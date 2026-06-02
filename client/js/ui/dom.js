@@ -1,0 +1,9 @@
+export const userIdInput = document.getElementById('userId');
+export const btnSearch = document.getElementById('btnSearch');
+export const userInfo = document.getElementById('userInfo');
+export const taskFormContainer = document.getElementById('taskFormContainer');
+export const taskForm = document.getElementById('taskForm');
+export const taskTableBody = document.getElementById('taskTableBody');
+export const taskCount = document.getElementById('taskCount');
+export const emptyState = document.getElementById('emptyState');
+export const toastContainer = document.getElementById('toastContainer');

@@ -23,8 +23,8 @@
     {
       "userId": 1,
       "userName": "Nestor Stiven Gomez",
-      "title": "joser",
-      "description": "aaaa",
+      "title": "joser OK Editando",
+      "description": "pppppp",
       "status": "Completada",
       "createdAt": "12/05/2026, 05:40 p. m.",
       "id": "1"
@@ -55,6 +55,15 @@
       "status": "En progreso",
       "createdAt": "19/05/2026, 03:03 p. m.",
       "id": "4"
+    },
+    {
+      "id": "255b",
+      "userId": "1",
+      "userName": "Nestor Stiven Gomez",
+      "title": "Fuga Ut non magni u",
+      "description": "Sunt dicta doloremqu",
+      "status": "En progreso",
+      "createdAt": "02/06/2026, 01:42 p. m."
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
