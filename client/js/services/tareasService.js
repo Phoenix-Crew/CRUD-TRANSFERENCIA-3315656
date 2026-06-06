@@ -2,9 +2,9 @@
 //Archivo: tareasService.js — El cerebro de la aplicación
 
 // ¿Que hace este archivo?
-// Aquí se decide qué hacer cuando el usuario busca, agrega, edita
-// o elimina una tarea. Le pide datos a la API, los procesa y luego
-// le dice a la pantalla que muestre los cambios.
+// Aquí se decide qué hacer cuando el usuario busca, agrega, edita,
+// elimina o reordena una tarea. Le pide datos a la API, los procesa
+// y luego le dice a la pantalla que muestre los cambios.
 //
 // ¿Que no hace?
 // NO habla directamente con el servidor (eso lo hace tareasApi.js),
@@ -12,14 +12,23 @@
 // notifications.js y taskRenderer.js).
 //
 // Dependencias (archivos que importa):
-// ./ui/dom.js           -   referencias a los elementos HTML
-// ./api/tareasApi.js    -   funciones para hablar con el servidor
-// ./ui/notifications.js  -  mostrar mensajes al usuario
-// ./ui/taskRenderer.js   -  pintar la tabla y los modos de edición
-// ./utils/helpers.js    -   funciones genéricas
+// ./ui/dom.js            - referencias a los elementos HTML
+// ./api/tareasApi.js     - funciones para hablar con el servidor
+// ./ui/notifications.js  - mostrar mensajes al usuario
+// ./ui/taskRenderer.js   - pintar la tabla, edición e iconos de sort
+// ./utils/helpers.js     - timestamp, validación, sortTasks,
+//                          filterTasksByStatus, colores
 //
-// ¿Qué exporta?
-// searchUser() registerTask() clearUserInfo()
+// ¿Qué exporta?  (8 funciones)
+// CRUD de tareas:
+//   - searchUser()         → busca usuario y carga sus tareas
+//   - registerTask(ev)     → crea una tarea nueva
+//   - clearUserInfo()      → resetea estado y pantalla
+// RF02 (ordenamiento + filtro):
+//   - setSortCriteria(c)       → cambia el criterio de orden
+//   - setSortDirection(d)      → fija la dirección del orden
+//   - toggleSortDirection()    → alterna asc/desc
+//   - setFilterStatus(s)       → filtra por estado (RF02)
 //
 // ¿quien las usa?
 //   app.js → importa searchUser y registerTask para conectarlas
@@ -28,14 +37,20 @@
 import { userIdInput, btnSearch, userInfo, taskFormContainer, taskForm, taskTableBody } from '../ui/dom.js';
 import { fetchUsers, fetchTasksByUser, createTask, updateTask, deleteTaskFromApi } from '../api/tareasApi.js';
 import { showToast, showUserInfo, showUserNotFound, showValidationError, clearFieldErrors, showFieldError } from '../ui/notifications.js';
-import { enableTaskForm, hideEmptyState, showEmptyState, updateTaskCount, createTaskElement, enableEditMode, cancelEdit, disableAllEditModes } from '../ui/taskRenderer.js';
-import { getCurrentTimestamp, isValidInput, statusColors } from '../utils/helpers.js';
+import { enableTaskForm, hideEmptyState, showEmptyState, updateTaskCount, createTaskElement, enableEditMode, cancelEdit, disableAllEditModes, updateSortIcons, updateSortButtonLabel } from '../ui/taskRenderer.js';
+import { getCurrentTimestamp, isValidInput, statusColors, sortTasks, filterTasksByStatus, buildTasksJson, buildExportFilename } from '../utils/helpers.js';
 
 
-//   currentUser:  el usuario que se buscó (objeto con id, name, rol, ficha)
-//   tasks:        las tareas de ese usuario (array de objetos)
+//   currentUser:    el usuario que se buscó (objeto con id, name, rol, ficha)
+//   tasks:          las tareas de ese usuario (array de objetos)
+//   filterStatus:   estado activo del filtro ('all' | 'Pendiente' | 'En progreso' | 'Completada')
+//   sortCriteria:   criterio activo de ordenamiento ('createdAt' | 'title' | 'status')
+//   sortDirection:  dirección del orden ('asc' | 'desc')
 let currentUser = null;
 let tasks = [];
+let filterStatus = 'all';
+let sortCriteria = 'createdAt';
+let sortDirection = 'desc';
 
 
 //   ¿Qué hace?  Limpia toda la pantalla y reinicia el estado.
@@ -55,6 +70,8 @@ function clearUserInfo() {
     taskTableBody.innerHTML = '';
     updateTaskCount(tasks);
     showEmptyState(tasks);
+    updateSortIcons(sortCriteria, sortDirection);
+    updateSortButtonLabel(sortDirection);
 }
 
 
@@ -124,16 +141,7 @@ async function searchUser() {
 
             const savedTasks = await fetchTasksByUser(userId);
             tasks = savedTasks;
-            taskTableBody.innerHTML = '';
-
-            if (tasks.length > 0) {
-                hideEmptyState();
-                tasks.forEach(task => createTaskElement(task, bindCallbacks()));
-            } else {
-                showEmptyState(tasks);
-            }
-
-            updateTaskCount(tasks);
+            applySorting();
         } else {
             showUserNotFound();
         }
@@ -217,9 +225,7 @@ async function registerTask(event) {
         if (response.ok) {
             const savedTask = await response.json();
             tasks.push(savedTask);
-            createTaskElement(savedTask, bindCallbacks());
-            hideEmptyState();
-            updateTaskCount(tasks);
+            applySorting();
             taskForm.reset();
             showToast('Tarea registrada exitosamente', 'success');
         } else {
@@ -267,12 +273,7 @@ async function saveEdit(taskId, row) {
             const updatedTask = await response.json();
             const idx = tasks.findIndex(t => String(t.id) === String(taskId));
             if (idx !== -1) tasks[idx] = updatedTask;
-            cancelEdit(row, updatedTask);
-            row.querySelector('.task-title').textContent = updatedTask.title;
-            row.querySelector('.task-desc').textContent = updatedTask.description;
-            const statusBadge = row.querySelector('.task-status');
-            statusBadge.textContent = updatedTask.status;
-            statusBadge.style.background = statusColors[updatedTask.status];
+            applySorting();
             showToast('Tarea actualizada correctamente', 'success');
         } else {
             showToast('Error al actualizar la tarea', 'error');
@@ -308,9 +309,7 @@ async function deleteTask(taskId, row) {
 
         if (response.ok) {
             tasks = tasks.filter(t => String(t.id) !== String(taskId));
-            row.remove();
-            updateTaskCount(tasks);
-            if (tasks.length === 0) showEmptyState(tasks);
+            applySorting();
             showToast('Tarea eliminada correctamente', 'success');
         } else {
             showToast('Error al eliminar la tarea', 'error');
@@ -322,8 +321,11 @@ async function deleteTask(taskId, row) {
 
 
 // Exportaciones — lo que este archivo comparte con app.js
-//   searchUser()    → para conectarlo al botón "Buscar"
-//   registerTask()  → para conectarlo al formulario de tareas
-//   clearUserInfo() → para limpiar la pantalla cuando sea necesario
+//   searchUser()         → para conectarlo al botón "Buscar"
+//   registerTask()       → para conectarlo al formulario de tareas
+//   clearUserInfo()      → para limpiar la pantalla cuando sea necesario
+//   setSortCriteria()    → para conectarlo al <select> de criterio
+//   setSortDirection()   → para conectarlo al botón de dirección directa
+//   toggleSortDirection()→ para alternar asc/desc con un solo botón
 
-export { searchUser, registerTask, clearUserInfo };
+export { searchUser, registerTask, clearUserInfo, setSortCriteria, setSortDirection, toggleSortDirection, setFilterStatus };

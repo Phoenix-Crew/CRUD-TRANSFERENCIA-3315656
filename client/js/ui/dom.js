@@ -1,3 +1,36 @@
+// Archivo: dom.js — Referencias a elementos del HTML (capa de UI)
+
+// ¿Que hace este archivo?
+//   Centraliza TODAS las referencias a elementos del DOM usando
+//   getElementById / querySelectorAll. Los demás módulos importan
+//   estas constantes en vez de llamar a getElementById directamente.
+//
+// ¿que no hace?
+//   NO manipula el DOM, NO agrega listeners, NO tiene lógica.
+//
+// ¿que exporta?  (12 referencias)
+//   Búsqueda de usuario:
+//     - userIdInput, btnSearch, userInfo
+//   Formulario y tabla de tareas:
+//     - taskFormContainer, taskForm, taskTableBody,
+//       taskCount, emptyState
+//   Notificaciones:
+//     - toastContainer
+//   RF02 (ordenamiento + filtro):
+//     - filterStatusSelect  → <select> para filtrar por estado
+//     - sortDirectionBtn   → botón que alterna asc/desc
+//     - sortableHeaders    → NodeList de <th.sortable> (clickeables)
+//
+// ¿quien las usa?
+//   - app.js             → userIdInput, btnSearch, taskForm,
+//                          filterStatusSelect, sortDirectionBtn,
+//                          sortableHeaders
+//   - services/tareasService.js → userInfo, taskFormContainer,
+//                                  taskTableBody, taskForm
+//   - ui/notifications.js → userInfo, taskFormContainer, toastContainer
+//   - ui/taskRenderer.js  → taskTableBody, taskCount, emptyState,
+//                           taskFormContainer, sortableHeaders
+
 export const userIdInput = document.getElementById('userId');
 export const btnSearch = document.getElementById('btnSearch');
 export const userInfo = document.getElementById('userInfo');
@@ -7,3 +40,6 @@ export const taskTableBody = document.getElementById('taskTableBody');
 export const taskCount = document.getElementById('taskCount');
 export const emptyState = document.getElementById('emptyState');
 export const toastContainer = document.getElementById('toastContainer');
+export const filterStatusSelect = document.getElementById('filterStatus');
+export const sortDirectionBtn = document.getElementById('sortDirection');
+export const sortableHeaders = document.querySelectorAll('th.sortable');

@@ -825,3 +825,113 @@ body {
         transform: scale(0.95);
     }
 }
+
+/* ============================================
+   RF02 - ORDENAMIENTO DINÁMICO
+   ============================================ */
+
+.sort-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    background-color: var(--color-background-secondary);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    flex-wrap: wrap;
+}
+
+.sort-controls__label {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-secondary);
+}
+
+.sort-controls__select {
+    padding: 8px 12px;
+    font-size: var(--font-size-sm);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: border-color var(--transition-base);
+    font-family: inherit;
+}
+
+.sort-controls__select:hover {
+    border-color: var(--color-primary-light);
+}
+
+.sort-controls__select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-lighter);
+}
+
+.sort-controls__btn {
+    padding: 8px 14px;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    background-color: var(--color-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color var(--transition-base);
+    font-family: inherit;
+}
+
+.sort-controls__btn:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.sort-controls__btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-primary-lighter);
+}
+
+.task-table th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color var(--transition-base);
+    position: relative;
+}
+
+.task-table th.sortable:hover {
+    background-color: var(--color-primary-lighter);
+    color: var(--color-primary-dark);
+}
+
+.task-table th.sortable--active {
+    color: var(--color-primary);
+    background-color: var(--color-primary-lighter);
+}
+
+.sort-icon {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    min-width: 14px;
+}
+
+.task-table td .task-date {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .sort-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .sort-controls__select,
+    .sort-controls__btn {
+        width: 100%;
+    }
+}

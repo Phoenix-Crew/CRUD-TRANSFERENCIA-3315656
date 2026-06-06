@@ -1,4 +1,36 @@
-import { taskTableBody, taskCount, emptyState, taskFormContainer } from './dom.js';
+// Archivo: taskRenderer.js — Renderizado de la tabla y modos de edición
+
+// ¿Que hace este archivo?
+//   Se encarga de toda la parte visual de las tareas en la tabla:
+//   crear filas, alternar modo edición, contar tareas, mostrar
+//   estado vacío, y los indicadores visuales del RF02 (ordenamiento).
+//
+// ¿que no hace?
+//   NO llama a la API, NO maneja estado, NO valida formularios.
+//
+// ¿que exporta?  (11 funciones)
+//   Formulario y tabla:
+//     - enableTaskForm()         → muestra el contenedor del form
+//     - hideEmptyState()         → oculta "no hay tareas"
+//     - showEmptyState(tasks)    → muestra "no hay tareas" si length===0
+//     - updateTaskCount(tasks)   → actualiza el contador "N tareas"
+//     - createTaskElement(t, cb) → crea una fila <tr> con la tarea
+//                                   y conecta los 4 botones de acción
+//   Edición inline:
+//     - enableEditMode(row, t)   → muestra inputs en una fila
+//     - cancelEdit(row, t)       → revierte la fila a modo lectura
+//     - disableAllEditModes(t)   → cierra todas las ediciones abiertas
+//   RF02 (ordenamiento):
+//     - updateSortIcons(c, d)    → pinta ▲/▼ en el <th> activo
+//     - updateSortButtonLabel(d) → actualiza el texto del botón asc/desc
+//
+// ¿quien las usa?
+//   - services/tareasService.js → enableTaskForm, hideEmptyState,
+//     showEmptyState, updateTaskCount, createTaskElement, cancelEdit,
+//     disableAllEditModes, updateSortIcons, updateSortButtonLabel
+//   - app.js                     → showEmptyState (en carga inicial)
+
+import { taskTableBody, taskCount, emptyState, taskFormContainer, sortableHeaders } from './dom.js';
 import { statusColors } from '../utils/helpers.js';
 
 export function enableTaskForm() {
@@ -40,6 +72,9 @@ export function createTaskElement(task, { onEdit, onDelete, onSave, onCancel }) 
                 <option value="En progreso" ${task.status === 'En progreso' ? 'selected' : ''}>En progreso</option>
                 <option value="Completada" ${task.status === 'Completada' ? 'selected' : ''}>Completada</option>
             </select>
+        </td>
+        <td>
+            <span class="task-date">${task.createdAt || ''}</span>
         </td>
         <td class="actions-cell">
             <button class="action-btn action-btn--edit btn-edit">Editar</button>
@@ -89,4 +124,41 @@ export function disableAllEditModes(tasks) {
         const task = tasks.find(t => String(t.id) === String(taskId));
         if (task) cancelEdit(row, task);
     });
+}
+
+
+// updateSortIcons(criteria, direction)
+//   ¿Qué hace?  Pinta el indicador visual (▲ o ▼) en el <th> que
+//               coincide con el criterio activo, y limpia los demás.
+//   Parámetros:
+//     - criteria:  'createdAt' | 'title' | 'status'
+//     - direction: 'asc' | 'desc'
+//   ¿Quién la llama?  tareasService.js → applySorting()
+
+export function updateSortIcons(criteria, direction) {
+    const arrow = direction === 'asc' ? '▲' : '▼';
+    sortableHeaders.forEach(th => {
+        const icon = th.querySelector('.sort-icon');
+        if (!icon) return;
+        if (th.dataset.sort === criteria) {
+            icon.textContent = arrow;
+            th.classList.add('sortable--active');
+        } else {
+            icon.textContent = '';
+            th.classList.remove('sortable--active');
+        }
+    });
+}
+
+
+// updateSortButtonLabel(direction)
+//   ¿Qué hace?  Cambia el texto del botón de dirección para que el
+//               usuario vea el estado actual ("Ascendente" o "Descendente").
+//   ¿Quién la llama?  tareasService.js → applySorting()
+
+export function updateSortButtonLabel(direction) {
+    const btn = document.getElementById('sortDirection');
+    if (!btn) return;
+    btn.textContent = direction === 'asc' ? '▲ Ascendente' : '▼ Descendente';
+    btn.dataset.direction = direction;
 }
