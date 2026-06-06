@@ -67,7 +67,14 @@
         <section class="messages-section">
             <div class="messages-header">
                 <h2 class="messages-header__title">Tareas Registradas</h2>
-                <span class="messages-header__count" id="taskCount">0 tareas</span>
+                <div class="messages-header__actions">
+                    <span class="messages-header__count" id="taskCount">0 tareas</span>
+                    <!-- RF04 - Botón exportar JSON (deshabilitado hasta cargar usuario) -->
+                    <button type="button" id="exportBtn" class="btn btn--export" disabled>
+                        <span class="btn__icon">📥</span>
+                        <span class="btn__text">Exportar JSON</span>
+                    </button>
+                </div>
             </div>
 
             <!-- RF02 - Filtro y dirección de orden -->

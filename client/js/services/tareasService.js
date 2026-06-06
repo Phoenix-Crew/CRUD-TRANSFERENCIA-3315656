@@ -29,15 +29,17 @@
 //   - setSortDirection(d)      → fija la dirección del orden
 //   - toggleSortDirection()    → alterna asc/desc
 //   - setFilterStatus(s)       → filtra por estado (RF02)
+// RF04 (exportación):
+//   - exportVisibleTasks()     → descarga las tareas visibles a JSON
 //
 // ¿quien las usa?
 //   app.js → importa searchUser y registerTask para conectarlas
 //   a los botones de la pantalla
 
-import { userIdInput, btnSearch, userInfo, taskFormContainer, taskForm, taskTableBody } from '../ui/dom.js';
+import { userIdInput, btnSearch, userInfo, taskFormContainer, taskForm, taskTableBody, exportBtn } from '../ui/dom.js';
 import { fetchUsers, fetchTasksByUser, createTask, updateTask, deleteTaskFromApi } from '../api/tareasApi.js';
 import { showToast, showUserInfo, showUserNotFound, showValidationError, clearFieldErrors, showFieldError } from '../ui/notifications.js';
-import { enableTaskForm, hideEmptyState, showEmptyState, updateTaskCount, createTaskElement, enableEditMode, cancelEdit, disableAllEditModes, updateSortIcons, updateSortButtonLabel } from '../ui/taskRenderer.js';
+import { enableTaskForm, hideEmptyState, showEmptyState, updateTaskCount, createTaskElement, enableEditMode, cancelEdit, disableAllEditModes, updateSortIcons, updateSortButtonLabel, downloadJson } from '../ui/taskRenderer.js';
 import { getCurrentTimestamp, isValidInput, statusColors, sortTasks, filterTasksByStatus, buildTasksJson, buildExportFilename } from '../utils/helpers.js';
 
 
@@ -72,6 +74,7 @@ function clearUserInfo() {
     showEmptyState(tasks);
     updateSortIcons(sortCriteria, sortDirection);
     updateSortButtonLabel(sortDirection);
+    setExportBtnState(false);
 }
 
 
@@ -88,6 +91,185 @@ function bindCallbacks() {
         onSave: saveEdit,
         onCancel: cancelEdit
     };
+}
+
+
+// setExportBtnState(enabled)  [privada — NO se exporta]
+//   ¿Qué hace?  Habilita o deshabilita el botón "Exportar JSON"
+//               según si hay un usuario cargado con tareas.
+//   Parámetros:
+//     - enabled: true → habilitado, false → deshabilitado
+//   ¿Cuándo se usa?
+//     - true  → en searchUser() después de cargar tareas
+//     - false → en clearUserInfo() al cambiar de usuario
+//   ¿Quién la llama?  searchUser(), clearUserInfo() (RF04)
+
+function setExportBtnState(enabled) {
+    if (!exportBtn) return;
+    exportBtn.disabled = !enabled;
+}
+
+
+// getVisibleTasks()  [privada — NO se exporta]
+//   ¿Qué hace?  Devuelve el array de tareas que están actualmente
+//               visibles en pantalla (filtradas + ordenadas).
+//               Es la MISMA lógica que usa applySorting() para
+//               pintar la tabla, de modo que la exportación refleja
+//               exactamente lo que el usuario ve.
+//   Parámetros:  ninguno
+//   ¿Qué devuelve?  Un array de tareas (puede estar vacío).
+//   ¿Quién la llama?  exportVisibleTasks() (RF04)
+
+function getVisibleTasks() {
+    const filtered = filterTasksByStatus(tasks, filterStatus);
+    return sortTasks(filtered, sortCriteria, sortDirection);
+}
+
+
+// exportVisibleTasks()  [se exporta]
+//   ¿Qué hace?  Toma las tareas VISIBLES en pantalla (filtradas +
+//               ordenadas), arma el JSON con metadata y dispara la
+//               descarga de un archivo .json en el navegador.
+//   Flujo:
+//     1. Verifica que haya un currentUser cargado
+//     2. Calcula las tareas visibles con getVisibleTasks()
+//     3. Si count === 0 → toast de advertencia "No hay tareas para
+//        exportar" y termina (no descarga nada)
+//     4. Construye el JSON con buildTasksJson(visible, meta)
+//     5. Genera el nombre del archivo con buildExportFilename()
+//     6. Dispara la descarga con downloadJson() (de taskRenderer)
+//     7. Muestra toast de éxito "Tareas exportadas (N)"
+//   ¿Quién la llama?  app.js → click en #exportBtn (RF04)
+//
+//   Estructura de capas respetada:
+//     utils/helpers.js  →  arma JSON + nombre (puro)
+//     ui/taskRenderer.js →  dispara descarga (toca DOM)
+//     services/tareasService.js →  coordina (este archivo)
+//     app.js            →  conecta el botón
+
+function exportVisibleTasks() {
+    if (!currentUser) {
+        showToast('No hay un usuario cargado para exportar', 'warning');
+        return;
+    }
+
+    const visible = getVisibleTasks();
+
+    if (visible.length === 0) {
+        showToast('No hay tareas para exportar con el filtro actual', 'warning');
+        return;
+    }
+
+    try {
+        const exportedAt = getCurrentTimestamp();
+
+        const meta = {
+            user: {
+                id: String(currentUser.id),
+                name: currentUser.name
+            },
+            filter: {
+                status: filterStatus,
+                sortCriteria: sortCriteria,
+                sortDirection: sortDirection
+            },
+            exportedAt: exportedAt
+        };
+
+        const jsonObject = buildTasksJson(visible, meta);
+        const jsonString = JSON.stringify(jsonObject, null, 2);
+
+        const filename = buildExportFilename(
+            String(currentUser.id),
+            filterStatus,
+            exportedAt
+        );
+
+        downloadJson(filename, jsonString);
+
+        showToast(`Tareas exportadas (${visible.length})`, 'success');
+    } catch (error) {
+        showToast('Error al exportar las tareas: ' + error.message, 'error');
+    }
+}
+
+
+// applySorting()  [privada — NO se exporta]
+//   ¿Qué hace?  Re-pinta la tabla con las tareas FILTRADAS por filterStatus
+//               y luego ORDENADAS según sortCriteria y sortDirection.
+//               Cierra cualquier modo edición abierto y muestra el estado
+//               vacío si no quedan tareas tras el filtro.
+//   ¿Cuándo se usa?  Cada vez que cambia el filtro, el criterio, la
+//                    dirección o se modifica el array tasks.
+
+function applySorting() {
+    disableAllEditModes(tasks);
+    taskTableBody.innerHTML = '';
+
+    const filtered = filterTasksByStatus(tasks, filterStatus);
+    const ordered = sortTasks(filtered, sortCriteria, sortDirection);
+
+    if (ordered.length > 0) {
+        hideEmptyState();
+        ordered.forEach(task => createTaskElement(task, bindCallbacks()));
+    } else {
+        showEmptyState(ordered);
+    }
+
+    updateTaskCount(ordered);
+    updateSortIcons(sortCriteria, sortDirection);
+    updateSortButtonLabel(sortDirection);
+}
+
+
+// setSortCriteria(criteria)  [se exporta]
+//   ¿Qué hace?  Cambia el criterio de ordenamiento y re-pinta la tabla.
+//   Parámetros:
+//     - criteria: 'createdAt' | 'title' | 'status'
+//   ¿Quién la llama?  app.js → cuando el usuario hace click en un
+//                      <th.sortable> de la tabla.
+
+function setSortCriteria(criteria) {
+    sortCriteria = criteria;
+    applySorting();
+}
+
+
+// setFilterStatus(status)  [se exporta]
+//   ¿Qué hace?  Cambia el filtro por estado y re-pinta la tabla
+//               mostrando solo las tareas que coincidan.
+//   Parámetros:
+//     - status: 'all' | 'Pendiente' | 'En progreso' | 'Completada'
+//   ¿Quién la llama?  app.js → cuando el usuario cambia el <select>
+//                      de filtro de estado.
+
+function setFilterStatus(status) {
+    filterStatus = status;
+    applySorting();
+}
+
+
+// setSortDirection(direction)  [se exporta]
+//   ¿Qué hace?  Cambia la dirección del ordenamiento y re-pinta la tabla.
+//   Parámetros:
+//     - direction: 'asc' | 'desc'
+//   ¿Quién la llama?  app.js → cuando el usuario hace click en el botón
+//                      de dirección.
+
+function setSortDirection(direction) {
+    sortDirection = direction;
+    applySorting();
+}
+
+
+// toggleSortDirection()  [se exporta]
+//   ¿Qué hace?  Alterna entre 'asc' y 'desc' y re-pinta la tabla.
+//   ¿Quién la llama?  app.js → cuando el usuario hace click en el botón
+//                      de dirección.
+
+function toggleSortDirection() {
+    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    applySorting();
 }
 
 
@@ -142,6 +324,7 @@ async function searchUser() {
             const savedTasks = await fetchTasksByUser(userId);
             tasks = savedTasks;
             applySorting();
+            setExportBtnState(true);
         } else {
             showUserNotFound();
         }
@@ -328,4 +511,4 @@ async function deleteTask(taskId, row) {
 //   setSortDirection()   → para conectarlo al botón de dirección directa
 //   toggleSortDirection()→ para alternar asc/desc con un solo botón
 
-export { searchUser, registerTask, clearUserInfo, setSortCriteria, setSortDirection, toggleSortDirection, setFilterStatus };
+export { searchUser, registerTask, clearUserInfo, setSortCriteria, setSortDirection, toggleSortDirection, setFilterStatus, exportVisibleTasks };

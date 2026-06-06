@@ -8,7 +8,7 @@
 // ¿que no hace?
 //   NO manipula el DOM, NO agrega listeners, NO tiene lógica.
 //
-// ¿que exporta?  (12 referencias)
+// ¿que exporta?  (13 referencias)
 //   Búsqueda de usuario:
 //     - userIdInput, btnSearch, userInfo
 //   Formulario y tabla de tareas:
@@ -20,13 +20,15 @@
 //     - filterStatusSelect  → <select> para filtrar por estado
 //     - sortDirectionBtn   → botón que alterna asc/desc
 //     - sortableHeaders    → NodeList de <th.sortable> (clickeables)
+//   RF04 (exportación JSON):
+//     - exportBtn          → botón "Exportar JSON"
 //
 // ¿quien las usa?
 //   - app.js             → userIdInput, btnSearch, taskForm,
 //                          filterStatusSelect, sortDirectionBtn,
-//                          sortableHeaders
+//                          sortableHeaders, exportBtn
 //   - services/tareasService.js → userInfo, taskFormContainer,
-//                                  taskTableBody, taskForm
+//                                  taskTableBody, taskForm, exportBtn
 //   - ui/notifications.js → userInfo, taskFormContainer, toastContainer
 //   - ui/taskRenderer.js  → taskTableBody, taskCount, emptyState,
 //                           taskFormContainer, sortableHeaders
@@ -43,3 +45,4 @@ export const toastContainer = document.getElementById('toastContainer');
 export const filterStatusSelect = document.getElementById('filterStatus');
 export const sortDirectionBtn = document.getElementById('sortDirection');
 export const sortableHeaders = document.querySelectorAll('th.sortable');
+export const exportBtn = document.getElementById('exportBtn');

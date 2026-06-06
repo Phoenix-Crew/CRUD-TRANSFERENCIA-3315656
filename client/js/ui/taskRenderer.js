@@ -23,11 +23,14 @@
 //   RF02 (ordenamiento):
 //     - updateSortIcons(c, d)    → pinta ▲/▼ en el <th> activo
 //     - updateSortButtonLabel(d) → actualiza el texto del botón asc/desc
+//   RF04 (exportación):
+//     - downloadJson(filename, content) → dispara descarga de un .json
 //
 // ¿quien las usa?
 //   - services/tareasService.js → enableTaskForm, hideEmptyState,
 //     showEmptyState, updateTaskCount, createTaskElement, cancelEdit,
-//     disableAllEditModes, updateSortIcons, updateSortButtonLabel
+//     disableAllEditModes, updateSortIcons, updateSortButtonLabel,
+//     downloadJson
 //   - app.js                     → showEmptyState (en carga inicial)
 
 import { taskTableBody, taskCount, emptyState, taskFormContainer, sortableHeaders } from './dom.js';
@@ -161,4 +164,38 @@ export function updateSortButtonLabel(direction) {
     if (!btn) return;
     btn.textContent = direction === 'asc' ? '▲ Ascendente' : '▼ Descendente';
     btn.dataset.direction = direction;
+}
+
+
+// downloadJson(filename, content)
+//   ¿Qué hace?  Dispara la descarga de un archivo .json en el navegador.
+//               Crea un Blob con el contenido, genera un link temporal
+//               con la URL del Blob, hace click() y lo limpia.
+//   Parámetros:
+//     - filename: nombre del archivo a descargar (ej: "tareas.json")
+//     - content:  string con el JSON a guardar
+//   ¿Quién la llama?  tareasService.js → exportVisibleTasks()
+//
+//   Notas técnicas:
+//     - El Blob se crea con MIME 'application/json' y charset utf-8
+//     - El link se inserta al body, se hace click() y se remueve
+//     - revokeObjectURL se llama 100ms después para garantizar que
+//       el browser haya iniciado la descarga antes de liberar memoria
+//     - Esta función es la ÚNICA que toca el DOM para RF04 (separación
+//       de responsabilidades: utils → arma el JSON, ui → descarga)
+
+export function downloadJson(filename, content) {
+    const blob = new Blob([content], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.style.display = 'none';
+
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    setTimeout(() => URL.revokeObjectURL(url), 100);
 }

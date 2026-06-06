@@ -935,3 +935,61 @@ body {
         width: 100%;
     }
 }
+
+/* ============================================
+   RF04 - EXPORTACIÓN DE TAREAS (JSON)
+   ============================================ */
+
+.messages-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn--export {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: #ffffff;
+    background-color: var(--color-success);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background-color var(--transition-base), opacity var(--transition-base);
+    font-family: inherit;
+}
+
+.btn--export:hover:not(:disabled) {
+    background-color: #059669;
+}
+
+.btn--export:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+}
+
+.btn--export:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn--export .btn__icon {
+    font-size: var(--font-size-base);
+}
+
+@media (max-width: 480px) {
+    .messages-header__actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn--export {
+        width: 100%;
+        justify-content: center;
+    }
+}

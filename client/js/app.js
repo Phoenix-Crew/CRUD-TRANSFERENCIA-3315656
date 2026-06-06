@@ -24,12 +24,14 @@
 //     4. change en filterStatusSelect → setFilterStatus(value)
 //     5. click en sortDirectionBtn    → toggleSortDirection()
 //     6. click en cada th.sortable    → setSortCriteria(dataset.sort)
+//   RF04 (exportación JSON):
+//     7. click en exportBtn           → exportVisibleTasks()
 //   Carga inicial:
-//     7. DOMContentLoaded             → showEmptyState + fetchUsers
+//     8. DOMContentLoaded             → showEmptyState + fetchUsers
 //                                       (log en consola con IDs)
 
-import { userIdInput, btnSearch, taskForm, filterStatusSelect, sortDirectionBtn, sortableHeaders } from './ui/dom.js';
-import { searchUser, registerTask, setSortCriteria, toggleSortDirection, setFilterStatus } from './services/tareasService.js';
+import { userIdInput, btnSearch, taskForm, filterStatusSelect, sortDirectionBtn, sortableHeaders, exportBtn } from './ui/dom.js';
+import { searchUser, registerTask, setSortCriteria, toggleSortDirection, setFilterStatus, exportVisibleTasks } from './services/tareasService.js';
 import { fetchUsers } from './api/tareasApi.js';
 import { showEmptyState } from './ui/taskRenderer.js';
 
@@ -62,6 +64,13 @@ sortableHeaders.forEach(th => {
         setSortCriteria(criteria);
     });
 });
+
+if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+        exportVisibleTasks();
+    });
+}
+
 document.addEventListener('DOMContentLoaded', async function() {
     showEmptyState([]);
 

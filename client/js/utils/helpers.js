@@ -14,13 +14,16 @@
 //     - isValidInput(value)        → valida que un texto no esté vacío
 //     - sortTasks(tasks, c, d)     → ordena por fecha/título/status
 //     - filterTasksByStatus(t, s)  → filtra tareas por estado
-////   2 objetos:
+//     - buildTasksJson(tasks, m)   → arma el JSON a exportar (RF04)
+//     - buildExportFilename(...)   → genera el nombre del archivo (RF04)
+//   2 objetos:
 //     - statusColors  → colores hex por estado (para badges)
 //     - statusOrder   → orden lógico del ciclo de vida (no alfabético)
 //
 // ¿quien las usa?
 //   - tareasService.js → getCurrentTimestamp, isValidInput,
 //                        sortTasks, filterTasksByStatus, statusColors,
+//                        buildTasksJson, buildExportFilename
 //   - taskRenderer.js  → statusColors, updateSortIcons (vía dom)
 
 
@@ -152,4 +155,98 @@ export function sortTasks(tasks, criteria, direction = 'asc') {
 export function filterTasksByStatus(tasks, status) {
     if (!status || status === 'all') return tasks.slice();
     return tasks.filter(t => t.status === status);
+}
+
+
+// buildTasksJson(visibleTasks, meta)
+//   ¿Qué hace?  Arma el objeto JSON que se exporta en RF04.
+//               Incluye metadata (usuario, filtro, fecha de exportación)
+//               más el array de tareas. NO toca el DOM ni dispara
+//               descargas — solo construye el objeto.
+//   Parámetros:
+//     - visibleTasks: array de tareas ya filtradas y ordenadas
+//                     (resultado de getVisibleTasks())
+//     - meta: objeto con:
+//         {
+//           user:         { id, name }     → usuario actual
+//           filter:       { status, sortCriteria, sortDirection }
+//           exportedAt:   string con timestamp es-CO
+//         }
+//   ¿Qué devuelve?  Un objeto JS listo para JSON.stringify().
+//   ¿Quién la llama?  tareasService.js → exportVisibleTasks()
+//
+//   Estructura del JSON resultante:
+//   {
+//     "exportedAt": "06/06/2026, 04:45 p. m.",
+//     "user":       { "id": "1", "name": "Stiven" },
+//     "filter":     { "status": "Pendiente",
+//                     "sortCriteria": "createdAt",
+//                     "sortDirection": "desc" },
+//     "count":      3,
+//     "tasks":      [ { id, userId, userName, title, description,
+//                       status, createdAt }, ... ]
+//   }
+
+export function buildTasksJson(visibleTasks, meta) {
+    return {
+        exportedAt: meta.exportedAt,
+        user: {
+            id: meta.user.id,
+            name: meta.user.name
+        },
+        filter: {
+            status: meta.filter.status,
+            sortCriteria: meta.filter.sortCriteria,
+            sortDirection: meta.filter.sortDirection
+        },
+        count: visibleTasks.length,
+        tasks: visibleTasks.map(t => ({
+            id: t.id,
+            userId: t.userId,
+            userName: t.userName,
+            title: t.title,
+            description: t.description,
+            status: t.status,
+            createdAt: t.createdAt
+        }))
+    };
+}
+
+
+// buildExportFilename(userId, filterStatus, exportedAt)
+//   ¿Qué hace?  Genera el nombre del archivo .json a descargar.
+//               Sanitiza el filterStatus (sin acentos, sin espacios)
+//               y formatea el timestamp para que sea filename-safe.
+//   Parámetros:
+//     - userId:       id del usuario (string)
+//     - filterStatus: 'all' | 'Pendiente' | 'En progreso' | 'Completada'
+//     - exportedAt:   string con la fecha (de getCurrentTimestamp())
+//   ¿Qué devuelve?  Un string como:
+//                     "tareas_1_pendiente_2026-06-06T16-45-30.json"
+//   ¿Quién la llama?  tareasService.js → exportVisibleTasks()
+//
+//   Tabla de sanitización del filtro:
+//     'all'           → 'todas'
+//     'Pendiente'     → 'pendiente'
+//     'En progreso'   → 'en_progreso'
+//     'Completada'    → 'completada'
+
+export function buildExportFilename(userId, filterStatus, exportedAt) {
+    const filterMap = {
+        'all': 'todas',
+        'Pendiente': 'pendiente',
+        'En progreso': 'en_progreso',
+        'Completada': 'completada'
+    };
+    const safeFilter = filterMap[filterStatus] || 'todas';
+
+    // Convierte "06/06/2026, 04:45 p. m." → "2026-06-06T16-45-30"
+    // (toma la parte antes de la coma y reemplaza "/" por "-")
+    let safeTimestamp = 'ts';
+    if (exportedAt) {
+        const datePart = exportedAt.split(',')[0].trim();
+        safeTimestamp = datePart.replace(/\//g, '-').replace(/\s/g, '');
+    }
+
+    return `tareas_${userId}_${safeFilter}_${safeTimestamp}.json`;
 }
