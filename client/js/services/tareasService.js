@@ -34,6 +34,7 @@ import { getCurrentTimestamp, isValidInput, statusColors } from '../utils/helper
 
 //   currentUser:  el usuario que se buscó (objeto con id, name, rol, ficha)
 //   tasks:        las tareas de ese usuario (array de objetos)
+let currentUser = null;
 let tasks = [];
 
 
@@ -202,7 +203,7 @@ async function registerTask(event) {
     if (hasError) return;
 
     const taskData = {
-        userId: currentUser.id,
+        userId: String(currentUser.id),
         userName: currentUser.name,
         title: title,
         description: description,

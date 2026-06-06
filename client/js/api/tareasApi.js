@@ -10,13 +10,25 @@
 //   NO guarda información en variables.
 //
 // ¿Qué exporta?
-//   Todas las funciones de aquí + la constante API_URL
+//   5 funciones + la constante API_URL:
+//     - fetchUsers()             → GET /users
+//     - fetchTasksByUser(userId) → GET /tasks + filtro en cliente
+//     - createTask(task)         → POST /tasks
+//     - updateTask(id, data)     → PATCH /tasks/{id}
+//     - deleteTaskFromApi(id)    → DELETE /tasks/{id}
 //
 // ¿Quién las usa?
 //   tareasService.js — importa estas funciones para hacer las
 //   operaciones de buscar, crear, editar y eliminar tareas.
+//
+// ============================================================
+// NOTA SOBRE LA URL DEL API
+// ============================================================
+//   - En dev local:  http://localhost:3002
+//   - Histórico:     antes apuntaba a :3005 (puerto incorrecto,
+//                     provocaba "Error de conexión" en la UI).
 
-const API_URL = "http://192.168.1.125:3005";
+const API_URL = "http://localhost:3002";
 
 
 // fetchUsers()
@@ -33,17 +45,24 @@ export async function fetchUsers() {
 
 
 // fetchTasksByUser(userId)
-//   ¿Qué hace?  Pide las tareas de un usuario específico.
-//   Método:     GET → /tasks?userId=123
+//   ¿Qué hace?  Pide TODAS las tareas y filtra en el cliente
+//               comparando con String() en ambos lados para que
+//               matchee tanto con userId numérico como string.
 //   Parámetros:
 //     - userId: el número de documento del usuario
 //   ¿Qué devuelve?  Un array con las tareas de ese usuario.
 //   ¿Quién la llama?  tareasService.js → searchUser()
+//
+//   Nota: Se hace fetch completo + filter en cliente para evitar
+//   problemas de tipo (int vs string) en json-server. El db.json
+//   puede tener userId guardados como número (1) o como string ("1"),
+//   y la query ?userId=1 solo matchea el número exacto.
 
 export async function fetchTasksByUser(userId) {
-    const response = await fetch(`${API_URL}/tasks?userId=${userId}`);
+    const response = await fetch(`${API_URL}/tasks`);
     if (!response.ok) throw new Error('Error al obtener tareas');
-    return response.json();
+    const allTasks = await response.json();
+    return allTasks.filter(t => String(t.userId) === String(userId));
 }
 
 
