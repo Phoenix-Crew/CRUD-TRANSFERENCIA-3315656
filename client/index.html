@@ -67,17 +67,40 @@
         <section class="messages-section">
             <div class="messages-header">
                 <h2 class="messages-header__title">Tareas Registradas</h2>
-                <span class="messages-header__count" id="taskCount">0 tareas</span>
+                <div class="messages-header__actions">
+                    <span class="messages-header__count" id="taskCount">0 tareas</span>
+                    <!-- RF04 - Botón exportar JSON (deshabilitado hasta cargar usuario) -->
+                    <button type="button" id="exportBtn" class="btn btn--export" disabled>
+                        <span class="btn__icon">📥</span>
+                        <span class="btn__text">Exportar JSON</span>
+                    </button>
+                </div>
             </div>
-            
+
+            <!-- RF02 - Filtro y dirección de orden -->
+            <div class="sort-controls">
+                <label for="filterStatus" class="sort-controls__label">Filtrar por estado:</label>
+                <select id="filterStatus" class="sort-controls__select">
+                    <option value="all">Todas</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="En progreso">En progreso</option>
+                    <option value="Completada">Completada</option>
+                </select>
+                <button type="button" id="sortDirection" class="sort-controls__btn" data-direction="desc">
+                    ▼ Descendente
+                </button>
+            </div>
+
             <div class="messages-container">
                 <div class="table-wrapper">
                     <table class="task-table">
+                        <!-- RF02 - th.sortable: click para ordenar por esa columna -->
                         <thead>
                             <tr>
-                                <th>Título</th>
+                                <th data-sort="title" class="sortable">Título <span class="sort-icon"></span></th>
                                 <th>Descripción</th>
-                                <th>Estado</th>
+                                <th data-sort="status" class="sortable">Estado <span class="sort-icon"></span></th>
+                                <th data-sort="createdAt" class="sortable">Fecha <span class="sort-icon"></span></th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
