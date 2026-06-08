@@ -1,11 +1,13 @@
-import { userInfo, taskFormContainer, toastContainer } from './dom.js';
 
-export function showToast(message, type = 'success') {
+import { userInfo, taskFormContainer, toastContainer } from './dom.js';
+import notificationManager from '../core/NotificationManager.js';
+
+function createToastElement(notification) {
     const toast = document.createElement('div');
-    toast.className = `toast toast--${type}`;
+    toast.className = `toast toast--${notification.type}`;
     const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
     toast.innerHTML = `
-        <span>${icons[type] || ''} ${message}</span>
+        <span>${icons[notification.type] || ''} ${notification.message}</span>
         <button class="toast__close">&times;</button>
     `;
     toast.querySelector('.toast__close').addEventListener('click', () => toast.remove());
@@ -16,6 +18,12 @@ export function showToast(message, type = 'success') {
         toast.style.transition = 'all 0.3s ease';
         setTimeout(() => toast.remove(), 300);
     }, 4000);
+}
+
+const unsubscribe = notificationManager.subscribe(createToastElement);
+
+export function showToast(message, type = 'success') {
+    notificationManager.add(type, message);
 }
 
 export function showUserInfo(user) {
