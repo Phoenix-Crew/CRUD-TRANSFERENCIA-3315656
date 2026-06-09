@@ -211,6 +211,82 @@ Creamos un archivo nuevo en el módulo correspondiente. No tocamos los existente
 
 ---
 
+---
+
+## Diseño Visual — "Silver Emerald"
+
+> *"No basta con que funcione: tiene que provocar una reacción cuando lo ves."*
+
+El diseño visual de la aplicación se trabajó como un componente aparte, siguiendo los principios de **separación de responsabilidades** que aplicamos en el código. El estilo no está mezclado con la lógica; vive en su propio archivo (`styles.css`) y se apoya en el HTML (`index.html`) únicamente para elementos decorativos.
+
+### Concepto
+
+Combinación de **verde esmeralda institucional SENA** con **plateado (silver)** para evocar:
+- **Identidad**: los colores verdes conectan con la marca SENA
+- **Modernidad**: el plateado reemplaza al dorado tradicional para un acabado más sobrio y contemporáneo
+- **Profesionalismo**: fondo oscuro con acentos brillantes que contrastan sin gritar
+
+### Arquitectura visual
+
+```
+┌──────────────────────────────────────────────┐
+│               HEADER                          │
+│  [ADSO · 3315656 · Grupo 4]                  │
+│  Gestión de Tareas (con brillo plateado)      │
+├────────────────────┬─────────────────────────┤
+│  COLUMNA IZQUIERDA │  COLUMNA DERECHA         │
+│  280px             │  1fr (flexible)          │
+│  ┌──────────────┐  │  ┌─────────────────────┐ │
+│  │ Buscar ID    │  │  │ Tareas Registradas  │ │
+│  │ (borde verde)│  │  │ Filtros + Tabla     │ │
+│  └──────────────┘  │  │ (línea plateada)    │ │
+│  ┌──────────────┐  │  └─────────────────────┘ │
+│  │ Registrar    │  │                          │
+│  │ (borde silver)│  │                          │
+│  └──────────────┘  │                          │
+├────────────────────┴─────────────────────────┤
+│            Separador ◆                        │
+├──────────────────────────────────────────────┤
+│               FOOTER                          │
+└──────────────────────────────────────────────┘
+```
+
+### Paleta de colores
+
+| Color | Código | Para qué |
+|-------|--------|----------|
+| Verde esmeralda | `#10b981` | Botones, bordes, acentos |
+| Verde oscuro | `#022c22` | Fondos de inputs |
+| Plateado | `#cbd5e1` | Bordes tabla, botones filtro, badges |
+| Fondo página | `#030a06` | Fondo general |
+| Texto | `#f1f5f9` | Texto principal |
+
+### Efectos y animaciones (16 en total)
+
+| Animación | Qué hace |
+|-----------|----------|
+| `floatParticle` | 5 puntos brillantes flotan por la pantalla |
+| `orbPulse` | 3 esferas de luz con blur pulsan en el fondo |
+| `beamSweep` | Barrido de luz cruza el header y el footer |
+| `silverShimmer` | El texto "Tareas" brilla con movimiento plateado |
+| `sweep` | Al pasar el mouse, un destello cruza las tarjetas |
+| `toastBounce` | Las notificaciones entran con rebote desde la derecha |
+| `messageSlide` | Cada tarea aparece deslizándose desde la izquierda |
+| `titleGlow` | El título del header "respira" con un brillo sutil |
+
+### ¿Qué se tocó para lograrlo?
+
+- **`styles.css`** → Sistema completo de diseño: colores, tipografía, layout grid, glassmorphism, animaciones, responsive
+- **`index.html`** → Se agregaron **solo elementos decorativos**: partículas, orbes, líneas de luz, divisores, badges, brillos. Cero cambios en la funcionalidad.
+- **`helpers.js`** → Se actualizaron los 3 colores de `statusColors` para los badges de estado
+- **`estilo.md`** → Documento completo con la guía de estilo para exponer en clase
+
+### Frase para tu exposición
+
+> *"Así como modularizamos el código para que cada archivo tenga una responsabilidad, el diseño visual también tiene su propia arquitectura: colores que comunican, animaciones que guían, y un layout que organiza. La página no solo funciona: se ve, se siente y se recuerda."*
+
+---
+
 **SENA — ADSO**  
 **Ficha:** 3315656  
 **Guía:** GFPI-F-135 V04 — Modularización en JavaScript
