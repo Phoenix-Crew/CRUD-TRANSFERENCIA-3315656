@@ -1,13 +1,13 @@
 /* ============================================
-   SISTEMA DE DISEÑO - VARIABLES CSS
+   VARIABLES GLOBALES (BEM + CUSTOM PROPERTIES)
    ============================================ */
 
 :root {
-    /* Paleta de colores principal */
-    --color-primary: #4f46e5;
-    --color-primary-dark: #4338ca;
-    --color-primary-light: #6366f1;
-    --color-primary-lighter: #eef2ff;
+    /* Paleta de colores principal - ENFOQUE GEMINI (Azul Oscuro/Cósmico) */
+    --color-primary: #1a237e;           /* Azul oscuro profundo */
+    --color-primary-dark: #0d1340;      /* Azul noche casi negro */
+    --color-primary-light: #3949ab;     /* Azul cósmico brillante */
+    --color-primary-lighter: #e8eaf6;   /* Fondo azul pastel muy suave */
     
     /* Colores de estado */
     --color-success: #10b981;
@@ -112,9 +112,14 @@ body {
     font-weight: var(--font-weight-normal);
     line-height: 1.5;
     color: var(--color-text-primary);
-    background: linear-gradient(135deg, var(--color-primary-lighter) 0%, var(--color-gray-50) 100%);
+    background: linear-gradient(135deg, #0d1340 0%, #1a237e 100%); /* Fondo degradado Gemini Azul Oscuro */
     min-height: 100vh;
     padding: var(--spacing-lg);
+}
+
+/* Textura general para títulos y textos destacados */
+h1, h2, h3, .btn, .status-badge {
+    text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.15);
 }
 
 /* ============================================
@@ -134,9 +139,10 @@ body {
     text-align: center;
     margin-bottom: var(--spacing-2xl);
     padding: var(--spacing-xl) var(--spacing-md);
-    background: var(--color-surface);
+    background: #e8eaf6; /* Caja Pastel Azulada */
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-md);
+    border: 1px solid rgba(57, 73, 171, 0.2);
 }
 
 .header__title {
@@ -145,12 +151,14 @@ body {
     color: var(--color-primary);
     margin-bottom: var(--spacing-sm);
     letter-spacing: -0.02em;
+    text-shadow: 1px 1px 2px rgba(26, 35, 126, 0.2); /* Textura en letras */
 }
 
 .header__subtitle {
     font-size: var(--font-size-lg);
     color: var(--color-text-secondary);
     font-weight: var(--font-weight-normal);
+    text-shadow: 0.5px 0.5px 0px rgba(255, 255, 255, 0.8);
 }
 
 /* ============================================
@@ -158,18 +166,19 @@ body {
    ============================================ */
 
 .card {
-    background: var(--color-surface);
+    background: #f4f5fa; /* Caja Pastel Neutro Lavanda */
     border-radius: var(--radius-lg);
     padding: var(--spacing-xl);
     box-shadow: var(--shadow-lg);
-    border: 1px solid var(--color-gray-100);
+    border: 1px solid rgba(26, 35, 126, 0.1);
 }
 
 .card__title {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
+    color: var(--color-primary); /* Enfoque azul oscuro */
     margin-bottom: var(--spacing-lg);
+    text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.1);
 }
 
 /* ============================================
@@ -188,8 +197,9 @@ body {
     display: block;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    color: var(--color-text-primary);
+    color: var(--color-primary); /* Azul oscuro */
     margin-bottom: var(--spacing-sm);
+    text-shadow: 0.5px 0.5px 0px rgba(255, 255, 255, 0.5);
 }
 
 .form__input {
@@ -198,16 +208,16 @@ body {
     font-size: var(--font-size-base);
     font-family: var(--font-family-base);
     color: var(--color-text-primary);
-    background-color: var(--color-surface);
-    border: 2px solid var(--color-gray-200);
+    background-color: #ffffff;
+    border: 2px solid rgba(26, 35, 126, 0.15);
     border-radius: var(--radius-md);
     transition: all var(--transition-base);
     outline: none;
 }
 
 .form__input:focus {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px var(--color-primary-lighter);
+    border-color: var(--color-primary-light);
+    box-shadow: 0 0 0 3px rgba(57, 73, 171, 0.2);
 }
 
 .form__input::placeholder {
@@ -257,16 +267,17 @@ body {
     outline: none;
     text-decoration: none;
     white-space: nowrap;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3); /* Textura en texto de botones */
 }
 
 .btn--primary {
-    background-color: var(--color-primary);
+    background-color: var(--color-primary-light); /* Azul cósmico */
     color: white;
     box-shadow: var(--shadow-sm);
 }
 
 .btn--primary:hover {
-    background-color: var(--color-primary-dark);
+    background-color: var(--color-primary); /* Azul más oscuro al pasar el cursor */
     box-shadow: var(--shadow-md);
     transform: translateY(-1px);
 }
@@ -298,19 +309,22 @@ body {
     align-items: center;
     margin-bottom: var(--spacing-lg);
     padding: var(--spacing-md);
+    background: rgba(232, 234, 246, 0.2);
+    border-radius: var(--radius-md);
 }
 
 .messages-header__title {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
+    color: #e8eaf6; /* Letras claras pastel con contraste sobre el fondo oscuro */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .messages-header__count {
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    color: var(--color-text-secondary);
-    background-color: var(--color-gray-100);
+    color: var(--color-primary);
+    background-color: #e8eaf6; /* Caja Pastel Chica */
     padding: var(--spacing-xs) var(--spacing-md);
     border-radius: var(--radius-full);
 }
@@ -328,36 +342,37 @@ body {
     align-items: center;
     justify-content: center;
     padding: var(--spacing-3xl) var(--spacing-xl);
-    background: var(--color-surface);
+    background: rgba(232, 234, 246, 0.15); /* Transparencia pastel */
     border-radius: var(--radius-lg);
-    border: 2px dashed var(--color-gray-200);
+    border: 2px dashed rgba(232, 234, 246, 0.3);
     text-align: center;
 }
 
 .messages-empty__icon {
-    color: var(--color-gray-300);
+    color: var(--color-primary-lighter);
     margin-bottom: var(--spacing-lg);
 }
 
 .messages-empty__text {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
-    color: var(--color-text-secondary);
+    color: #e8eaf6;
     margin-bottom: var(--spacing-xs);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 .messages-empty__subtext {
     font-size: var(--font-size-sm);
-    color: var(--color-text-tertiary);
+    color: var(--color-gray-300);
 }
 
 /* Tarjeta de mensaje */
 .message-card {
-    background: var(--color-surface);
+    background: #eff1fa; /* Caja Pastel Azul Claro */
     border-radius: var(--radius-lg);
     padding: var(--spacing-lg);
     box-shadow: var(--shadow-md);
-    border-left: 4px solid var(--color-primary);
+    border-left: 4px solid var(--color-primary-light);
     animation: slideIn var(--transition-slow) ease-out;
     transition: all var(--transition-base);
 }
@@ -365,6 +380,7 @@ body {
 .message-card:hover {
     box-shadow: var(--shadow-xl);
     transform: translateY(-2px);
+    background: #e3e6f5;
 }
 
 .message-card__header {
@@ -391,23 +407,25 @@ body {
     color: white;
     font-weight: var(--font-weight-bold);
     font-size: var(--font-size-sm);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
 }
 
 .message-card__username {
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
+    color: var(--color-primary); /* Azul oscuro en el usuario */
+    text-shadow: 0.3px 0.3px 0px rgba(255, 255, 255, 0.8);
 }
 
 .message-card__timestamp {
     font-size: var(--font-size-xs);
-    color: var(--color-text-tertiary);
+    color: var(--color-gray-500);
     font-weight: var(--font-weight-medium);
 }
 
 .message-card__content {
     font-size: var(--font-size-base);
-    color: var(--color-text-secondary);
+    color: var(--color-gray-700);
     line-height: 1.6;
     word-wrap: break-word;
 }
@@ -419,14 +437,16 @@ body {
 .footer {
     text-align: center;
     padding: var(--spacing-xl);
-    background: var(--color-surface);
+    background: #e8eaf6; /* Caja Pastel */
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(26, 35, 126, 0.1);
 }
 
 .footer__text {
     font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
 }
 
 /* ============================================
@@ -463,24 +483,25 @@ body {
     margin-top: 10px;
     font-size: var(--font-size-sm);
     line-height: 1.6;
+    text-shadow: 0.5px 0.5px 0px rgba(255, 255, 255, 0.5); /* Textura en texto de estados */
 }
 
 .user-feedback--success {
-    background: #d4edda;
-    border: 1px solid #c3e6cb;
-    color: #155724;
+    background: #e2f6ea; /* Verde Pastel */
+    border: 1px solid #bcecd0;
+    color: #107154;
 }
 
 .user-feedback--error {
-    background: #f8d7da;
-    border: 1px solid #f5c6cb;
-    color: #721c24;
+    background: #fde8e9; /* Rojo Pastel */
+    border: 1px solid #fbc4c7;
+    color: #b91c1c;
 }
 
 .user-feedback--warning {
-    background: #fff3cd;
-    border: 1px solid #ffeeba;
-    color: #856404;
+    background: #fef3d6; /* Amarillo Pastel */
+    border: 1px solid #fde49e;
+    color: #92400e;
 }
 
 /* ============================================
@@ -509,17 +530,23 @@ body {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    background-color: #f7f8fc; /* Fondo Pastel Suave para la Tabla */
+    border-radius: var(--radius-md);
+    overflow: hidden;
 }
 
 .task-table thead tr {
-    background-color: #f8f9fa;
-    border-bottom: 2px solid #dee2e6;
+    background-color: #e1e4f5; /* Encabezado Pastel Azul */
+    border-bottom: 2px solid rgba(26, 35, 126, 0.15);
 }
 
 .task-table th {
     padding: 12px;
     text-align: left;
     white-space: nowrap;
+    color: var(--color-primary); /* Texto Azul Oscuro */
+    font-weight: var(--font-weight-bold);
+    text-shadow: 0.5px 0.5px 0px rgba(255, 255, 255, 0.6);
 }
 
 .task-table th:last-child {
@@ -529,14 +556,15 @@ body {
 .task-table td {
     padding: 12px;
     vertical-align: middle;
+    color: var(--color-gray-800);
 }
 
 .task-table tbody tr {
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid rgba(26, 35, 126, 0.08);
 }
 
 .task-table tbody tr:hover {
-    background-color: #f8f9ff;
+    background-color: #eaeefc; /* Hover Pastel */
 }
 
 /* Status badge */
@@ -547,6 +575,7 @@ body {
     font-size: 12px;
     font-weight: 600;
     color: white;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
 }
 
 /* Action buttons in table */
@@ -561,6 +590,7 @@ body {
     font-family: var(--font-family-base);
     transition: all var(--transition-fast);
     white-space: nowrap;
+    text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.2);
 }
 
 .action-btn:hover {
@@ -569,7 +599,7 @@ body {
 }
 
 .action-btn--edit {
-    background: var(--color-primary);
+    background: var(--color-primary-light);
     color: white;
 }
 
@@ -597,7 +627,7 @@ body {
     display: none;
     width: 100%;
     padding: 6px;
-    border: 2px solid var(--color-primary);
+    border: 2px solid var(--color-primary-light);
     border-radius: 6px;
     font-size: 14px;
     font-family: var(--font-family-base);
@@ -632,6 +662,7 @@ body {
     align-items: center;
     gap: 10px;
     line-height: 1.4;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
 }
 
 .toast--success {
@@ -645,6 +676,7 @@ body {
 .toast--warning {
     background: var(--color-warning);
     color: var(--color-gray-900);
+    text-shadow: none;
 }
 
 .toast--info {
@@ -836,8 +868,8 @@ body {
     gap: 12px;
     padding: 12px 16px;
     margin-bottom: 16px;
-    background-color: var(--color-background-secondary);
-    border: 1px solid var(--color-gray-200);
+    background-color: #e1e4f5; /* Caja Pastel Controles */
+    border: 1px solid rgba(26, 35, 126, 0.15);
     border-radius: var(--radius-md);
     flex-wrap: wrap;
 }
@@ -845,7 +877,8 @@ body {
 .sort-controls__label {
     font-size: var(--font-size-sm);
     font-weight: 600;
-    color: var(--color-text-secondary);
+    color: var(--color-primary); /* Texto Azul Oscuro */
+    text-shadow: 0.5px 0.5px 0px rgba(255, 255, 255, 0.5);
 }
 
 .sort-controls__select {
@@ -874,17 +907,18 @@ body {
     padding: 8px 14px;
     font-size: var(--font-size-sm);
     font-weight: 600;
-    background-color: var(--color-primary);
+    background-color: var(--color-primary-light);
     color: #ffffff;
     border: none;
     border-radius: var(--radius-sm);
     cursor: pointer;
     transition: background-color var(--transition-base);
     font-family: inherit;
+    text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.2);
 }
 
 .sort-controls__btn:hover {
-    background-color: var(--color-primary-dark);
+    background-color: var(--color-primary);
 }
 
 .sort-controls__btn:focus {
@@ -906,7 +940,7 @@ body {
 
 .task-table th.sortable--active {
     color: var(--color-primary);
-    background-color: var(--color-primary-lighter);
+    background-color: rgba(57, 73, 171, 0.15);
 }
 
 .sort-icon {
@@ -920,7 +954,7 @@ body {
 .task-table td .task-date {
     display: block;
     font-size: var(--font-size-xs);
-    color: var(--color-text-tertiary);
+    color: var(--color-gray-500);
     white-space: nowrap;
 }
 
@@ -961,6 +995,7 @@ body {
     cursor: pointer;
     transition: background-color var(--transition-base), opacity var(--transition-base);
     font-family: inherit;
+    text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.2);
 }
 
 .btn--export:hover:not(:disabled) {
