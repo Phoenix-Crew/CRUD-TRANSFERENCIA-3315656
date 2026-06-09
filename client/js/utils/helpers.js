@@ -68,9 +68,9 @@ export function isValidInput(value) {
 //   ¿Quién lo usa?  taskRenderer.js y tareasService.js
 
 export const statusColors = {
-    'Pendiente': '#ffc107',
-    'En progreso': '#17a2b8',
-    'Completada': '#28a745'
+    'Pendiente': '#cbd5e1',
+    'En progreso': '#10b981',
+    'Completada': '#059669'
 };
 
 
