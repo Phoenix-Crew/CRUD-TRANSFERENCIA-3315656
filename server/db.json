@@ -2,69 +2,116 @@
   "users": [
     {
       "id": "1",
-      "name": "Nestor Stiven Gomez",
-      "rol": "Aprendiz ADSO",
-      "ficha": "2874057"
+      "name": "Brian Bayona",
+      "rol": "Aprendiz",
+      "ficha": "3315656"
     },
     {
       "id": "2",
-      "name": "Brian Bayona",
-      "rol": "Aprendiz ADSO",
-      "ficha": "2874057"
+      "name": "Nestor Gomez",
+      "rol": "Aprendiz",
+      "ficha": "3315656"
     },
     {
       "id": "3",
-      "name": "Instructor SENA",
-      "rol": "Coordinador",
-      "ficha": "N/A"
+      "name": "Joser Fuentes",
+      "rol": "Aprendiz",
+      "ficha": "3315656"
+    },
+    {
+      "id": "4",
+      "name": "Ana María López",
+      "rol": "Instructora",
+      "ficha": "3315656"
+    },
+    {
+      "id": "5",
+      "name": "Carlos Andrés Pérez",
+      "rol": "Aprendiz",
+      "ficha": "3315656"
     }
   ],
   "tasks": [
     {
-      "userId": 1,
-      "userName": "Nestor Stiven Gomez",
-      "title": "joser OK Editando",
-      "description": "pppppp",
-      "status": "Completada",
-      "createdAt": "12/05/2026, 05:40 p. m.",
-      "id": "1"
-    },
-    {
-      "userId": 3,
-      "userName": "Instructor SENA",
-      "title": "brian",
-      "description": "hola",
-      "status": "Pendiente",
-      "createdAt": "12/05/2026, 05:44 p. m.",
-      "id": "2"
-    },
-    {
-      "userId": 2,
-      "userName": "Brian Bayona",
-      "title": "Adso",
-      "description": "ss",
-      "status": "En progreso",
-      "createdAt": "12/05/2026, 05:44 p. m.",
-      "id": "3"
-    },
-    {
-      "userId": 2,
-      "userName": "Brian Bayona",
-      "title": "Quisquam nulla ex il",
-      "description": "aaaa",
-      "status": "En progreso",
-      "createdAt": "19/05/2026, 03:03 p. m.",
-      "id": "4"
-    },
-    {
-      "id": "255b",
+      "id": "1",
       "userId": "1",
-      "userName": "Nestor Stiven Gomez",
-      "title": "Fuga Ut non magni u",
-      "description": "Sunt dicta doloremqu",
+      "userName": "Brian Bayona",
+      "title": "Implementar módulo de notificaciones",
+      "description": "Crear NotificationManager con patrón observador para manejar toasts",
+      "status": "Completada",
+      "createdAt": "01/06/2026, 10:30 a. m."
+    },
+    {
+      "id": "2",
+      "userId": "1",
+      "userName": "Brian Bayona",
+      "title": "Diseñar estructura modular del proyecto",
+      "description": "Definir carpetas api, services, ui, utils y core con sus responsabilidades",
+      "status": "Completada",
+      "createdAt": "01/06/2026, 09:00 a. m."
+    },
+    {
+      "id": "3",
+      "userId": "1",
+      "userName": "Brian Bayona",
+      "title": "Refactorizar tareasService",
+      "description": "Separar lógica de negocio del archivo principal al nuevo módulo services",
       "status": "En progreso",
-      "createdAt": "02/06/2026, 01:42 p. m."
+      "createdAt": "05/06/2026, 02:00 p. m."
+    },
+    {
+      "id": "4",
+      "userId": "2",
+      "userName": "Nestor Gomez",
+      "title": "Implementar ordenamiento dinámico",
+      "description": "Agregar sort por fecha, título y estado con toggle asc/desc",
+      "status": "Completada",
+      "createdAt": "03/06/2026, 11:15 a. m."
+    },
+    {
+      "id": "5",
+      "userId": "2",
+      "userName": "Nestor Gomez",
+      "title": "Crear funciones de ayuda en helpers.js",
+      "description": "Implementar sortTasks, filterTasksByStatus, buildTasksJson, buildExportFilename",
+      "status": "Completada",
+      "createdAt": "02/06/2026, 04:30 p. m."
+    },
+    {
+      "id": "6",
+      "userId": "2",
+      "userName": "Nestor Gomez",
+      "title": "Exportación de tareas a JSON",
+      "description": "Implementar botón de exportación con metadatos y nombre dinámico",
+      "status": "Pendiente",
+      "createdAt": "08/06/2026, 09:45 a. m."
+    },
+    {
+      "id": "7",
+      "userId": "3",
+      "userName": "Joser Fuentes",
+      "title": "Mejorar interfaz de tabla de tareas",
+      "description": "Agregar animaciones, badges de estado y diseño responsive a la tabla",
+      "status": "Completada",
+      "createdAt": "04/06/2026, 10:00 a. m."
+    },
+    {
+      "id": "8",
+      "userId": "3",
+      "userName": "Joser Fuentes",
+      "title": "Implementar edición inline en tabla",
+      "description": "Permitir editar título, descripción y estado directamente en la fila de la tabla",
+      "status": "En progreso",
+      "createdAt": "06/06/2026, 03:20 p. m."
+    },
+    {
+      "id": "9",
+      "userId": "3",
+      "userName": "Joser Fuentes",
+      "title": "Centralizar referencias del DOM",
+      "description": "Crear dom.js con todas las referencias a elementos HTML del proyecto",
+      "status": "Completada",
+      "createdAt": "02/06/2026, 08:30 a. m."
     }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+  ]
 }
