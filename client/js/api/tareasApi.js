@@ -28,7 +28,7 @@
 //   - Histórico:     antes apuntaba a :3005 (puerto incorrecto,
 //                     provocaba "Error de conexión" en la UI).
 
-const API_URL = "http://localhost:3002";
+const API_URL = "http://10.5.225.71:3002";
 
 
 // fetchUsers()
