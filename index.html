@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo 4</title>
+</head>
+<body>
+
+    <div class="particle particle--1"></div>
+    <div class="particle particle--2"></div>
+    <div class="particle particle--3"></div>
+    <div class="particle particle--4"></div>
+    <div class="particle particle--5"></div>
+
+    <div class="bg-orb bg-orb--1"></div>
+    <div class="bg-orb bg-orb--2"></div>
+    <div class="bg-orb bg-orb--3"></div>
+
+    <div class="container">
+        <!-- ====== HEADER ====== -->
+        <header class="header">
+            <div class="header__beam"></div>
+            <div class="header__inner">
+                <div class="header__badge">
+                    <span class="header__badge-dot"></span>
+                    Programacion de Software · 3315656 · Grupo 4
+                </div>
+                <h1 class="header__title">Gestión de <span class="text-silver">Tareas</span></h1>
+                <p class="header__subtitle">Consulta un usuario y asigna sus tareas pendientes</p>
+            </div>
+            <div class="header__flare"></div>
+        </header>
+
+        <!-- ====== LEFT COLUMN ====== -->
+        <div class="col-left">
+
+            <section class="form-section">
+                <div class="card card--search">
+                    <div class="card__border card__border--top"></div>
+                    <div class="card__border card__border--bottom"></div>
+                    <div class="card__sweep"></div>
+                    <h2 class="card__title">
+                        <span class="card__icon"></span>
+                        Buscar Usuario
+                    </h2>
+                    <div class="form__group">
+                        <label for="userId" class="form__label">ID del Usuario</label>
+                        <div class="search-group">
+                            <input type="text" id="userId" class="form__input" placeholder="Ingresa tu documento/ID">
+                            <button type="button" class="btn btn--primary" id="btnSearch">Buscar</button>
+                        </div>
+                        <div id="userInfo" class="form__error"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section" id="taskFormContainer" style="display: none;">
+                <div class="card card--register">
+                    <div class="card__border card__border--top"></div>
+                    <div class="card__border card__border--bottom"></div>
+                    <div class="card__sweep"></div>
+                    <h2 class="card__title">
+                        <span class="card__icon"></span>
+                        Registrar Nueva Tarea
+                    </h2>
+                    <form id="taskForm" class="form" novalidate>
+                        <div class="form__group">
+                            <label for="taskTitle" class="form__label">Título de la tarea</label>
+                            <input type="text" id="taskTitle" class="form__input" placeholder="¿Qué hay que hacer?">
+                            <span class="field-error" id="titleError"></span>
+                        </div>
+                        <div class="form__group">
+                            <label for="taskDescription" class="form__label">Descripción</label>
+                            <textarea id="taskDescription" class="form__input form__textarea" rows="2" placeholder="Detalles de la tarea..."></textarea>
+                            <span class="field-error" id="descError"></span>
+                        </div>
+                        <div class="form__group">
+                            <label for="taskStatus" class="form__label">Estado</label>
+                            <select id="taskStatus" class="form__input">
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="En progreso">En progreso</option>
+                                <option value="Completada">Completada</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn--primary btn--submit">
+                            <span class="btn__text">Registrar Tarea</span>
+                            <span class="btn__icon">+</span>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ====== RIGHT COLUMN ====== -->
+        <div class="col-right">
+
+            <section class="messages-section">
+                <div class="messages-header">
+                    <div class="messages-header__glow"></div>
+                    <h2 class="messages-header__title"> Tareas Registradas</h2>
+                    <div class="messages-header__actions">
+                        <span class="messages-header__count" id="taskCount">0 tareas</span>
+                        <button type="button" id="exportBtn" class="btn btn--export" disabled>
+                            <span class="btn__icon"></span>
+                            <span class="btn__text">Exportar JSON</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="sort-controls">
+                    <label for="filterStatus" class="sort-controls__label">Filtrar:</label>
+                    <select id="filterStatus" class="sort-controls__select">
+                        <option value="all">Todas</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En progreso">En progreso</option>
+                        <option value="Completada">Completada</option>
+                    </select>
+                    <button type="button" id="sortDirection" class="sort-controls__btn" data-direction="desc">
+                        ▼ Descendente
+                    </button>
+                </div>
+
+                <div class="messages-container">
+                    <div class="table-wrapper">
+                        <div class="table-wrapper__silverline"></div>
+                        <table class="task-table">
+                            <thead>
+                                <tr>
+                                    <th data-sort="title" class="sortable">Título <span class="sort-icon"></span></th>
+                                    <th>Descripción</th>
+                                    <th data-sort="status" class="sortable">Estado <span class="sort-icon"></span></th>
+                                    <th data-sort="createdAt" class="sortable">Fecha <span class="sort-icon"></span></th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="taskTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="messages-empty" id="emptyState">
+                        <div class="messages-empty__icon"></div>
+                        <p class="messages-empty__text">No hay tareas asignadas</p>
+                        <p class="messages-empty__subtext">Busca un usuario para empezar a registrar tareas.</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ====== DIVIDER ====== -->
+        <div class="divider">
+            <span class="divider__line"></span>
+            <span class="divider__sparkle">✦</span>
+            <span class="divider__line"></span>
+        </div>
+
+        <!-- ====== FOOTER ====== -->
+        <footer class="footer">
+            <div class="footer__inner">
+                <div class="footer__beam"></div>
+                <p class="footer__text">Módulo de Gestión de Tareas · ADSO · SENA · <span class="text-silver">Grupo 4</span></p>
+            </div>
+        </footer>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <script type="module" src="/src/js/app.js"></script>
+</body>
+</html>
