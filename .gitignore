@@ -1,3 +1,15 @@
 server/db.json
+
+# Dependencies
 node_modules/
-dist/
+
+# Build output
+client/dist/
+
+# Environment files
+.env.local
+.env.*.local
+
+# OS files
+Thumbs.db
+.DS_Store
