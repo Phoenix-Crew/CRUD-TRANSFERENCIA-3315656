@@ -39,6 +39,7 @@
 import { userIdInput, btnSearch, userInfo, taskFormContainer, taskForm, taskTableBody, exportBtn } from '../ui/dom.js';
 import { fetchUsers, fetchTasksByUser, createTask, updateTask, deleteTaskFromApi } from '../api/tareasApi.js';
 import { showToast, showUserInfo, showUserNotFound, showValidationError, clearFieldErrors, showFieldError } from '../ui/notifications.js';
+import { showConfirmDialog } from '../ui/confirmDialog.js';
 import { enableTaskForm, hideEmptyState, showEmptyState, updateTaskCount, createTaskElement, enableEditMode, cancelEdit, disableAllEditModes, updateSortIcons, updateSortButtonLabel, downloadJson } from '../ui/taskRenderer.js';
 import { getCurrentTimestamp, isValidInput, statusColors, sortTasks, filterTasksByStatus, buildTasksJson, buildExportFilename } from '../utils/helpers.js';
 
@@ -485,7 +486,13 @@ async function saveEdit(taskId, row) {
 //     4. Si hay error: muestra toast rojo
 
 async function deleteTask(taskId, row) {
-    if (!confirm('¿Estás seguro de eliminar esta tarea?')) return;
+    const confirmed = await showConfirmDialog({
+        title: 'Eliminar tarea',
+        message: '¿Estás seguro de eliminar esta tarea? Esta acción no se puede deshacer.',
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar'
+    });
+    if (!confirmed) return;
 
     try {
         const response = await deleteTaskFromApi(taskId);
