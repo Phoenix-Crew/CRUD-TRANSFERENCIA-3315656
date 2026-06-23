@@ -1,217 +1,292 @@
-# PROYECTO BASE: [11. CRUD] - Software Factory SENA
+# Gestión de Tareas por Usuario — CRUD Modular
 
-**Metodología:** *"Del Requerimiento al Producto"*
-
-Este repositorio constituye la base técnica y administrativa para el desarrollo del proyecto. No es solo un contenedor de código, es una simulación de un entorno profesional donde se aplican estándares de calidad, gestión ágil y flujos de trabajo colaborativos reales.
-
----
-
-## INTRODUCCIÓN Y PROPÓSITO
-
-El objetivo de este proyecto es desarrollar una solución tecnológica funcional, priorizando:
-
-- Arquitectura limpia  
-- Código escalable  
-- Trazabilidad total  
-
-### El "Por qué" (Justificación)
-
-Dominar el ciclo de vida del software es tan importante como programar. Esta metodología alinea las habilidades técnicas con las exigencias de la industria, garantizando que cada línea de código tenga un propósito claro y demostrable.
+> **Una aplicación web que empezó siendo un solo archivo de 385 líneas y se convirtió en una arquitectura modular profesional.**  
+> Proyecto de formación SENA — ADSO, Ficha 3315656.
 
 ---
 
-## CENTRO DE DOCUMENTACIÓN (WIKI DEL PROYECTO)
+## La Historia (para tu exposición)
 
-Antes de escribir la primera línea de código o ejecutar un comando, es obligatorio revisar las guías de trabajo.
+Imagina que construyes una casa. Al principio es una sola habitación: cocinas, duermes y trabajas en el mismo espacio. Funciona, pero cuando llega más gente y necesitas más espacios, se vuelve un caos. No encuentras nada, todo estorba, y arreglar una cosa rompe otra.
 
-### Nivel 1. Sistema  
-**Ubicación:** `docs/01-guia-sistema/`  
-- Manuales técnicos: creación de Issues y Milestones  
+Eso era nuestro proyecto al inicio: **un solo archivo (`script.js`) de 385 líneas** que hacía absolutamente todo:
 
-### Nivel 2. Metodología  
-**Ubicación:** `docs/02-guia-metodologia/`  
-- Reglas para reportar tareas y solicitar revisiones (PR)  
+- Capturaba eventos del mouse y teclado
+- Pintaba elementos en pantalla
+- Hacía llamadas al servidor con `fetch`
+- Validaba formularios
+- Guardaba el estado del usuario
+- Mostraba notificaciones
+- Coordinaba el flujo entero
 
-### Nivel 3. Formatos  
-**Ubicación:** `docs/03-formatos-maestros/`  
-- Plantillas oficiales de documentos  
+Funcionaba, sí. Pero era imposible de mantener. Si querías cambiar el color de un mensaje de error, tenías que leerte 385 líneas para encontrar dónde estaba. Si dos personas trabajaban al mismo tiempo, se pisaban los cambios. Y agregar una funcionalidad nueva era como meter un mueble más en una habitación ya repleta.
 
----
-
-## ROLES DE LA CÉLULA ÁGIL
-
-### Líder (Arquitecto)
-
-- **Responsabilidad:** Integridad del repositorio y control de calidad  
-- **Tareas en GitHub:**
-  - Protección de ramas  
-  - Gestión de Milestones  
-  - Aprobación de Pull Requests  
+**El problema no era que no funcionara. El problema era que no estaba organizado para crecer.**
 
 ---
 
-### Desarrollador (Albañil)
+## La Solución: Modularización
 
-- **Responsabilidad:** Construcción de módulos y lógica  
-- **Tareas en GitHub:**
-  - Desarrollo en ramas `feat/`  
-  - Reporte de avances  
-  - Solicitud de revisión técnica  
+Dividimos el código en **módulos independientes**, cada uno con una responsabilidad única. Así como una casa tiene cocina, baño, dormitorios y sala, nuestra app ahora tiene módulos especializados que se comunican entre sí de forma ordenada.
+
+### La estructura final
+
+```
+client/
+├── index.html              ← La página (casi no cambió)
+├── styles.css              ← Los estilos (tampoco cambió)
+└── js/
+    ├── app.js              ← 🎯 El director de orquesta (punto de entrada)
+    ├── core/
+    │   └── NotificationManager.js  ← 📢 Gestor puro de notificaciones
+    ├── api/
+    │   └── tareasApi.js    ← 📡 El cartero (solo habla con el servidor)
+    ├── services/
+    │   └── tareasService.js ← 🧠 El cerebro (lógica de negocio + estado)
+    ├── ui/
+    │   ├── dom.js          ← 📋 El inventario (referencias al HTML)
+    │   ├── notifications.js ← 📣 El speaker (mensajes al usuario)
+    │   └── taskRenderer.js ← 🎨 El pintor (tabla, edición, contadores)
+    └── utils/
+        └── helpers.js      ← 🧰 La caja de herramientas (funciones puras)
+```
+
+### ¿Qué hace cada módulo? (para que lo expliques en tu exposición)
+
+| Módulo | Lo puedes explicar como... |
+|--------|---------------------------|
+| **`app.js`** | Es el **director de orquesta**. No toca instrumentos, solo dice cuándo empezar. Conecta los clics del usuario con la lógica del sistema. Tiene unos 20 event listeners y nada más. |
+| **`core/NotificationManager.js`** | Es el **buzón de notificaciones**. Cualquier módulo puede dejar un mensaje aquí, y los que están suscritos lo reciben automáticamente. No sabe qué es una pantalla, ni un botón, ni un fetch. Es 100% puro. |
+| **`api/tareasApi.js`** | Es el **cartero**. Solo sabe hacer peticiones al servidor: GET, POST, PATCH, DELETE. No revisa si los datos son válidos ni pinta nada. Solo trae y lleva información. |
+| **`services/tareasService.js`** | Es el **cerebro**. Aquí está el estado de la app (usuario actual, tareas, filtros). Decide qué hacer cuando buscas, agregas, editas o eliminas. Llama al cartero cuando necesita datos, y al pintor cuando necesita mostrar algo. |
+| **`ui/dom.js`** | Es el **inventario**. Solo guarda referencias a los elementos del HTML (`getElementById`). No hace nada más. Si cambia un ID en el HTML, solo se cambia aquí. |
+| **`ui/notifications.js`** | Es el **speaker**. Muestra mensajes al usuario: toasts verdes de éxito, rojos de error, amarillos de advertencia. También muestra los datos del usuario y los errores de validación. |
+| **`ui/taskRenderer.js`** | Es el **pintor**. Dibuja la tabla de tareas, crea filas, alterna el modo edición, actualiza el contador, muestra el estado vacío. Solo toca el DOM, no llama a la API. |
+| **`utils/helpers.js`** | Es la **caja de herramientas**. Tiene funciones que no dependen de nada: formatear fechas, validar inputs, ordenar arrays, filtrar por estado, construir JSONs. Las puedes usar en cualquier proyecto. |
 
 ---
 
-### El "Por qué"
+## Las 4 Funcionalidades Clave (RF)
 
-La división de roles evita duplicidad de tareas y establece una jerarquía clara de responsabilidad (segregación de funciones), esencial en equipos de alto rendimiento.
+### RF01 — Filtro avanzado de tareas
+- Filtra por **usuario** (escribes el documento y solo ves sus tareas)
+- Filtra por **estado** (Pendiente, En progreso, Completada)
+- Puedes **combinar ambos** filtros: buscas un usuario y luego filtras sus tareas por estado
+- Todo sin recargar la página
+
+### RF02 — Ordenamiento dinámico
+- Haz clic en los encabezados de la tabla para ordenar por:
+  - **Título** (alfabéticamente, respetando acentos y ñ)
+  - **Estado** (en orden lógico: Pendiente → En progreso → Completada)
+  - **Fecha** (más antigua o más reciente)
+- Botón para alternar entre ascendente ▲ y descendente ▼
+- La columna activa muestra una flechita que indica el orden
+
+### RF03 — Sistema de notificaciones
+- Implementamos un **NotificationManager** con patrón observador
+- Es **100% independiente**: no importa nada del DOM, ni de la API, ni de otros módulos
+- Cualquier parte del sistema puede notificar sin saber cómo se va a mostrar
+- Tipos: ✅ éxito, ❌ error, ⚠️ advertencia, ℹ️ información
+- Los toasts aparecen con animación y se cierran solos a los 4 segundos
+
+### RF04 — Exportación a JSON
+- Botón "Exportar JSON" descarga las tareas que ESTÁS VIENDO en pantalla
+- Respeta los filtros y el ordenamiento activos
+- El archivo incluye metadatos: quién exportó, con qué filtros, cuándo
+- Separación estricta:
+  - `helpers.js` construye el JSON y el nombre del archivo
+  - `taskRenderer.js` dispara la descarga en el navegador
+  - `tareasService.js` coordina el proceso
 
 ---
 
-## CONFIGURACIÓN DEL ENTORNO (LOCAL)
+## Cómo fluye la información (diagrama para tu exposición)
 
-Para estandarizar el desarrollo y evitar errores de compatibilidad, sigue estos pasos en tu terminal:
+```
+USUARIO hace clic en "Buscar"
+       │
+       ▼
+┌─────────────────┐
+│     app.js      │  Recibe el evento y llama a searchUser()
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────────┐
+│ tareasService.js    │  El cerebro: valida el input, pide datos,
+│  (searchUser)       │  coordina la respuesta, actualiza estado
+└──┬──────┬──────┬───┘
+   │      │      │
+   ▼      ▼      ▼
+┌──────┐ ┌────┐ ┌──────────────┐
+│ api/ │ │ui/ │ │ ui/          │
+│ tarea│ │noti│ │taskRenderer  │
+│ sApi │ │fica│ │              │
+│ .js  │ │tion│ │Pinta la tabla│
+│      │ │s.js│ │              │
+│ fetch│ │Mues│ │createTask    │
+│Users │ │tra │ │Element()     │
+│fetch │ │info│ │              │
+│Tasks │ │user│ │              │
+└──────┘ └────┘ └──────────────┘
+```
+
+**Regla de oro:** Un módulo solo se comunica con sus vecinos directos.  
+La UI nunca llama directo a la API. La API nunca toca el DOM.  
+Si algo falla, sabes exactamente dónde mirar.
+
+---
+
+## Lo que NO cambió (y por qué está bien)
+
+- La aplicación **sigue funcionando exactamente igual** que antes
+- El HTML y el CSS **no se modificaron** (solo se agregaron los atributos `data-sort` para el ordenamiento)
+- El servidor (json-server) **sigue siendo el mismo**
+- Los usuarios pueden **seguir haciendo las mismas operaciones**: buscar, crear, editar, eliminar
+
+Lo que cambió está **debajo del capó**: el código ahora es mantenible, escalable y profesional.
+
+---
+
+## Cómo ejecutar el proyecto
 
 ```bash
-# Paso 1. Clonar el repositorio
-git clone [URL-del-repositorio-grupal]
-
-# Paso 2. Instalar dependencias
+# 1. Inicia el backend (json-server)
+cd server
 npm install
+npm start
+# El servidor corre en http://localhost:3002
 
-# Paso 3. Ejecutar el servidor local
-npm run dev
+# 2. Abre la aplicación
+# Simplemente abre client/index.html en tu navegador
+# O usa: npx serve client
 ```
 
-### El "por que"
+### IDs de prueba para la exposición
 
-Estandarizar el entorno asegura la paridad entre las máquinas de todos los colaboradores, erradicando para siempre la excusa de "en mi máquina sí funciona".
-
-## ARQUITECTURA Y ESTRUCTURA DEL PROYECTO
-
-Mantenemos una organización modular para facilitar el mantenimiento:
-
-```
-/
-├── .github/              # Motor de plantillas (Issues y Pull Requests)
-├── docs/                 # Guías metodológicas y reportes técnicos
-├── public/               # Recursos estáticos (imágenes, iconos)
-├── src/                  # Código fuente principal
-│   ├── assets/           # Estilos globales y multimedia
-│   ├── components/       # Piezas de interfaz reutilizables (UI)
-│   ├── services/         # Lógica de consumo de datos o APIs
-│   ├── views/            # Secciones o páginas principales
-│   └── main.js           # Punto de entrada de la aplicación
-├── .gitignore            # Archivos que Git debe ignorar
-├── package.json          # Dependencias y scripts del proyecto
-├── README.md             # Manual principal del repositorio
-└── TEAM_AGREEMENT.md     # Acuerdo y normas de convivencia del equipo
-```
-
-## METODOLOGÍA DE TRABAJO (GITFLOW PROFESIONAL)
-
-El flujo de trabajo es el corazón de nuestra colaboración.  
-Está estrictamente prohibido hacer commits directos sobre las ramas `main` o `develop`.
+| ID | Nombre | Rol |
+|:--:|--------|-----|
+| 1 | Brian Bayona | Aprendiz |
+| 2 | Nestor Gomez | Aprendiz |
+| 3 | Joser Fuentes | Aprendiz |
+| 4 | Ana María López | Instrutora |
+| 5 | Carlos Andrés Pérez | Aprendiz |
 
 ---
 
-### Paso 1. Sincronizar
-Trae los últimos cambios aprobados del equipo:
+## Para tu presentación: preguntas frecuentes
 
-```bash
-git checkout develop
-git pull origin develop
-```
-### Paso 2. Rama de Tarea
+**¿Cuál es el archivo más importante?**  
+`tareasService.js` — es el cerebro. Todo pasa por ahí.
 
-Crea un espacio aislado para tu requerimiento:
+**¿Dónde cambiarías la URL de la API?**  
+Solo en `api/tareasApi.js`, línea 31. Un solo cambio.
 
-```bash
-git checkout -b feat/nombre-tarea
-```
+**¿Puede la UI hablar directo con la API?**  
+No, y esa es la gracia. Si la UI hablara directo, la lógica de negocio quedaría dispersa. Todo pasa por `services/`.
 
-### Paso 3. Desarrollo
+**¿Qué pasa si agregamos una nueva funcionalidad?**  
+Creamos un archivo nuevo en el módulo correspondiente. No tocamos los existentes. El proyecto está listo para crecer.
 
-Escribe código limpio y realiza commits descriptivos.
-
-### Paso 4. Sincronización Final
-
-Antes de entregar, integra los cambios recientes del equipo para resolver conflictos en tu máquina:
-
-```bash
-git checkout develop
-git pull origin develop
-git checkout feat/nombre-tarea
-git merge develop
-```
-
-### Paso 5. Solicitud de PR
-
-Sube tu rama y solicita la revisión técnica en GitHub:
-
-```bash
-git push origin feat/nombre-tarea
-```
-
-### El "Por qué"
-
-Este flujo protege la estabilidad del código base. Si tu código falla, solo falla en tu rama, manteniendo el proyecto principal intacto y siempre funcional.
-
-## BLINDAJE DE RAMAS Y SEGURIDAD
-
-Para garantizar la integridad del producto, el repositorio cuenta con candados de seguridad:
-
-- **Rama `main`:**
-  - Representa el estado de producción  
-  - Solo recibe código desde `develop` cuando un Milestone (Hito) está al 100%  
-
-- **Restricción de Merge:**
-  - El botón de integración está bloqueado para los desarrolladores  
-  - Solo el Líder tiene el permiso final tras la revisión  
+**¿Cuántas líneas tiene ahora `app.js`?**  
+85 líneas, de las cuales la mitad son comentarios explicativos. El archivo principal pasó de 385 líneas a ser legible en 2 minutos.
 
 ---
 
-## ESTÁNDARES DE CALIDAD (DEFINITION OF DONE)
+## Equipo
 
-Antes de que el Líder apruebe un Pull Request, el desarrollador debe garantizar:
-
-- **Limpieza:**  
-  Cero `console.log`, variables sin uso o código comentado (*"por si acaso"*)  
-
-- **Responsive:**  
-  El diseño se adapta sin romperse a pantallas móviles  
-
-- **Sincronización:**  
-  La rama está actualizada y sin conflictos de merge  
-
-- **Automatización:**  
-  La descripción del PR incluye `Closes #ID` para cerrar la tarea  
-
-### El "Por qué"
-
-Un control de calidad preventivo reduce la deuda técnica (errores acumulados) y automatiza el proceso administrativo.
+| Integrante | Rol | ¿Qué hizo? |
+|------------|-----|------------|
+| **Brian Bayona** | Líder / Arquitecto | Estructura base, `app.js`, `tareasService.js`, `NotificationManager.js`, coordinación, merges |
+| **Néstor Stiven Gómez** | Desarrollador | `tareasApi.js`, `helpers.js`, ordenamiento dinámico (RF02), exportación JSON (RF04) |
+| **Joser Andrés Fuentes** | Desarrollador | `dom.js`, `taskRenderer.js`, mejoras UI/UX, filtros de interfaz |
 
 ---
 
-## CRITERIOS DE ENTREGA Y EVALUACIÓN
+## Una reflexión final (para cerrar tu exposición)
 
-La fase del proyecto se considera exitosa, terminada y lista para calificación únicamente cuando:
-
-- El **Milestone** en GitHub marca el **100%** de progreso  
-- Todas las **Issues** del hito están cerradas y vinculadas a un PR aprobado  
-- El proyecto está desplegado en vivo (ej. Vercel, GitHub Pages) y funciona sin errores  
-
-### El "Por qué"
-
-En la industria, el software que no está publicado no existe. Esto vincula el resultado técnico con la gestión profesional.
+> *"El software no es como un documento de Word que solo tú editas.  
+> Es como una ciudad donde muchas personas construyen al mismo tiempo.  
+> Si cada quien construye donde le parece, terminas con calles que no llevan a ningún lado.  
+> La modularización es ponerle dirección a las calles y decirle a cada quién dónde construir."*
 
 ---
 
-## DIRECCIÓN DEL PROYECTO
+---
 
-- **Instructor:** [Tu Nombre Aquí]  
-- **Institución:** Servicio Nacional de Aprendizaje (SENA)  
-- **Centro:** [Nombre de tu Centro de Formación]  
-- **Programa:** Análisis y Desarrollo de Software  
+## Diseño Visual — "Silver Emerald"
+
+> *"No basta con que funcione: tiene que provocar una reacción cuando lo ves."*
+
+El diseño visual de la aplicación se trabajó como un componente aparte, siguiendo los principios de **separación de responsabilidades** que aplicamos en el código. El estilo no está mezclado con la lógica; vive en su propio archivo (`styles.css`) y se apoya en el HTML (`index.html`) únicamente para elementos decorativos.
+
+### Concepto
+
+Combinación de **verde esmeralda institucional SENA** con **plateado (silver)** para evocar:
+- **Identidad**: los colores verdes conectan con la marca SENA
+- **Modernidad**: el plateado reemplaza al dorado tradicional para un acabado más sobrio y contemporáneo
+- **Profesionalismo**: fondo oscuro con acentos brillantes que contrastan sin gritar
+
+### Arquitectura visual
+
+```
+┌──────────────────────────────────────────────┐
+│               HEADER                          │
+│  [ADSO · 3315656 · Grupo 4]                  │
+│  Gestión de Tareas (con brillo plateado)      │
+├────────────────────┬─────────────────────────┤
+│  COLUMNA IZQUIERDA │  COLUMNA DERECHA         │
+│  280px             │  1fr (flexible)          │
+│  ┌──────────────┐  │  ┌─────────────────────┐ │
+│  │ Buscar ID    │  │  │ Tareas Registradas  │ │
+│  │ (borde verde)│  │  │ Filtros + Tabla     │ │
+│  └──────────────┘  │  │ (línea plateada)    │ │
+│  ┌──────────────┐  │  └─────────────────────┘ │
+│  │ Registrar    │  │                          │
+│  │ (borde silver)│  │                          │
+│  └──────────────┘  │                          │
+├────────────────────┴─────────────────────────┤
+│            Separador ◆                        │
+├──────────────────────────────────────────────┤
+│               FOOTER                          │
+└──────────────────────────────────────────────┘
+```
+
+### Paleta de colores
+
+| Color | Código | Para qué |
+|-------|--------|----------|
+| Verde esmeralda | `#10b981` | Botones, bordes, acentos |
+| Verde oscuro | `#022c22` | Fondos de inputs |
+| Plateado | `#cbd5e1` | Bordes tabla, botones filtro, badges |
+| Fondo página | `#030a06` | Fondo general |
+| Texto | `#f1f5f9` | Texto principal |
+
+### Efectos y animaciones (16 en total)
+
+| Animación | Qué hace |
+|-----------|----------|
+| `floatParticle` | 5 puntos brillantes flotan por la pantalla |
+| `orbPulse` | 3 esferas de luz con blur pulsan en el fondo |
+| `beamSweep` | Barrido de luz cruza el header y el footer |
+| `silverShimmer` | El texto "Tareas" brilla con movimiento plateado |
+| `sweep` | Al pasar el mouse, un destello cruza las tarjetas |
+| `toastBounce` | Las notificaciones entran con rebote desde la derecha |
+| `messageSlide` | Cada tarea aparece deslizándose desde la izquierda |
+| `titleGlow` | El título del header "respira" con un brillo sutil |
+
+### ¿Qué se tocó para lograrlo?
+
+- **`styles.css`** → Sistema completo de diseño: colores, tipografía, layout grid, glassmorphism, animaciones, responsive
+- **`index.html`** → Se agregaron **solo elementos decorativos**: partículas, orbes, líneas de luz, divisores, badges, brillos. Cero cambios en la funcionalidad.
+- **`helpers.js`** → Se actualizaron los 3 colores de `statusColors` para los badges de estado
+- **`estilo.md`** → Documento completo con la guía de estilo para exponer en clase
+
+### Frase para tu exposición
+
+> *"Así como modularizamos el código para que cada archivo tenga una responsabilidad, el diseño visual también tiene su propia arquitectura: colores que comunican, animaciones que guían, y un layout que organiza. La página no solo funciona: se ve, se siente y se recuerda."*
 
 ---
 
-Este repositorio es propiedad del equipo de desarrollo y se rige por las políticas de formación profesional integral del SENA.
+**SENA — ADSO**  
+**Ficha:** 3315656  
+**Guía:** GFPI-F-135 V04 — Modularización en JavaScript
