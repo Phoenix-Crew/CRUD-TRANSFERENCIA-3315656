@@ -116,11 +116,11 @@
     {
       "userId": "1",
       "userName": "Brian Bayona",
-      "title": "lolo",
-      "description": "come",
-      "status": "Pendiente",
-      "createdAt": "23/06/2026, 01:51 pm",
-      "id": "zZ0YOAiP3uI"
+      "title": "Recusandae Facilis",
+      "description": "Excepturi aut explic",
+      "status": "En progreso",
+      "createdAt": "23/06/2026, 02:03 pm",
+      "id": "U_Q0eYgKiqg"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
