@@ -51,24 +51,6 @@
       "createdAt": "01/06/2026, 09:00 a. m."
     },
     {
-      "id": "3",
-      "userId": "1",
-      "userName": "Brian Bayona",
-      "title": "Refactorizar tareasService",
-      "description": "Separar lógica de negocio del archivo principal al nuevo módulo services",
-      "status": "En progreso",
-      "createdAt": "05/06/2026, 02:00 p. m."
-    },
-    {
-      "id": "4",
-      "userId": "2",
-      "userName": "Nestor Gomez",
-      "title": "Implementar ordenamiento dinámico",
-      "description": "Agregar sort por fecha, título y estado con toggle asc/desc",
-      "status": "Completada",
-      "createdAt": "03/06/2026, 11:15 a. m."
-    },
-    {
       "id": "5",
       "userId": "2",
       "userName": "Nestor Gomez",
@@ -87,31 +69,59 @@
       "createdAt": "08/06/2026, 09:45 a. m."
     },
     {
-      "id": "7",
-      "userId": "3",
-      "userName": "Joser Fuentes",
-      "title": "Mejorar interfaz de tabla de tareas",
-      "description": "Agregar animaciones, badges de estado y diseño responsive a la tabla",
-      "status": "Completada",
-      "createdAt": "04/06/2026, 10:00 a. m."
+      "userId": "1",
+      "userName": "Brian Bayona",
+      "title": "presentar proyecto",
+      "description": "x",
+      "status": "Pendiente",
+      "createdAt": "09/06/2026, 05:23 p. m.",
+      "id": "486XLPP5GLs"
     },
     {
-      "id": "8",
       "userId": "3",
       "userName": "Joser Fuentes",
-      "title": "Implementar edición inline en tabla",
-      "description": "Permitir editar título, descripción y estado directamente en la fila de la tabla",
+      "title": "lavar los computadores",
+      "description": "que queden bien limpios y sin polvo",
+      "status": "Pendiente",
+      "createdAt": "16/06/2026, 01:26 p. m.",
+      "id": "VQabBgO0Gb4"
+    },
+    {
+      "userId": "3",
+      "userName": "Joser Fuentes",
+      "title": "limpiar las ollas",
+      "description": "echarle varsol para que queden brillantes",
       "status": "En progreso",
-      "createdAt": "06/06/2026, 03:20 p. m."
+      "createdAt": "16/06/2026, 01:28 p. m.",
+      "id": "0aVVlAG0woc"
     },
     {
-      "id": "9",
       "userId": "3",
       "userName": "Joser Fuentes",
-      "title": "Centralizar referencias del DOM",
-      "description": "Crear dom.js con todas las referencias a elementos HTML del proyecto",
+      "title": "hacer todo el trabajo de empaquetado",
+      "description": "para que tengas mas ganas de acabar rapido :)",
+      "status": "En progreso",
+      "createdAt": "16/06/2026, 01:29 p. m.",
+      "id": "g04BF4F-yqQ"
+    },
+    {
+      "userId": "3",
+      "userName": "Joser Fuentes",
+      "title": "no hacer nada",
+      "description": "zzzz",
       "status": "Completada",
-      "createdAt": "02/06/2026, 08:30 a. m."
+      "createdAt": "16/06/2026, 01:29 p. m.",
+      "id": "ookqfqb2KyU"
+    },
+    {
+      "userId": "1",
+      "userName": "Brian Bayona",
+      "title": "lolo",
+      "description": "come",
+      "status": "Pendiente",
+      "createdAt": "23/06/2026, 01:51 pm",
+      "id": "zZ0YOAiP3uI"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
