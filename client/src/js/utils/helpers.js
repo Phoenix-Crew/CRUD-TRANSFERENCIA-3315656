@@ -28,21 +28,13 @@
 
 
 
-// getCurrentTimestamp()
-//   ¿Qué hace?  Crea la fecha y hora actual con formato colombiano.
-//   Ejemplo:    "06/06/2026, 03:45 p. m."
-//   ¿Qué devuelve?  Un texto con la fecha y hora.
-//   ¿Quién la llama?  tareasService.js → registerTask()
+import dayjs from 'dayjs';
+import 'dayjs/locale/es';
+
+dayjs.locale('es');
 
 export function getCurrentTimestamp() {
-    const now = new Date();
-    return now.toLocaleString('es-CO', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
+    return dayjs().format('DD/MM/YYYY, hh:mm a');
 }
 
 

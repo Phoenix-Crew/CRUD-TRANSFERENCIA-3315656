@@ -30,6 +30,7 @@
 //     8. DOMContentLoaded             → showEmptyState + fetchUsers
 //                                       (log en consola con IDs)
 
+import '../styles/styles.css';
 import { userIdInput, btnSearch, taskForm, filterStatusSelect, sortDirectionBtn, sortableHeaders, exportBtn } from './ui/dom.js';
 import { searchUser, registerTask, setSortCriteria, toggleSortDirection, setFilterStatus, exportVisibleTasks } from './services/tareasService.js';
 import { fetchUsers } from './api/tareasApi.js';
