@@ -1,0 +1,22 @@
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  root: '.',
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+    open: false,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3002',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
+  },
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+    sourcemap: false
+  }
+});
