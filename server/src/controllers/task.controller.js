@@ -1,5 +1,4 @@
 const { readDB, writeDB } = require('../models');
-const { v4: uuidv4 } = require('uuid');
 
 exports.create = (req, res) => {
   try {
@@ -8,8 +7,9 @@ exports.create = (req, res) => {
       return res.status(400).json({ message: 'El título es obligatorio' });
     }
     const db = readDB();
+    const maxId = db.tasks.reduce((max, t) => Math.max(max, parseInt(t.id) || 0), 0);
     const newTask = {
-      id: uuidv4(),
+      id: String(maxId + 1),
       title: title.trim(),
       description: (description || '').trim(),
       status: 'Pendiente',
