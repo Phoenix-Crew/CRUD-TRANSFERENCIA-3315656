@@ -34,93 +34,103 @@
   "tasks": [
     {
       "id": "1",
-      "userId": "1",
-      "userName": "Brian Bayona",
       "title": "Implementar módulo de notificaciones",
       "description": "Crear NotificationManager con patrón observador para manejar toasts",
       "status": "Completada",
-      "createdAt": "01/06/2026, 10:30 a. m."
+      "createdAt": "01/06/2026, 10:30 a. m.",
+      "assignedUsers": [
+        { "id": "1", "name": "Brian Bayona" }
+      ]
     },
     {
       "id": "2",
-      "userId": "1",
-      "userName": "Brian Bayona",
       "title": "Diseñar estructura modular del proyecto",
       "description": "Definir carpetas api, services, ui, utils y core con sus responsabilidades",
       "status": "Completada",
-      "createdAt": "01/06/2026, 09:00 a. m."
+      "createdAt": "01/06/2026, 09:00 a. m.",
+      "assignedUsers": [
+        { "id": "1", "name": "Brian Bayona" }
+      ]
     },
     {
       "id": "5",
-      "userId": "2",
-      "userName": "Nestor Gomez",
       "title": "Crear funciones de ayuda en helpers.js",
       "description": "Implementar sortTasks, filterTasksByStatus, buildTasksJson, buildExportFilename",
       "status": "Completada",
-      "createdAt": "02/06/2026, 04:30 p. m."
+      "createdAt": "02/06/2026, 04:30 p. m.",
+      "assignedUsers": [
+        { "id": "2", "name": "Nestor Gomez" }
+      ]
     },
     {
       "id": "6",
-      "userId": "2",
-      "userName": "Nestor Gomez",
       "title": "Exportación de tareas a JSON",
       "description": "Implementar botón de exportación con metadatos y nombre dinámico",
       "status": "Pendiente",
-      "createdAt": "08/06/2026, 09:45 a. m."
+      "createdAt": "08/06/2026, 09:45 a. m.",
+      "assignedUsers": [
+        { "id": "2", "name": "Nestor Gomez" }
+      ]
     },
     {
-      "userId": "1",
-      "userName": "Brian Bayona",
+      "id": "486XLPP5GLs",
       "title": "presentar proyecto",
       "description": "x",
       "status": "Pendiente",
       "createdAt": "09/06/2026, 05:23 p. m.",
-      "id": "486XLPP5GLs"
+      "assignedUsers": [
+        { "id": "1", "name": "Brian Bayona" }
+      ]
     },
     {
-      "userId": "3",
-      "userName": "Joser Fuentes",
+      "id": "VQabBgO0Gb4",
       "title": "lavar los computadores",
       "description": "que queden bien limpios y sin polvo",
       "status": "Pendiente",
       "createdAt": "16/06/2026, 01:26 p. m.",
-      "id": "VQabBgO0Gb4"
+      "assignedUsers": [
+        { "id": "3", "name": "Joser Fuentes" }
+      ]
     },
     {
-      "userId": "3",
-      "userName": "Joser Fuentes",
+      "id": "0aVVlAG0woc",
       "title": "limpiar las ollas",
       "description": "echarle varsol para que queden brillantes",
       "status": "En progreso",
       "createdAt": "16/06/2026, 01:28 p. m.",
-      "id": "0aVVlAG0woc"
+      "assignedUsers": [
+        { "id": "3", "name": "Joser Fuentes" }
+      ]
     },
     {
-      "userId": "3",
-      "userName": "Joser Fuentes",
+      "id": "g04BF4F-yqQ",
       "title": "hacer todo el trabajo de empaquetado",
       "description": "para que tengas mas ganas de acabar rapido :)",
       "status": "En progreso",
       "createdAt": "16/06/2026, 01:29 p. m.",
-      "id": "g04BF4F-yqQ"
+      "assignedUsers": [
+        { "id": "3", "name": "Joser Fuentes" }
+      ]
     },
     {
-      "userId": "3",
-      "userName": "Joser Fuentes",
+      "id": "ookqfqb2KyU",
       "title": "no hacer nada",
       "description": "zzzz",
       "status": "Completada",
       "createdAt": "16/06/2026, 01:29 p. m.",
-      "id": "ookqfqb2KyU"
+      "assignedUsers": [
+        { "id": "3", "name": "Joser Fuentes" }
+      ]
     },
     {
-      "userId": "1",
-      "userName": "Brian Bayona",
+      "id": "U_Q0eYgKiqg",
       "title": "Recusandae Facilis",
       "description": "Excepturi aut explic",
       "status": "En progreso",
       "createdAt": "23/06/2026, 02:03 pm",
-      "id": "U_Q0eYgKiqg"
+      "assignedUsers": [
+        { "id": "1", "name": "Brian Bayona" }
+      ]
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

@@ -6,13 +6,14 @@
 //   la carga inicial. NO tiene lógica de negocio ni llamadas API.
 //
 // ¿Que no hace?
-//   NO toca la API, NO manipula estado, NO renderiza la tabla.
+//   NO toca la API directamente para lógica interna, NO manipula estado, 
+//   NO renderiza la tabla.
 //
 // ¿Que importa?
 //   - ui/dom.js                  → referencias a elementos HTML
-//   - services/tareasService.js  → funciones de negocio (7 exports)
-//   - api/tareasApi.js           → solo fetchUsers() (carga inicial)
-//   - ui/taskRenderer.js         → showEmptyState() (estado vacío)
+//   - services/tareasService.js  → funciones de negocio (8 exports de coordinación)
+//   - api/tareasApi.js           → solo fetchUsers() (consola en carga inicial)
+//   - ui/taskRenderer.js         → showEmptyState() (estado vacío inicial)
 //
 // Listeners que conecta (8 eventos):
 //   Búsqueda de usuario:
@@ -28,7 +29,7 @@
 //     7. click en exportBtn           → exportVisibleTasks()
 //   Carga inicial:
 //     8. DOMContentLoaded             → showEmptyState + fetchUsers
-//                                       (log en consola con IDs)
+//                                       (log en consola con IDs disponibles)
 
 import '../styles/styles.css';
 import { userIdInput, btnSearch, taskForm, filterStatusSelect, sortDirectionBtn, sortableHeaders, exportBtn, adminApplyFilters } from './ui/dom.js';

@@ -9,4 +9,11 @@ router.put('/:id',        userController.update);
 router.delete('/:id',     userController.remove);
 router.patch('/:id/status', userController.toggleStatus);
 
-module.exports = router;
+// Importar el controlador de tareas para poder buscar sus tareas asignadas
+const taskController = require('../controllers/task.controller');
+
+// Consultar las tareas de un usuario específico -> GET /api/users/{userId}/tasks
+router.get('/:userId/tasks', (req, res, next) => {
+  req.query.userId = req.params.userId;
+  next();
+}, taskController.filter);

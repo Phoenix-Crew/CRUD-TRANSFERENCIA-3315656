@@ -1,5 +1,5 @@
 import { userIdInput, btnSearch, userInfo, taskFormContainer, taskForm, taskTableBody, exportBtn, adminFilterStatus, adminFilterUser, adminFilterDateFrom, adminFilterDateTo, adminApplyFilters, adminStatTotal, adminStatCompletadas, adminStatPendientes, adminStatProgreso, adminGlobalBody, adminUserDistBody, adminGlobalCount } from '../ui/dom.js';
-import { fetchUsers, fetchTasksByUser, createTask, updateTask, deleteTaskFromApi, fetchTasksFiltered, fetchDashboard } from '../api/tareasApi.js';
+import { fetchUsers, fetchTasksByUser, createTask, updateTask, deleteTaskFromApi, assignTask, removeUserFromTask, fetchTasksFiltered, fetchDashboard } from '../api/tareasApi.js';
 import { showToast, showUserInfo, showUserNotFound, showValidationError, clearFieldErrors, showFieldError } from '../ui/notifications.js';
 import { showConfirmDialog } from '../ui/confirmDialog.js';
 import { showEditModal } from '../ui/editModal.js';
@@ -56,8 +56,8 @@ function exportVisibleTasks() {
         const exportedAt = getCurrentTimestamp();
         const meta = {
             user: { id: String(currentUser.id), name: currentUser.name },
-            filter: { status: filterStatus, sortCriteria: sortCriteria, sortDirection: sortDirection },
-            exportedAt: exportedAt
+            filter: { status: filterStatus, sortCriteria, sortDirection },
+            exportedAt
         };
         const jsonObject = buildTasksJson(visible, meta);
         const jsonString = JSON.stringify(jsonObject, null, 2);
@@ -107,7 +107,7 @@ function toggleSortDirection() {
 async function searchUser() {
     const userId = userIdInput.value;
     if (!isValidInput(userId)) {
-        showValidationError("Por favor ingresa un documento/ID válido");
+        showValidationError('Por favor ingresa un documento/ID válido');
         return;
     }
     btnSearch.disabled = true;
@@ -129,7 +129,7 @@ async function searchUser() {
             showUserNotFound();
         }
     } catch (error) {
-        showValidationError("Error de conexión: " + error.message + ". Verifica que el servidor esté corriendo.");
+        showValidationError('Error de conexión: ' + error.message + '. Verifica que el servidor esté corriendo.');
     } finally {
         btnSearch.disabled = false;
         btnSearch.textContent = 'Buscar';
@@ -156,12 +156,11 @@ async function registerTask(event) {
     }
     if (hasError) return;
     const taskData = {
-        userId: String(currentUser.id),
-        userName: currentUser.name,
-        title: title,
-        description: description,
-        status: status,
-        createdAt: getCurrentTimestamp()
+        title,
+        description,
+        status,
+        createdAt: getCurrentTimestamp(),
+        assignedUsers: currentUser ? [{ id: String(currentUser.id), name: currentUser.name }] : []
     };
     try {
         const response = await createTask(taskData);
@@ -228,6 +227,41 @@ async function deleteTask(taskId) {
     }
 }
 
+export async function assignUserToTask(taskId, userObj) {
+    try {
+        const response = await assignTask(taskId, userObj);
+        if (response.ok) {
+            const updatedTask = await response.json();
+            const idx = tasks.findIndex(t => String(t.id) === String(taskId));
+            if (idx !== -1) tasks[idx] = updatedTask;
+            applySorting();
+            showToast(`Usuario ${userObj.name} asignado correctamente`, 'success');
+        } else {
+            const errData = await response.json();
+            showToast(errData.message || 'Error al asignar usuario', 'warning');
+        }
+    } catch (error) {
+        showToast('Error de conexión al asignar el usuario', 'error');
+    }
+}
+
+export async function completeTaskDirect(taskId) {
+    try {
+        const response = await updateTask(taskId, { status: 'Completada' });
+        if (response.ok) {
+            const updatedTask = await response.json();
+            const idx = tasks.findIndex(t => String(t.id) === String(taskId));
+            if (idx !== -1) tasks[idx] = updatedTask;
+            applySorting();
+            showToast('Tarea completada', 'success');
+        } else {
+            showToast('Error al completar la tarea', 'error');
+        }
+    } catch (error) {
+        showToast('Error de conexión', 'error');
+    }
+}
+
 function renderAdminStats(dashboard) {
     if (!dashboard) return;
     adminStatTotal.textContent = dashboard.total;
@@ -249,11 +283,14 @@ function renderGlobalTable(tasks) {
         const row = document.createElement('tr');
         row.style.animation = 'fadeSlideUp 0.3s ease-out';
         const bgColor = statusColors[task.status] || '#6b7280';
+        const userNames = task.assignedUsers && task.assignedUsers.length > 0
+            ? task.assignedUsers.map(u => u.name).join(', ')
+            : '—';
         row.innerHTML = `
             <td>${task.title}</td>
             <td>${task.description}</td>
             <td><span class="status-badge" style="background:${bgColor}">${task.status}</span></td>
-            <td>${task.userName || '—'}</td>
+            <td>${userNames}</td>
             <td>${task.createdAt || ''}</td>
             <td class="actions-cell">${task.id}</td>
         `;
