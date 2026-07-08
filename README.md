@@ -1,167 +1,191 @@
-# Gestión de Tareas por Usuario — CRUD Modular
+# Gestión de Tareas — Proyecto Formativo SENA
 
-> **Una aplicación web que empezó siendo un solo archivo de 385 líneas y se convirtió en una arquitectura modular profesional.**  
-> Proyecto de formación SENA — ADSO, Ficha 3315656.
-
----
-
-## La Historia (para tu exposición)
-
-Imagina que construyes una casa. Al principio es una sola habitación: cocinas, duermes y trabajas en el mismo espacio. Funciona, pero cuando llega más gente y necesitas más espacios, se vuelve un caos. No encuentras nada, todo estorba, y arreglar una cosa rompe otra.
-
-Eso era nuestro proyecto al inicio: **un solo archivo (`script.js`) de 385 líneas** que hacía absolutamente todo:
-
-- Capturaba eventos del mouse y teclado
-- Pintaba elementos en pantalla
-- Hacía llamadas al servidor con `fetch`
-- Validaba formularios
-- Guardaba el estado del usuario
-- Mostraba notificaciones
-- Coordinaba el flujo entero
-
-Funcionaba, sí. Pero era imposible de mantener. Si querías cambiar el color de un mensaje de error, tenías que leerte 385 líneas para encontrar dónde estaba. Si dos personas trabajaban al mismo tiempo, se pisaban los cambios. Y agregar una funcionalidad nueva era como meter un mueble más en una habitación ya repleta.
-
-**El problema no era que no funcionara. El problema era que no estaba organizado para crecer.**
+**Producto:** Aplicación web CRUD para gestión de tareas  
+**Programa:** Técnico en Programación de Software (Código: 3315656)  
+**Proyecto:** Construcción de software integrador de tecnologías orientadas a servicios  
+**Fase:** Ejecución  
+**Competencia:** Desarrollar la solución de software según diseño y metodologías de desarrollo  
+**Versión:** v2.1 — Empaquetado profesional con Vite  
 
 ---
 
-## La Solución: Modularización
+## 1. Descripción del producto
 
-Dividimos el código en **módulos independientes**, cada uno con una responsabilidad única. Así como una casa tiene cocina, baño, dormitorios y sala, nuestra app ahora tiene módulos especializados que se comunican entre sí de forma ordenada.
+Aplicación web que permite gestionar tareas de forma dinámica mediante una interfaz moderna, conectada a una API REST. Los usuarios pueden buscar compañeros por documento, asignarles tareas, editarlas, filtrarlas, ordenarlas y exportar los datos — todo sin recargar la página.
 
-### La estructura final
+---
+
+## 2. Funcionalidades
+
+| Funcionalidad | Descripción |
+|---------------|-------------|
+| **Buscar usuario** | Ingresa un número de documento y obtén la información del usuario y sus tareas asociadas |
+| **Registrar tarea** | Crea nuevas tareas con título, descripción y estado (Pendiente/En progreso/Completada) |
+| **Editar tarea** | Edición inline directamente en la tabla sin recargar la página |
+| **Eliminar tarea** | Eliminación con confirmación mediante modal |
+| **Filtrar por estado** | Filtra las tareas visibles por Pendiente, En progreso o Completada |
+| **Ordenar tabla** | Ordena por título, estado o fecha, de forma ascendente o descendente |
+| **Exportar a JSON** | Descarga las tareas visibles en formato JSON con metadatos |
+| **Notificaciones toast** | Feedback visual de éxito, error o información con animaciones |
+
+---
+
+## 3. Arquitectura del software
+
+### 3.1 Estructura del proyecto
 
 ```
-client/
-├── index.html              ← La página (casi no cambió)
-├── styles.css              ← Los estilos (tampoco cambió)
-└── js/
-    ├── app.js              ← 🎯 El director de orquesta (punto de entrada)
-    ├── core/
-    │   └── NotificationManager.js  ← 📢 Gestor puro de notificaciones
-    ├── api/
-    │   └── tareasApi.js    ← 📡 El cartero (solo habla con el servidor)
-    ├── services/
-    │   └── tareasService.js ← 🧠 El cerebro (lógica de negocio + estado)
-    ├── ui/
-    │   ├── dom.js          ← 📋 El inventario (referencias al HTML)
-    │   ├── notifications.js ← 📣 El speaker (mensajes al usuario)
-    │   └── taskRenderer.js ← 🎨 El pintor (tabla, edición, contadores)
-    └── utils/
-        └── helpers.js      ← 🧰 La caja de herramientas (funciones puras)
+📁 CRUD-TRANSFERENCIA-3315656/
+├── 📁 client/                          → Aplicación frontend (Vite)
+│   ├── 📄 index.html                   → Página principal
+│   ├── 📄 package.json                 → dayjs + vite
+│   ├── 📄 vite.config.js               → Proxy, build, server
+│   ├── 📄 .env                         → Variables de entorno (desarrollo)
+│   ├── 📄 .env.production              → Variables de entorno (producción)
+│   └── 📁 src/
+│       ├── 📁 styles/
+│       │   └── 📄 styles.css           → Diseño Silver Emerald
+│       └── 📁 js/
+│           ├── 📄 app.js               → Punto de entrada
+│           ├── 📁 core/
+│           │   └── 📄 NotificationManager.js  → Patrón observador
+│           ├── 📁 api/
+│           │   └── 📄 tareasApi.js     → Capa HTTP
+│           ├── 📁 services/
+│           │   └── 📄 tareasService.js → Lógica de negocio + estado
+│           ├── 📁 ui/
+│           │   ├── 📄 dom.js           → Referencias DOM
+│           │   ├── 📄 notifications.js → Mensajes al usuario
+│           │   ├── 📄 taskRenderer.js  → Renderizado de componentes
+│           │   └── 📄 confirmDialog.js → Modal de confirmación
+│           └── 📁 utils/
+│               └── 📄 helpers.js       → Funciones puras
+│
+├── 📁 server/                          → Backend (json-server)
+│   ├── 📄 package.json                 → json-server
+│   └── 📄 db.json                      → 5 usuarios + tareas
+│
+├── 📁 docs/                            → Documentación del proceso
+│   ├── 📁 01-guia-sistema/             → Issues, milestones, Kanban, ramas
+│   ├── 📁 02-guia-metodologia/         → GitFlow, commits, PRs
+│   ├── 📁 03-formatos-maestros/        → Templates
+│   ├── 📄 04-guia-modularizacion.md
+│   ├── 📄 plan-tecnico.md
+│   ├── 📄 reporte-tecnico.md
+│   └── 📄 README-pasos-server.md
+│
+├── 📁 .github/                         → Templates GitHub
+│   ├── 📄 pull_request_template.md
+│   └── 📁 ISSUE_TEMPLATE/
+│       ├── 📄 bug_report.md
+│       └── 📄 feature_request.md
+│
+├── 📄 package.json                     → Scripts raíz (dev, build, preview)
+├── 📄 vite.config.js
+├── 📄 TEAM_AGREEMENT.md
+├── 📄 estilo.md
+├── 📄 Parte1.md
+└── 📄 README.md
 ```
 
-### ¿Qué hace cada módulo? (para que lo expliques en tu exposición)
+### 3.2 Módulos del frontend
 
-| Módulo | Lo puedes explicar como... |
-|--------|---------------------------|
-| **`app.js`** | Es el **director de orquesta**. No toca instrumentos, solo dice cuándo empezar. Conecta los clics del usuario con la lógica del sistema. Tiene unos 20 event listeners y nada más. |
-| **`core/NotificationManager.js`** | Es el **buzón de notificaciones**. Cualquier módulo puede dejar un mensaje aquí, y los que están suscritos lo reciben automáticamente. No sabe qué es una pantalla, ni un botón, ni un fetch. Es 100% puro. |
-| **`api/tareasApi.js`** | Es el **cartero**. Solo sabe hacer peticiones al servidor: GET, POST, PATCH, DELETE. No revisa si los datos son válidos ni pinta nada. Solo trae y lleva información. |
-| **`services/tareasService.js`** | Es el **cerebro**. Aquí está el estado de la app (usuario actual, tareas, filtros). Decide qué hacer cuando buscas, agregas, editas o eliminas. Llama al cartero cuando necesita datos, y al pintor cuando necesita mostrar algo. |
-| **`ui/dom.js`** | Es el **inventario**. Solo guarda referencias a los elementos del HTML (`getElementById`). No hace nada más. Si cambia un ID en el HTML, solo se cambia aquí. |
-| **`ui/notifications.js`** | Es el **speaker**. Muestra mensajes al usuario: toasts verdes de éxito, rojos de error, amarillos de advertencia. También muestra los datos del usuario y los errores de validación. |
-| **`ui/taskRenderer.js`** | Es el **pintor**. Dibuja la tabla de tareas, crea filas, alterna el modo edición, actualiza el contador, muestra el estado vacío. Solo toca el DOM, no llama a la API. |
-| **`utils/helpers.js`** | Es la **caja de herramientas**. Tiene funciones que no dependen de nada: formatear fechas, validar inputs, ordenar arrays, filtrar por estado, construir JSONs. Las puedes usar en cualquier proyecto. |
+| Módulo | Responsabilidad | Archivo |
+|--------|----------------|---------|
+| **app.js** | Orquestador: conecta eventos del DOM con la lógica de negocio | `client/src/js/app.js` |
+| **NotificationManager** | Gestor de eventos con patrón observador, 100% independiente del DOM | `client/src/js/core/NotificationManager.js` |
+| **tareasApi** | Comunicación HTTP: GET, POST, PATCH, DELETE | `client/src/js/api/tareasApi.js` |
+| **tareasService** | Estado global y lógica de negocio: coordina API + UI | `client/src/js/services/tareasService.js` |
+| **dom** | Referencias centralizadas a elementos del HTML | `client/src/js/ui/dom.js` |
+| **notifications** | Mensajes al usuario: toasts, errores, datos de usuario | `client/src/js/ui/notifications.js` |
+| **taskRenderer** | Manipulación del DOM: tabla, edición inline, contadores | `client/src/js/ui/taskRenderer.js` |
+| **confirmDialog** | Modal de confirmación reutilizable con Promise | `client/src/js/ui/confirmDialog.js` |
+| **helpers** | Funciones puras: fechas (dayjs), validaciones, filtros, ordenamiento | `client/src/js/utils/helpers.js` |
 
----
-
-## Las 4 Funcionalidades Clave (RF)
-
-### RF01 — Filtro avanzado de tareas
-- Filtra por **usuario** (escribes el documento y solo ves sus tareas)
-- Filtra por **estado** (Pendiente, En progreso, Completada)
-- Puedes **combinar ambos** filtros: buscas un usuario y luego filtras sus tareas por estado
-- Todo sin recargar la página
-
-### RF02 — Ordenamiento dinámico
-- Haz clic en los encabezados de la tabla para ordenar por:
-  - **Título** (alfabéticamente, respetando acentos y ñ)
-  - **Estado** (en orden lógico: Pendiente → En progreso → Completada)
-  - **Fecha** (más antigua o más reciente)
-- Botón para alternar entre ascendente ▲ y descendente ▼
-- La columna activa muestra una flechita que indica el orden
-
-### RF03 — Sistema de notificaciones
-- Implementamos un **NotificationManager** con patrón observador
-- Es **100% independiente**: no importa nada del DOM, ni de la API, ni de otros módulos
-- Cualquier parte del sistema puede notificar sin saber cómo se va a mostrar
-- Tipos: ✅ éxito, ❌ error, ⚠️ advertencia, ℹ️ información
-- Los toasts aparecen con animación y se cierran solos a los 4 segundos
-
-### RF04 — Exportación a JSON
-- Botón "Exportar JSON" descarga las tareas que ESTÁS VIENDO en pantalla
-- Respeta los filtros y el ordenamiento activos
-- El archivo incluye metadatos: quién exportó, con qué filtros, cuándo
-- Separación estricta:
-  - `helpers.js` construye el JSON y el nombre del archivo
-  - `taskRenderer.js` dispara la descarga en el navegador
-  - `tareasService.js` coordina el proceso
-
----
-
-## Cómo fluye la información (diagrama para tu exposición)
+### 3.3 Flujo de datos
 
 ```
-USUARIO hace clic en "Buscar"
-       │
-       ▼
-┌─────────────────┐
-│     app.js      │  Recibe el evento y llama a searchUser()
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────────┐
-│ tareasService.js    │  El cerebro: valida el input, pide datos,
-│  (searchUser)       │  coordina la respuesta, actualiza estado
-└──┬──────┬──────┬───┘
-   │      │      │
-   ▼      ▼      ▼
-┌──────┐ ┌────┐ ┌──────────────┐
-│ api/ │ │ui/ │ │ ui/          │
-│ tarea│ │noti│ │taskRenderer  │
-│ sApi │ │fica│ │              │
-│ .js  │ │tion│ │Pinta la tabla│
-│      │ │s.js│ │              │
-│ fetch│ │Mues│ │createTask    │
-│Users │ │tra │ │Element()     │
-│fetch │ │info│ │              │
-│Tasks │ │user│ │              │
-└──────┘ └────┘ └──────────────┘
+usuario (clic/teclado)
+    → app.js (event listener)
+        → tareasService.js (lógica de negocio)
+            ├── api/tareasApi.js (fetch HTTP)
+            ├── utils/helpers.js (validaciones, transformaciones)
+            ├── ui/notifications.js (mensajes al usuario)
+            └── ui/taskRenderer.js (actualización del DOM)
 ```
 
-**Regla de oro:** Un módulo solo se comunica con sus vecinos directos.  
-La UI nunca llama directo a la API. La API nunca toca el DOM.  
-Si algo falla, sabes exactamente dónde mirar.
+La UI nunca llama directamente a la API. La API nunca manipula el DOM. Cada capa tiene una responsabilidad única.
+
+### 3.4 API REST
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/users` | Lista todos los usuarios |
+| GET | `/users/{id}` | Busca usuario por ID |
+| GET | `/tasks?userId=X` | Obtiene tareas de un usuario |
+| POST | `/tasks` | Crea una nueva tarea |
+| PATCH | `/tasks/{id}` | Actualiza una tarea |
+| DELETE | `/tasks/{id}` | Elimina una tarea |
 
 ---
 
-## Lo que NO cambió (y por qué está bien)
+## 4. Diseño visual: Silver Emerald
 
-- La aplicación **sigue funcionando exactamente igual** que antes
-- El HTML y el CSS **no se modificaron** (solo se agregaron los atributos `data-sort` para el ordenamiento)
-- El servidor (json-server) **sigue siendo el mismo**
-- Los usuarios pueden **seguir haciendo las mismas operaciones**: buscar, crear, editar, eliminar
+### 4.1 Concepto
 
-Lo que cambió está **debajo del capó**: el código ahora es mantenible, escalable y profesional.
+Combinación de **verde esmeralda institucional SENA** con **plateado (silver)** para evocar identidad, modernidad y profesionalismo.
+
+### 4.2 Paleta
+
+| Color | Código | Uso |
+|-------|--------|-----|
+| Verde esmeralda | `#10b981` | Botones, bordes, acentos |
+| Verde oscuro | `#022c22` | Fondos de inputs |
+| Plateado | `#cbd5e1` | Bordes tabla, badges |
+| Fondo página | `#030a06` | Fondo general |
+| Texto | `#f1f5f9` | Texto principal |
+
+### 4.3 Animaciones (15 en total)
+
+Todas en CSS puro, sin librerías externas: partículas flotantes, esferas pulsantes, barrido de luz en header, texto con brillo plateado animado, toasts con rebote, filas que se deslizan, divisor giratorio, y más.
 
 ---
 
-## Cómo ejecutar el proyecto
+## 5. Requisitos técnicos e instalación
+
+### Requisitos
+
+- Node.js ≥ 18
+- npm ≥ 9
+
+### Instalación y ejecución
 
 ```bash
-# 1. Inicia el backend (json-server)
+# Servidor (API REST)
 cd server
 npm install
-npm start
-# El servidor corre en http://localhost:3002
+npm start                # http://localhost:3002
 
-# 2. Abre la aplicación
-# Simplemente abre client/index.html en tu navegador
-# O usa: npx serve client
+# Cliente (desarrollo)
+cd client
+npm install
+npm run dev              # http://localhost:5173
+
+# Build producción
+cd client
+npm run build
+npm run preview
 ```
 
-### IDs de prueba para la exposición
+### Variables de entorno
+
+| Variable | Desarrollo | Producción |
+|----------|-----------|------------|
+| `VITE_API_URL` | `/api` (proxy → localhost:3002) | `http://10.5.225.75:3002` |
+
+---
+
+## 6. Datos de prueba
 
 | ID | Nombre | Rol |
 |:--:|--------|-----|
@@ -173,120 +197,76 @@ npm start
 
 ---
 
-## Para tu presentación: preguntas frecuentes
+## 7. Tecnologías
 
-**¿Cuál es el archivo más importante?**  
-`tareasService.js` — es el cerebro. Todo pasa por ahí.
-
-**¿Dónde cambiarías la URL de la API?**  
-Solo en `api/tareasApi.js`, línea 31. Un solo cambio.
-
-**¿Puede la UI hablar directo con la API?**  
-No, y esa es la gracia. Si la UI hablara directo, la lógica de negocio quedaría dispersa. Todo pasa por `services/`.
-
-**¿Qué pasa si agregamos una nueva funcionalidad?**  
-Creamos un archivo nuevo en el módulo correspondiente. No tocamos los existentes. El proyecto está listo para crecer.
-
-**¿Cuántas líneas tiene ahora `app.js`?**  
-85 líneas, de las cuales la mitad son comentarios explicativos. El archivo principal pasó de 385 líneas a ser legible en 2 minutos.
+| Tecnología | Versión | Propósito |
+|-----------|---------|-----------|
+| JavaScript (ES Modules) | — | Lógica de la aplicación |
+| HTML5 + CSS3 | — | Estructura y diseño Silver Emerald |
+| Fetch API | — | Comunicación con el servidor |
+| Vite | ^8.0 | Empaquetado y dev server |
+| dayjs | ^1.11 | Formateo de fechas |
+| json-server | ^1.0 | API REST de pruebas |
+| Git + GitHub | — | Control de versiones y trabajo colaborativo |
 
 ---
 
-## Equipo
+## 8. Equipo de trabajo
 
-| Integrante | Rol | ¿Qué hizo? |
-|------------|-----|------------|
-| **Brian Bayona** | Líder / Arquitecto | Estructura base, `app.js`, `tareasService.js`, `NotificationManager.js`, coordinación, merges |
-| **Néstor Stiven Gómez** | Desarrollador | `tareasApi.js`, `helpers.js`, ordenamiento dinámico (RF02), exportación JSON (RF04) |
-| **Joser Andrés Fuentes** | Desarrollador | `dom.js`, `taskRenderer.js`, mejoras UI/UX, filtros de interfaz |
-
----
-
-## Una reflexión final (para cerrar tu exposición)
-
-> *"El software no es como un documento de Word que solo tú editas.  
-> Es como una ciudad donde muchas personas construyen al mismo tiempo.  
-> Si cada quien construye donde le parece, terminas con calles que no llevan a ningún lado.  
-> La modularización es ponerle dirección a las calles y decirle a cada quién dónde construir."*
+| Integrante | Rol | Contribuciones principales |
+|------------|-----|---------------------------|
+| **Brian Bayona** | Líder / Arquitecto | `tareasService.js`, `app.js`, `NotificationManager.js`, migración Vite, coordinación, merges |
+| **Néstor Gómez** | Desarrollador | `tareasApi.js`, `helpers.js`, ordenamiento dinámico (RF02), exportación JSON (RF04) |
+| **Joser Fuentes** | Desarrollador | `dom.js`, `taskRenderer.js`, diseño visual Silver Emerald, `confirmDialog.js` |
 
 ---
 
----
+## 9. Proceso de desarrollo
 
-## Diseño Visual — "Silver Emerald"
+### 9.1 Línea de tiempo
 
-> *"No basta con que funcione: tiene que provocar una reacción cuando lo ves."*
+| Etapa | Logro | Commits clave |
+|-------|-------|---------------|
+| 1. Base | Servidor json-server + HTML/CSS/JS funcional | `3ac5345`, `36a9c88` |
+| 2. CRUD | Crear, leer, editar, eliminar sin recargar | `9c31903` |
+| 3. Modularización | Código separado en 7 módulos con responsabilidad única | `f65b298` |
+| 4. Features extra | Filtros (RF01), ordenamiento (RF02), notificaciones (RF03), exportación (RF04) | `6c97b0b`, `340b911`, `04ce551` |
+| 5. Silver Emerald | Rediseño visual con 15 animaciones CSS | `7ad8eed` |
+| 6. Vite v2.1 | Empaquetado, variables de entorno, dayjs, CSS en src/ | `da49353`, `593a527`, `c95b67e` |
 
-El diseño visual de la aplicación se trabajó como un componente aparte, siguiendo los principios de **separación de responsabilidades** que aplicamos en el código. El estilo no está mezclado con la lógica; vive en su propio archivo (`styles.css`) y se apoya en el HTML (`index.html`) únicamente para elementos decorativos.
+### 9.2 Análisis inicial (Parte 1)
 
-### Concepto
-
-Combinación de **verde esmeralda institucional SENA** con **plateado (silver)** para evocar:
-- **Identidad**: los colores verdes conectan con la marca SENA
-- **Modernidad**: el plateado reemplaza al dorado tradicional para un acabado más sobrio y contemporáneo
-- **Profesionalismo**: fondo oscuro con acentos brillantes que contrastan sin gritar
-
-### Arquitectura visual
+El proyecto comenzó con un solo archivo (`script.js`) de **385 líneas** que mezclaba 9 responsabilidades: referencias DOM, comunicación API, estado global, búsqueda, validaciones, CRUD, renderizado, notificaciones y contadores. El análisis documentado en `Parte1.md` identificó cada función y determinó a qué módulo debía pertenecer, siguiendo el principio de responsabilidad única.
 
 ```
-┌──────────────────────────────────────────────┐
-│               HEADER                          │
-│  [ADSO · 3315656 · Grupo 4]                  │
-│  Gestión de Tareas (con brillo plateado)      │
-├────────────────────┬─────────────────────────┤
-│  COLUMNA IZQUIERDA │  COLUMNA DERECHA         │
-│  280px             │  1fr (flexible)          │
-│  ┌──────────────┐  │  ┌─────────────────────┐ │
-│  │ Buscar ID    │  │  │ Tareas Registradas  │ │
-│  │ (borde verde)│  │  │ Filtros + Tabla     │ │
-│  └──────────────┘  │  │ (línea plateada)    │ │
-│  ┌──────────────┐  │  └─────────────────────┘ │
-│  │ Registrar    │  │                          │
-│  │ (borde silver)│  │                          │
-│  └──────────────┘  │                          │
-├────────────────────┴─────────────────────────┤
-│            Separador ◆                        │
-├──────────────────────────────────────────────┤
-│               FOOTER                          │
-└──────────────────────────────────────────────┘
+Antes:  script.js (385 líneas, todo mezclado)
+Después: 8 módulos especializados + 1 orquestador
 ```
 
-### Paleta de colores
+### 9.3 Metodologías aplicadas
 
-| Color | Código | Para qué |
-|-------|--------|----------|
-| Verde esmeralda | `#10b981` | Botones, bordes, acentos |
-| Verde oscuro | `#022c22` | Fondos de inputs |
-| Plateado | `#cbd5e1` | Bordes tabla, botones filtro, badges |
-| Fondo página | `#030a06` | Fondo general |
-| Texto | `#f1f5f9` | Texto principal |
-
-### Efectos y animaciones (16 en total)
-
-| Animación | Qué hace |
-|-----------|----------|
-| `floatParticle` | 5 puntos brillantes flotan por la pantalla |
-| `orbPulse` | 3 esferas de luz con blur pulsan en el fondo |
-| `beamSweep` | Barrido de luz cruza el header y el footer |
-| `silverShimmer` | El texto "Tareas" brilla con movimiento plateado |
-| `sweep` | Al pasar el mouse, un destello cruza las tarjetas |
-| `toastBounce` | Las notificaciones entran con rebote desde la derecha |
-| `messageSlide` | Cada tarea aparece deslizándose desde la izquierda |
-| `titleGlow` | El título del header "respira" con un brillo sutil |
-
-### ¿Qué se tocó para lograrlo?
-
-- **`styles.css`** → Sistema completo de diseño: colores, tipografía, layout grid, glassmorphism, animaciones, responsive
-- **`index.html`** → Se agregaron **solo elementos decorativos**: partículas, orbes, líneas de luz, divisores, badges, brillos. Cero cambios en la funcionalidad.
-- **`helpers.js`** → Se actualizaron los 3 colores de `statusColors` para los badges de estado
-- **`estilo.md`** → Documento completo con la guía de estilo para exponer en clase
-
-### Frase para tu exposición
-
-> *"Así como modularizamos el código para que cada archivo tenga una responsabilidad, el diseño visual también tiene su propia arquitectura: colores que comunican, animaciones que guían, y un layout que organiza. La página no solo funciona: se ve, se siente y se recuerda."*
+| Metodología | Documentación |
+|-------------|---------------|
+| **GitFlow** | Rama `main` (producción), `develop` (integración), `feat/*` (tareas) | `docs/02-guia-metodologia/gitflow.md` |
+| **Conventional Commits** | `feat:`, `fix:`, `refactor:`, `docs:`, `chore:` | `docs/02-guia-metodologia/conventional-commits.md` |
+| **Issues** | Templates para bugs y features, milestones, labels | `docs/01-guia-sistema/creacion-issues.md` |
+| **Pull Requests** | Template con checklist de calidad, evidencia, análisis de impacto | `docs/02-guia-metodologia/GUIA_PULL_REQUEST.md` |
+| **Kanban** | Tablero con 4 columnas: To Do, In Progress, In Review, Done | `docs/01-guia-sistema/tablero-kanban.md` |
+| **Blindaje de ramas** | Rulesets: PR obligatorio, aprobación requerida, protecciones | `docs/01-guia-sistema/blindaje-ramas.md` |
 
 ---
 
-**SENA — ADSO**  
-**Ficha:** 3315656  
-**Guía:** GFPI-F-135 V04 — Modularización en JavaScript
+## 10. Documentación entregable
+
+| Documento | Contenido |
+|-----------|-----------|
+| `docs/04-guia-modularizacion.md` | Guía completa de cómo y por qué se modularizó el código |
+| `docs/plan-tecnico.md` | Planeación técnica de la migración a Vite v2.1 |
+| `docs/reporte-tecnico.md` | Reporte técnico post-implementación con problemas y soluciones |
+| `estilo.md` | Guía de estilo Silver Emerald con paleta, animaciones y componentes |
+| `Parte1.md` | Análisis del código heredado y propuesta de separación |
+| `TEAM_AGREEMENT.md` | Acuerdo de trabajo del equipo con roles y reglas |
+
+---
+
+**SENA — ADSO — Ficha 3315656 — Grupo 4 — 2026**
