@@ -3,6 +3,7 @@ const userController = require('../controllers/user.controller');
 
 router.post('/',          userController.create);
 router.get('/',           userController.getAll);
+router.get('/:userId/tasks', userController.getUserTasks);
 router.get('/:id',        userController.getById);
 router.put('/:id',        userController.update);
 router.delete('/:id',     userController.remove);
@@ -16,3 +17,5 @@ router.get('/:userId/tasks', (req, res, next) => {
   req.query.userId = req.params.userId;
   next();
 }, taskController.filter);
+
+module.exports = router;

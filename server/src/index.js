@@ -5,6 +5,7 @@ const path = require('path');
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const taskRoutes = require('./routes/task.routes');
+const taskController = require('./controllers/task.controller');
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -16,22 +17,14 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
 
-app.get('/api/dashboard', (req, res) => {
-  const { readDB } = require('./models');
-  const { tasks, users } = readDB();
-  res.json({
-    message: 'Pendiente de implementar',
-    totalTasks: tasks.length,
-    totalUsers: users.length
-  });
-});
+app.get('/api/dashboard', taskController.getDashboard);
 
 app.get('/api/users/:userId/tasks', (req, res) => {
   const { readDB } = require('./models');
   const { tasks } = readDB();
   const userTasks = tasks.filter(t => {
     if (Array.isArray(t.userIds)) return t.userIds.includes(req.params.userId);
-    return t.userId === req.params.userId;
+    return String(t.userId) === String(req.params.userId);
   });
   res.json(userTasks);
 });
