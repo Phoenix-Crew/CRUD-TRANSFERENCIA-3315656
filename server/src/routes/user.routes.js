@@ -17,3 +17,5 @@ router.get('/:userId/tasks', (req, res, next) => {
   req.query.userId = req.params.userId;
   next();
 }, taskController.filter);
+
+module.exports = router;
