@@ -429,6 +429,12 @@ body::before {
 .form__input::placeholder { color: var(--ink-faint); }
 .form__textarea { resize: vertical; min-height: 70px; }
 
+.form__input option {
+    background: #022c22;
+    color: #f1f5f9;
+    padding: 8px;
+}
+
 .form__input.error {
     border-color: #ef4444;
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.04);
