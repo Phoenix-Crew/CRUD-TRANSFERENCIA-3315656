@@ -157,11 +157,130 @@
             <span class="divider__line"></span>
         </div>
 
+        <!-- ====== ADMIN PANEL ====== -->
+        <div class="admin-panel" id="adminPanel">
+            <div class="admin-panel__header">
+                <div class="admin-panel__beam"></div>
+                <h2 class="admin-panel__title"> Panel de <span class="text-silver">Administración</span></h2>
+                <p class="admin-panel__subtitle">Visión general de todas las tareas del sistema</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="admin-stats">
+                <div class="admin-stat-card admin-stat-card--total">
+                    <div class="admin-stat-card__icon"></div>
+                    <div class="admin-stat-card__info">
+                        <span class="admin-stat-card__value" id="adminStatTotal">0</span>
+                        <span class="admin-stat-card__label">Total Tareas</span>
+                    </div>
+                </div>
+                <div class="admin-stat-card admin-stat-card--completed">
+                    <div class="admin-stat-card__icon"></div>
+                    <div class="admin-stat-card__info">
+                        <span class="admin-stat-card__value" id="adminStatCompletadas">0</span>
+                        <span class="admin-stat-card__label">Completadas</span>
+                    </div>
+                </div>
+                <div class="admin-stat-card admin-stat-card--progress">
+                    <div class="admin-stat-card__icon"></div>
+                    <div class="admin-stat-card__info">
+                        <span class="admin-stat-card__value" id="adminStatProgreso">0</span>
+                        <span class="admin-stat-card__label">En Progreso</span>
+                    </div>
+                </div>
+                <div class="admin-stat-card admin-stat-card--pending">
+                    <div class="admin-stat-card__icon"></div>
+                    <div class="admin-stat-card__info">
+                        <span class="admin-stat-card__value" id="adminStatPendientes">0</span>
+                        <span class="admin-stat-card__label">Pendientes</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="admin-filters">
+                <div class="admin-filters__title">Filtros Combinados</div>
+                <div class="admin-filters__row">
+                    <div class="admin-filters__group">
+                        <label for="adminFilterStatus" class="form__label">Estado</label>
+                        <select id="adminFilterStatus" class="form__input">
+                            <option value="">Todos los estados</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En progreso">En progreso</option>
+                            <option value="Completada">Completada</option>
+                        </select>
+                    </div>
+                    <div class="admin-filters__group">
+                        <label for="adminFilterUser" class="form__label">Usuario</label>
+                        <select id="adminFilterUser" class="form__input">
+                            <option value="">Todos los usuarios</option>
+                        </select>
+                    </div>
+                    <div class="admin-filters__group">
+                        <label for="adminFilterDateFrom" class="form__label">Fecha Desde</label>
+                        <input type="date" id="adminFilterDateFrom" class="form__input">
+                    </div>
+                    <div class="admin-filters__group">
+                        <label for="adminFilterDateTo" class="form__label">Fecha Hasta</label>
+                        <input type="date" id="adminFilterDateTo" class="form__input">
+                    </div>
+                    <div class="admin-filters__group admin-filters__group--btn">
+                        <label class="form__label">&nbsp;</label>
+                        <button type="button" class="btn btn--primary" id="adminApplyFilters">Aplicar Filtros</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Global Table + User Distribution -->
+            <div class="admin-grid">
+                <div class="admin-table-section">
+                    <div class="admin-table-section__header">
+                        <h3 class="admin-table-section__title">Todas las Tareas</h3>
+                        <span class="messages-header__count" id="adminGlobalCount">0 tareas</span>
+                    </div>
+                    <div class="table-wrapper">
+                        <div class="table-wrapper__silverline"></div>
+                        <table class="task-table">
+                            <thead>
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Descripción</th>
+                                    <th>Estado</th>
+                                    <th>Usuario</th>
+                                    <th>Fecha</th>
+                                    <th>ID</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminGlobalBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="admin-user-dist">
+                    <div class="admin-table-section__header">
+                        <h3 class="admin-table-section__title">Distribución por Usuario</h3>
+                    </div>
+                    <div class="table-wrapper">
+                        <div class="table-wrapper__silverline"></div>
+                        <table class="task-table">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Tareas</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminUserDistBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- ====== FOOTER ====== -->
         <footer class="footer">
             <div class="footer__inner">
                 <div class="footer__beam"></div>
-                <p class="footer__text">Módulo de Gestión de Tareas · ADSO · SENA · <span class="text-silver">Grupo 4</span></p>
+                <p class="footer__text">Módulo de Gestión de Tareas · PROGRAMACION DE SOFTWARE · SENA · <span class="text-silver">Grupo 4</span></p>
             </div>
         </footer>
     </div>

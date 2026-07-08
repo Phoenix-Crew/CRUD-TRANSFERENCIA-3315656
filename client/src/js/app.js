@@ -31,8 +31,8 @@
 //                                       (log en consola con IDs)
 
 import '../styles/styles.css';
-import { userIdInput, btnSearch, taskForm, filterStatusSelect, sortDirectionBtn, sortableHeaders, exportBtn } from './ui/dom.js';
-import { searchUser, registerTask, setSortCriteria, toggleSortDirection, setFilterStatus, exportVisibleTasks } from './services/tareasService.js';
+import { userIdInput, btnSearch, taskForm, filterStatusSelect, sortDirectionBtn, sortableHeaders, exportBtn, adminApplyFilters } from './ui/dom.js';
+import { searchUser, registerTask, setSortCriteria, toggleSortDirection, setFilterStatus, exportVisibleTasks, loadAdminPanel, applyAdminFilters } from './services/tareasService.js';
 import { fetchUsers } from './api/tareasApi.js';
 import { showEmptyState } from './ui/taskRenderer.js';
 
@@ -72,6 +72,10 @@ if (exportBtn) {
     });
 }
 
+if (adminApplyFilters) {
+    adminApplyFilters.addEventListener('click', applyAdminFilters);
+}
+
 document.addEventListener('DOMContentLoaded', async function() {
     showEmptyState([]);
 
@@ -80,7 +84,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.group("IDs DISPONIBLES PARA BUSCAR (Carga Inicial)");
         console.table(users.map(u => ({ ID: u.id, Nombre: u.name, Rol: u.rol })));
         console.groupEnd();
+        loadAdminPanel();
     } catch (error) {
         console.warn("No se pudieron precargar los IDs. ¿El backend está encendido?", error.message);
+        loadAdminPanel();
     }
 });

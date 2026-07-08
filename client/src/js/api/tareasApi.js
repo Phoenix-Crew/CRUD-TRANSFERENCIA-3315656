@@ -118,4 +118,23 @@ export async function deleteTaskFromApi(taskId) {
     return response;
 }
 
+export async function fetchTasksFiltered(params = {}) {
+    const query = new URLSearchParams();
+    if (params.status) query.set('status', params.status);
+    if (params.userId) query.set('userId', params.userId);
+    if (params.dateFrom) query.set('dateFrom', params.dateFrom);
+    if (params.dateTo) query.set('dateTo', params.dateTo);
+    const qs = query.toString();
+    const url = `${API_URL}/tasks/filter${qs ? '?' + qs : ''}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Error al filtrar tareas');
+    return response.json();
+}
+
+export async function fetchDashboard() {
+    const response = await fetch(`${API_URL}/dashboard`);
+    if (!response.ok) throw new Error('Error al obtener dashboard');
+    return response.json();
+}
+
 export { API_URL };

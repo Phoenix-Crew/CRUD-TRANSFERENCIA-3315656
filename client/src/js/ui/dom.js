@@ -46,3 +46,18 @@ export const filterStatusSelect = document.getElementById('filterStatus');
 export const sortDirectionBtn = document.getElementById('sortDirection');
 export const sortableHeaders = document.querySelectorAll('th.sortable');
 export const exportBtn = document.getElementById('exportBtn');
+
+// Admin Panel
+export const adminPanel = document.getElementById('adminPanel');
+export const adminFilterStatus = document.getElementById('adminFilterStatus');
+export const adminFilterUser = document.getElementById('adminFilterUser');
+export const adminFilterDateFrom = document.getElementById('adminFilterDateFrom');
+export const adminFilterDateTo = document.getElementById('adminFilterDateTo');
+export const adminApplyFilters = document.getElementById('adminApplyFilters');
+export const adminStatTotal = document.getElementById('adminStatTotal');
+export const adminStatCompletadas = document.getElementById('adminStatCompletadas');
+export const adminStatPendientes = document.getElementById('adminStatPendientes');
+export const adminStatProgreso = document.getElementById('adminStatProgreso');
+export const adminGlobalBody = document.getElementById('adminGlobalBody');
+export const adminUserDistBody = document.getElementById('adminUserDistBody');
+export const adminGlobalCount = document.getElementById('adminGlobalCount');
