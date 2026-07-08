@@ -1,15 +1,21 @@
-server/db.json
-
 # Dependencies
 node_modules/
 
 # Build output
+dist/
 client/dist/
 
 # Environment files
 .env.local
 .env.*.local
 
+# Server database (generated)
+server/db.json
+
 # OS files
 Thumbs.db
 .DS_Store
+
+# IDE
+.vscode/
+.idea/
