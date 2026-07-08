@@ -271,6 +271,54 @@
             </div>
         </div>
 
+        <!-- ====== USER ADMIN SECTION ====== -->
+        <div class="admin-panel" id="userAdminSection">
+            <div class="admin-panel__header">
+                <div class="admin-panel__beam"></div>
+                <h2 class="admin-panel__title">Administración de <span class="text-silver">Usuarios</span></h2>
+                <p class="admin-panel__subtitle">Gestiona los usuarios registrados en el sistema</p>
+            </div>
+
+            <div class="admin-filters">
+                <div class="admin-filters__row" style="justify-content: flex-end;">
+                    <div class="admin-filters__group admin-filters__group--btn">
+                        <button type="button" class="btn btn--primary" id="btnCreateUser">
+                            <span class="btn__icon">+</span>
+                            <span class="btn__text">Nuevo Usuario</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-table-section">
+                <div class="admin-table-section__header">
+                    <h3 class="admin-table-section__title">Usuarios Registrados</h3>
+                    <span class="messages-header__count" id="userCount">0 usuarios</span>
+                </div>
+                <div class="table-wrapper">
+                    <div class="table-wrapper__silverline"></div>
+                    <table class="task-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="messages-empty" id="userEmptyState">
+                    <div class="messages-empty__icon"></div>
+                    <p class="messages-empty__text">No hay usuarios registrados</p>
+                    <p class="messages-empty__subtext">Crea un nuevo usuario para comenzar.</p>
+                </div>
+            </div>
+        </div>
+
         <!-- ====== FOOTER ====== -->
         <footer class="footer">
             <div class="footer__inner">

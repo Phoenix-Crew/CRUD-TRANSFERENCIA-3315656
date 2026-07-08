@@ -1445,3 +1445,68 @@ body::before {
     .admin-stat-card { padding: 16px; }
     .admin-stat-card__value { font-size: 22px; }
 }
+
+/* ============================================
+   USER ADMIN SECTION
+   ============================================ */
+
+.user-status-badge--active {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(4, 120, 87, 0.15);
+    color: #6ee7b7;
+}
+
+.user-status-badge--inactive {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(239, 68, 68, 0.15);
+    color: #fca5a5;
+}
+
+.action-btn--status-on {
+    background: linear-gradient(135deg, #059669, #047857);
+    color: white;
+}
+
+.action-btn--status-off {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+}
+
+.action-btn--status-on:hover,
+.action-btn--status-off:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.user-name {
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.user-email {
+    color: var(--ink-muted);
+    font-size: 13px;
+}
+
+.user-rol {
+    font-size: 13px;
+    color: var(--ink);
+}
+
+#userEmptyState {
+    margin-top: 0;
+}
+
+@media (max-width: 768px) {
+    .user-admin-section .admin-filters__row {
+        grid-template-columns: 1fr;
+    }
+}

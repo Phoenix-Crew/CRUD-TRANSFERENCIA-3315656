@@ -3,31 +3,37 @@
     {
       "id": "1",
       "name": "Brian Bayona",
-      "rol": "Aprendiz",
+      "email": "brian.bayona@example.com",
+      "rol": "Instructor",
+      "password": "123456",
+      "active": true,
       "ficha": "3315656"
     },
     {
       "id": "2",
       "name": "Nestor Gomez",
+      "email": "nestor.gomez@example.com",
       "rol": "Aprendiz",
+      "password": "123456",
+      "active": true,
       "ficha": "3315656"
     },
     {
       "id": "3",
       "name": "Joser Fuentes",
+      "email": "joser.fuentes@example.com",
       "rol": "Aprendiz",
+      "password": "123456",
+      "active": true,
       "ficha": "3315656"
     },
     {
       "id": "4",
-      "name": "Ana María López",
-      "rol": "Instructora",
-      "ficha": "3315656"
-    },
-    {
-      "id": "5",
-      "name": "Carlos Andrés Pérez",
-      "rol": "Aprendiz",
+      "name": "juan carlos",
+      "email": "juan@hola.com",
+      "rol": "Instructor",
+      "password": "1234567",
+      "active": true,
       "ficha": "3315656"
     }
   ],
@@ -39,7 +45,10 @@
       "status": "Completada",
       "createdAt": "01/06/2026, 10:30 a. m.",
       "assignedUsers": [
-        { "id": "1", "name": "Brian Bayona" }
+        {
+          "id": "1",
+          "name": "Brian Bayona"
+        }
       ]
     },
     {
@@ -49,7 +58,10 @@
       "status": "Completada",
       "createdAt": "01/06/2026, 09:00 a. m.",
       "assignedUsers": [
-        { "id": "1", "name": "Brian Bayona" }
+        {
+          "id": "1",
+          "name": "Brian Bayona"
+        }
       ]
     },
     {
@@ -59,7 +71,10 @@
       "status": "Completada",
       "createdAt": "02/06/2026, 04:30 p. m.",
       "assignedUsers": [
-        { "id": "2", "name": "Nestor Gomez" }
+        {
+          "id": "2",
+          "name": "Nestor Gomez"
+        }
       ]
     },
     {
@@ -69,7 +84,10 @@
       "status": "Pendiente",
       "createdAt": "08/06/2026, 09:45 a. m.",
       "assignedUsers": [
-        { "id": "2", "name": "Nestor Gomez" }
+        {
+          "id": "2",
+          "name": "Nestor Gomez"
+        }
       ]
     },
     {
@@ -79,7 +97,10 @@
       "status": "Pendiente",
       "createdAt": "09/06/2026, 05:23 p. m.",
       "assignedUsers": [
-        { "id": "1", "name": "Brian Bayona" }
+        {
+          "id": "1",
+          "name": "Brian Bayona"
+        }
       ]
     },
     {
@@ -89,7 +110,10 @@
       "status": "Pendiente",
       "createdAt": "16/06/2026, 01:26 p. m.",
       "assignedUsers": [
-        { "id": "3", "name": "Joser Fuentes" }
+        {
+          "id": "3",
+          "name": "Joser Fuentes"
+        }
       ]
     },
     {
@@ -99,7 +123,10 @@
       "status": "En progreso",
       "createdAt": "16/06/2026, 01:28 p. m.",
       "assignedUsers": [
-        { "id": "3", "name": "Joser Fuentes" }
+        {
+          "id": "3",
+          "name": "Joser Fuentes"
+        }
       ]
     },
     {
@@ -109,7 +136,10 @@
       "status": "En progreso",
       "createdAt": "16/06/2026, 01:29 p. m.",
       "assignedUsers": [
-        { "id": "3", "name": "Joser Fuentes" }
+        {
+          "id": "3",
+          "name": "Joser Fuentes"
+        }
       ]
     },
     {
@@ -119,7 +149,10 @@
       "status": "Completada",
       "createdAt": "16/06/2026, 01:29 p. m.",
       "assignedUsers": [
-        { "id": "3", "name": "Joser Fuentes" }
+        {
+          "id": "3",
+          "name": "Joser Fuentes"
+        }
       ]
     },
     {
@@ -129,7 +162,10 @@
       "status": "En progreso",
       "createdAt": "23/06/2026, 02:03 pm",
       "assignedUsers": [
-        { "id": "1", "name": "Brian Bayona" }
+        {
+          "id": "1",
+          "name": "Brian Bayona"
+        }
       ]
     }
   ],
