@@ -1,5 +1,4 @@
-
-// Archivo: tareasApi.js — Capa de comunicación con el servidor (json-server)
+// Archivo: tareasApi.js — Capa de comunicación con el servidor (json-server / Express backend)
 
 // ¿Qué hace este archivo?
 //   Solo se encarga de hacer peticiones al backend (fetch) y devolver
@@ -10,12 +9,17 @@
 //   NO guarda información en variables.
 //
 // ¿Qué exporta?
-//   5 funciones + la constante API_URL:
-//     - fetchUsers()             → GET /users
-//     - fetchTasksByUser(userId) → GET /tasks + filtro en cliente
-//     - createTask(task)         → POST /tasks
-//     - updateTask(id, data)     → PATCH /tasks/{id}
-//     - deleteTaskFromApi(id)    → DELETE /tasks/{id}
+//   Funciones de conexión + la constante API_URL:
+//     - fetchUsers()                 → GET /users
+//     - fetchTasksByUser(userId)     → GET /tasks + filtro en cliente
+//     - createTask(task)             → POST /tasks
+//     - updateTask(id, data)         → PATCH /tasks/{id}
+//     - deleteTaskFromApi(id)        → DELETE /tasks/{id}
+//     - assignTask(taskId, userData) → POST /tasks/{taskId}/assign  [NUEVO]
+//     - getTaskUsers(taskId)         → GET /tasks/{taskId}/users    [NUEVO]
+//     - removeUserFromTask(tId, uId) → DELETE /tasks/{tId}/users/{uId} [NUEVO]
+//     - updateTaskStatus(id, status) → PATCH /tasks/{id}/status     [NUEVO]
+//     - getUserTasks(userId)         → GET /users/{userId}/tasks    [NUEVO]
 //
 // ¿Quién las usa?
 //   tareasService.js — importa estas funciones para hacer las
@@ -26,7 +30,7 @@
 // ============================================================
 //   - En dev local:  http://localhost:3002
 //   - Histórico:     antes apuntaba a :3005 (puerto incorrecto,
-//                     provocaba "Error de conexión" en la UI).
+//                    provocaba "Error de conexión" en la UI).
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
@@ -52,11 +56,6 @@ export async function fetchUsers() {
 //     - userId: el número de documento del usuario
 //   ¿Qué devuelve?  Un array con las tareas de ese usuario.
 //   ¿Quién la llama?  tareasService.js → searchUser()
-//
-//   Nota: Se hace fetch completo + filter en cliente para evitar
-//   problemas de tipo (int vs string) en json-server. El db.json
-//   puede tener userId guardados como número (1) o como string ("1"),
-//   y la query ?userId=1 solo matchea el número exacto.
 
 export async function fetchTasksByUser(userId) {
     const response = await fetch(`${API_URL}/tasks`);
@@ -70,7 +69,7 @@ export async function fetchTasksByUser(userId) {
 //   ¿Qué hace?  Envía una tarea nueva al servidor para que la guarde.
 //   Método:     POST → /tasks
 //   Parámetros:
-//     - task: un objeto con userId, userName, title, description, status, createdAt
+//     - task: objeto con title, description, status, createdAt, assignedUsers
 //   ¿Qué devuelve?  La respuesta del servidor (response).
 //   ¿Quién la llama?  tareasService.js → registerTask()
 
@@ -116,6 +115,75 @@ export async function deleteTaskFromApi(taskId) {
         method: 'DELETE'
     });
     return response;
+}
+
+
+// assignTask(taskId, userData)
+//   ¿Qué hace?  Asigna un nuevo usuario al arreglo multiusuario de la tarea.
+//   Método:     POST → /tasks/{taskId}/assign
+//   Parámetros:
+//     - taskId: ID de la tarea seleccionada.
+//     - userData: Objeto con los datos del usuario { id, name }.
+//   ¿Qué devuelve? La respuesta del servidor con la tarea modificada.
+
+export async function assignTask(taskId, userData) {
+    const response = await fetch(`${API_URL}/tasks/${taskId}/assign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+    });
+    return response;
+}
+
+
+// getTaskUsers(taskId)
+//   ¿Qué hace?  Obtiene la lista de usuarios asignados únicamente a esa tarea.
+//   Método:     GET → /tasks/{taskId}/users
+//   ¿Qué devuelve? El array asignado "assignedUsers" de la tarea elegida.
+
+export async function getTaskUsers(taskId) {
+    const response = await fetch(`${API_URL}/tasks/${taskId}/users`);
+    if (!response.ok) throw new Error('Error al obtener usuarios de la tarea');
+    return response.json();
+}
+
+
+// removeUserFromTask(taskId, userId)
+//   ¿Qué hace?  Desasigna un usuario específico de una tarea en el servidor.
+//   Método:     DELETE → /tasks/{taskId}/users/{userId}
+
+export async function removeUserFromTask(taskId, userId) {
+    const response = await fetch(`${API_URL}/tasks/${taskId}/users/${userId}`, {
+        method: 'DELETE'
+    });
+    return response;
+}
+
+
+// updateTaskStatus(taskId, status)
+//   ¿Qué hace?  Actualiza únicamente la propiedad de estado de una tarea.
+//   Método:     PATCH → /tasks/{taskId}/status
+//   Parámetros:
+//     - status: String ('Pendiente' | 'En progreso' | 'Completada')
+
+export async function updateTaskStatus(taskId, status) {
+    const response = await fetch(`${API_URL}/tasks/${taskId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+    });
+    return response;
+}
+
+
+// getUserTasks(userId)
+//   ¿Qué hace?  Pide al backend todas las tareas en las que esté asignado el ID del usuario.
+//   Método:     GET → /users/{userId}/tasks
+
+export async function getUserTasks(userId) {
+    const response = await fetch(`${API_URL}/users/${userId}/tasks`);
+    if (!response.ok) throw new Error('Error al obtener tareas del usuario');
+    return response.json();
 }
 
 export { API_URL };

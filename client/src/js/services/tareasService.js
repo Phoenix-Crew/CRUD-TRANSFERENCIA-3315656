@@ -1,10 +1,10 @@
-
 //Archivo: tareasService.js — El cerebro de la aplicación
 
 // ¿Que hace este archivo?
 // Aquí se decide qué hacer cuando el usuario busca, agrega, edita,
-// elimina o reordena una tarea. Le pide datos a la API, los procesa
-// y luego le dice a la pantalla que muestre los cambios.
+// elimina, reordena, asigna usuarios o cambia estados en una tarea.
+// Le pide datos a la API, los procesa y luego le dice a la pantalla
+// que muestre los cambios.
 //
 // ¿Que no hace?
 // NO habla directamente con el servidor (eso lo hace tareasApi.js),
@@ -19,10 +19,10 @@
 // ./utils/helpers.js     - timestamp, validación, sortTasks,
 //                          filterTasksByStatus, colores
 //
-// ¿Qué exporta?  (8 funciones)
+// ¿Qué exporta?  (10 funciones)
 // CRUD de tareas:
 //   - searchUser()         → busca usuario y carga sus tareas
-//   - registerTask(ev)     → crea una tarea nueva
+//   - registerTask(ev)     → crea una tarea nueva con array de usuarios
 //   - clearUserInfo()      → resetea estado y pantalla
 // RF02 (ordenamiento + filtro):
 //   - setSortCriteria(c)       → cambia el criterio de orden
@@ -31,13 +31,16 @@
 //   - setFilterStatus(s)       → filtra por estado (RF02)
 // RF04 (exportación):
 //   - exportVisibleTasks()     → descarga las tareas visibles a JSON
+// Funciones Multiusuario y Estados [NUEVAS]:
+//   - assignUserToTask(tId, u) → añade un usuario extra a la tarea
+//   - completeTaskDirect(tId)  → pasa el estado de una tarea a 'Completada' directamente
 //
 // ¿quien las usa?
 //   app.js → importa searchUser y registerTask para conectarlas
 //   a los botones de la pantalla
 
 import { userIdInput, btnSearch, userInfo, taskFormContainer, taskForm, taskTableBody, exportBtn } from '../ui/dom.js';
-import { fetchUsers, fetchTasksByUser, createTask, updateTask, deleteTaskFromApi } from '../api/tareasApi.js';
+import { fetchUsers, fetchTasksByUser, createTask, updateTask, deleteTaskFromApi, assignTask, removeUserFromTask, updateTaskStatus, getUserTasks } from '../api/tareasApi.js';
 import { showToast, showUserInfo, showUserNotFound, showValidationError, clearFieldErrors, showFieldError } from '../ui/notifications.js';
 import { showConfirmDialog } from '../ui/confirmDialog.js';
 import { enableTaskForm, hideEmptyState, showEmptyState, updateTaskCount, createTaskElement, enableEditMode, cancelEdit, disableAllEditModes, updateSortIcons, updateSortButtonLabel, downloadJson } from '../ui/taskRenderer.js';
@@ -58,13 +61,6 @@ let sortDirection = 'desc';
 
 //   ¿Qué hace?  Limpia toda la pantalla y reinicia el estado.
 //   ¿Cuándo se usa?  Cuando se va a buscar un usuario nuevo.
-//   Flujo:
-//     1. Borra el HTML del contenedor de información del usuario
-//     2. Oculta el formulario de tareas
-//     3. currentUser = null  y  tasks = []
-//     4. Limpia la tabla y actualiza el contador a 0
-//     5. Muestra el mensaje de "no hay tareas"
-
 function clearUserInfo() {
     userInfo.innerHTML = '';
     taskFormContainer.style.display = 'none';
@@ -80,11 +76,7 @@ function clearUserInfo() {
 
 
 // bindCallbacks()  [privada — NO se exporta]
-//   ¿Qué hace?  Junta las 4 funciones de los botones (editar, eliminar,
-//               guardar, cancelar) en un solo objeto.
-//   ¿Para qué sirve?  Para pasarle ese objeto a createTaskElement() y
-//   que cada fila de la tabla tenga sus botones funcionando.
-
+//   ¿Qué hace?  Junta las funciones de los botones interactivos de las filas.
 function bindCallbacks() {
     return {
         onEdit: enableEditMode,
@@ -96,15 +88,6 @@ function bindCallbacks() {
 
 
 // setExportBtnState(enabled)  [privada — NO se exporta]
-//   ¿Qué hace?  Habilita o deshabilita el botón "Exportar JSON"
-//               según si hay un usuario cargado con tareas.
-//   Parámetros:
-//     - enabled: true → habilitado, false → deshabilitado
-//   ¿Cuándo se usa?
-//     - true  → en searchUser() después de cargar tareas
-//     - false → en clearUserInfo() al cambiar de usuario
-//   ¿Quién la llama?  searchUser(), clearUserInfo() (RF04)
-
 function setExportBtnState(enabled) {
     if (!exportBtn) return;
     exportBtn.disabled = !enabled;
@@ -112,15 +95,6 @@ function setExportBtnState(enabled) {
 
 
 // getVisibleTasks()  [privada — NO se exporta]
-//   ¿Qué hace?  Devuelve el array de tareas que están actualmente
-//               visibles en pantalla (filtradas + ordenadas).
-//               Es la MISMA lógica que usa applySorting() para
-//               pintar la tabla, de modo que la exportación refleja
-//               exactamente lo que el usuario ve.
-//   Parámetros:  ninguno
-//   ¿Qué devuelve?  Un array de tareas (puede estar vacío).
-//   ¿Quién la llama?  exportVisibleTasks() (RF04)
-
 function getVisibleTasks() {
     const filtered = filterTasksByStatus(tasks, filterStatus);
     return sortTasks(filtered, sortCriteria, sortDirection);
@@ -128,26 +102,6 @@ function getVisibleTasks() {
 
 
 // exportVisibleTasks()  [se exporta]
-//   ¿Qué hace?  Toma las tareas VISIBLES en pantalla (filtradas +
-//               ordenadas), arma el JSON con metadata y dispara la
-//               descarga de un archivo .json en el navegador.
-//   Flujo:
-//     1. Verifica que haya un currentUser cargado
-//     2. Calcula las tareas visibles con getVisibleTasks()
-//     3. Si count === 0 → toast de advertencia "No hay tareas para
-//        exportar" y termina (no descarga nada)
-//     4. Construye el JSON con buildTasksJson(visible, meta)
-//     5. Genera el nombre del archivo con buildExportFilename()
-//     6. Dispara la descarga con downloadJson() (de taskRenderer)
-//     7. Muestra toast de éxito "Tareas exportadas (N)"
-//   ¿Quién la llama?  app.js → click en #exportBtn (RF04)
-//
-//   Estructura de capas respetada:
-//     utils/helpers.js  →  arma JSON + nombre (puro)
-//     ui/taskRenderer.js →  dispara descarga (toca DOM)
-//     services/tareasService.js →  coordina (este archivo)
-//     app.js            →  conecta el botón
-
 function exportVisibleTasks() {
     if (!currentUser) {
         showToast('No hay un usuario cargado para exportar', 'warning');
@@ -196,13 +150,6 @@ function exportVisibleTasks() {
 
 
 // applySorting()  [privada — NO se exporta]
-//   ¿Qué hace?  Re-pinta la tabla con las tareas FILTRADAS por filterStatus
-//               y luego ORDENADAS según sortCriteria y sortDirection.
-//               Cierra cualquier modo edición abierto y muestra el estado
-//               vacío si no quedan tareas tras el filtro.
-//   ¿Cuándo se usa?  Cada vez que cambia el filtro, el criterio, la
-//                    dirección o se modifica el array tasks.
-
 function applySorting() {
     disableAllEditModes(tasks);
     taskTableBody.innerHTML = '';
@@ -224,12 +171,6 @@ function applySorting() {
 
 
 // setSortCriteria(criteria)  [se exporta]
-//   ¿Qué hace?  Cambia el criterio de ordenamiento y re-pinta la tabla.
-//   Parámetros:
-//     - criteria: 'createdAt' | 'title' | 'status'
-//   ¿Quién la llama?  app.js → cuando el usuario hace click en un
-//                      <th.sortable> de la tabla.
-
 function setSortCriteria(criteria) {
     sortCriteria = criteria;
     applySorting();
@@ -237,13 +178,6 @@ function setSortCriteria(criteria) {
 
 
 // setFilterStatus(status)  [se exporta]
-//   ¿Qué hace?  Cambia el filtro por estado y re-pinta la tabla
-//               mostrando solo las tareas que coincidan.
-//   Parámetros:
-//     - status: 'all' | 'Pendiente' | 'En progreso' | 'Completada'
-//   ¿Quién la llama?  app.js → cuando el usuario cambia el <select>
-//                      de filtro de estado.
-
 function setFilterStatus(status) {
     filterStatus = status;
     applySorting();
@@ -251,12 +185,6 @@ function setFilterStatus(status) {
 
 
 // setSortDirection(direction)  [se exporta]
-//   ¿Qué hace?  Cambia la dirección del ordenamiento y re-pinta la tabla.
-//   Parámetros:
-//     - direction: 'asc' | 'desc'
-//   ¿Quién la llama?  app.js → cuando el usuario hace click en el botón
-//                      de dirección.
-
 function setSortDirection(direction) {
     sortDirection = direction;
     applySorting();
@@ -264,10 +192,6 @@ function setSortDirection(direction) {
 
 
 // toggleSortDirection()  [se exporta]
-//   ¿Qué hace?  Alterna entre 'asc' y 'desc' y re-pinta la tabla.
-//   ¿Quién la llama?  app.js → cuando el usuario hace click en el botón
-//                      de dirección.
-
 function toggleSortDirection() {
     sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
     applySorting();
@@ -275,31 +199,6 @@ function toggleSortDirection() {
 
 
 // searchUser()  [se exporta]
-//   ¿Qué hace?  Busca un usuario por su número de documento.
-//               Si lo encuentra, muestra sus datos y carga sus tareas.
-//
-//   ¿Quién la llama?  app.js → cuando el usuario hace clic en "Buscar"
-//                      o presiona Enter en el campo de texto.
-//
-//   Flujo completo:
-//     1. Toma el valor del input (userIdInput)
-//     2. Valida que no esté vacío usando isValidInput() de helpers.js
-//        → Si está vacío: muestra error y se detiene
-//     3. Deshabilita el botón y cambia el texto a "Buscando..."
-//     4. Pide todos los usuarios al servidor con fetchUsers() de tareasApi.js
-//     5. Busca en la lista un usuario cuyo ID coincida con lo escrito
-//     6. Si existe el usuario:
-//        a. Guarda el usuario en currentUser
-//        b. Muestra los datos en pantalla con showUserInfo() de notifications.js
-//        c. Muestra el formulario de tareas con enableTaskForm() de taskRenderer.js
-//        d. Pide las tareas de ese usuario con fetchTasksByUser() de tareasApi.js
-//        e. Guarda las tareas en la variable tasks
-//        f. Limpia la tabla y pinta cada tarea con createTaskElement()
-//        g. Actualiza el contador con updateTaskCount()
-//     7. Si NO existe: muestra "Usuario no registrado" con showUserNotFound()
-//     8. Si hay error de conexión: muestra mensaje de error
-//     9. Vuelve a habilitar el botón y restaura el texto "Buscar"
-
 async function searchUser() {
     const userId = userIdInput.value;
 
@@ -322,7 +221,8 @@ async function searchUser() {
             showUserInfo(user);
             enableTaskForm();
 
-            const savedTasks = await fetchTasksByUser(userId);
+            // Usamos la nueva API dedicada del backend para jalar las tareas mapeadas en assignedUsers
+            const savedTasks = await getUserTasks(userId);
             tasks = savedTasks;
             applySorting();
             setExportBtnState(true);
@@ -339,34 +239,8 @@ async function searchUser() {
 
 
 // registerTask(event)  [se exporta]
-//   ¿Qué hace?  Toma los datos del formulario, los valida y crea una
-//               tarea nueva en el servidor.
-//
-//   ¿Quién la llama?  app.js → cuando el usuario envía el formulario
-//                      (hace clic en "Agregar Tarea").
-//
-//   Flujo completo:
-//     1. Detiene el envío normal del formulario (event.preventDefault())
-//     2. Sale de cualquier modo edición que esté abierto
-//     3. Limpia los mensajes de error anteriores
-//     4. Toma los valores de título, descripción y estado del formulario
-//     5. Valida que título y descripción NO estén vacíos
-//        → Si falta alguno: muestra error debajo del campo y se detiene
-//     6. Arma el objeto taskData con:
-//        - userId, userName (del currentUser)
-//        - title, description, status (del formulario)
-//        - createdAt (fecha actual con getCurrentTimestamp())
-//     7. Envía la tarea al servidor con createTask() de tareasApi.js
-//     8. Si el servidor responde ok:
-//        a. Agrega la tarea devuelta al array tasks
-//        b. La pinta en la tabla con createTaskElement()
-//        c. Oculta el mensaje de "no hay tareas"
-//        d. Actualiza el contador
-//        e. Limpia el formulario
-//        f. Muestra un toast verde "Tarea registrada exitosamente"
-//     9. Si el servidor responde con error: muestra toast rojo
-//    10. Si hay error de conexión: muestra toast rojo
-
+//   ¿Qué cambió aquí? Ahora inyecta por defecto al creador (currentUser) 
+//   dentro del array inicial "assignedUsers", adaptándose al nuevo formato multiusuario.
 async function registerTask(event) {
     event.preventDefault();
     disableAllEditModes(tasks);
@@ -395,12 +269,13 @@ async function registerTask(event) {
     if (hasError) return;
 
     const taskData = {
-        userId: String(currentUser.id),
-        userName: currentUser.name,
         title: title,
         description: description,
         status: status,
-        createdAt: getCurrentTimestamp()
+        createdAt: getCurrentTimestamp(),
+        assignedUsers: [
+            { id: String(currentUser.id), name: currentUser.name }
+        ]
     };
 
     try {
@@ -421,25 +296,7 @@ async function registerTask(event) {
 }
 
 
-// saveEdit(taskId, row)  [privada — NO se exporta directamente]
-//   ¿Qué hace?  Toma los valores que el usuario escribió en los inputs
-//               de edición y los guarda en el servidor.
-//
-//   ¿Cuándo se usa?  Cuando el usuario hace clic en "Guardar" después
-//                     de editar una tarea en la tabla.
-//
-//   Flujo completo:
-//     1. Toma los valores de los inputs de edición (título, descripción, estado)
-//     2. Valida que título y descripción no estén vacíos
-//        → Si están vacíos: muestra toast de advertencia y se detiene
-//     3. Envía los cambios al servidor con updateTask() de tareasApi.js
-//     4. Si el servidor responde ok:
-//        a. Actualiza la tarea en el array tasks
-//        b. Sale del modo edición con cancelEdit()
-//        c. Actualiza el texto del título, descripción y color del estado
-//        d. Muestra toast verde "Tarea actualizada correctamente"
-//     5. Si hay error: muestra toast rojo
-
+// saveEdit(taskId, row)  [privada]
 async function saveEdit(taskId, row) {
     const newTitle = row.querySelector('.task-edit-title').value.trim();
     const newDesc = row.querySelector('.task-edit-desc').value.trim();
@@ -468,23 +325,7 @@ async function saveEdit(taskId, row) {
 }
 
 
-// deleteTask(taskId, row)  [privada — NO se exporta directamente]
-//   ¿Qué hace?  Pregunta si está seguro y luego borra la tarea.
-//
-//   ¿Cuándo se usa?  Cuando el usuario hace clic en "Eliminar" en una tarea.
-//
-//   Flujo completo:
-//     1. Muestra un confirm() preguntando "¿Estás seguro?"
-//        → Si el usuario cancela: no hace nada
-//     2. Envía la orden de eliminar al servidor con deleteTaskFromApi()
-//     3. Si el servidor responde ok:
-//        a. Quita la tarea del array tasks (filter)
-//        b. Borra la fila de la tabla (row.remove())
-//        c. Actualiza el contador
-//        d. Si ya no quedan tareas: muestra el mensaje de vacío
-//        e. Muestra toast verde "Tarea eliminada correctamente"
-//     4. Si hay error: muestra toast rojo
-
+// deleteTask(taskId, row)  [privada]
 async function deleteTask(taskId, row) {
     const confirmed = await showConfirmDialog({
         title: 'Eliminar tarea',
@@ -510,12 +351,27 @@ async function deleteTask(taskId, row) {
 }
 
 
-// Exportaciones — lo que este archivo comparte con app.js
-//   searchUser()         → para conectarlo al botón "Buscar"
-//   registerTask()       → para conectarlo al formulario de tareas
-//   clearUserInfo()      → para limpiar la pantalla cuando sea necesario
-//   setSortCriteria()    → para conectarlo al <select> de criterio
-//   setSortDirection()   → para conectarlo al botón de dirección directa
-//   toggleSortDirection()→ para alternar asc/desc con un solo botón
+// assignUserToTask(taskId, userObj)  [se exporta]
+//   ¿Qué hace? Envía los datos de un nuevo colaborador al endpoint de asignación.
+//   ¿Quién la llama? ui/taskRenderer o los controles de asignación múltiple.
+export async function assignUserToTask(taskId, userObj) {
+    try {
+        const response = await assignTask(taskId, userObj);
+        if (response.ok) {
+            const updatedTask = await response.json();
+            const idx = tasks.findIndex(t => String(t.id) === String(taskId));
+            if (idx !== -1) tasks[idx] = updatedTask;
+            applySorting();
+            showToast(`Usuario ${userObj.name} asignado correctamente`, 'success');
+        } else {
+            const errData = await response.json();
+            showToast(errData.message || 'Error al asignar usuario', 'warning');
+        }
+    } catch (error) {
+        showToast('Error de conexión al asignar el usuario', 'error');
+    }
+}
 
-export { searchUser, registerTask, clearUserInfo, setSortCriteria, setSortDirection, toggleSortDirection, setFilterStatus, exportVisibleTasks };
+
+// completeTaskDirect(taskId)  [se exporta]
+//   ¿Qué hace? Cambia velozmente el estado de una tarea a '
