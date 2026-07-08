@@ -14,8 +14,8 @@
 //     - hideEmptyState()         → oculta "no hay tareas"
 //     - showEmptyState(tasks)    → muestra "no hay tareas" si length===0
 //     - updateTaskCount(tasks)   → actualiza el contador "N tareas"
-//     - createTaskElement(t, cb) → crea una fila <tr> con la tarea
-//                                   y conecta los 4 botones de acción
+//     - createTaskElement(t, cb) → crea una fila <tr> con la tarea,
+//                                  lista sus múltiples usuarios y maneja botones interactivos. [ACTUALIZADO]
 //   Edición inline:
 //     - enableEditMode(row, t)   → muestra inputs en una fila
 //     - cancelEdit(row, t)       → revierte la fila a modo lectura
@@ -35,6 +35,7 @@
 
 import { taskTableBody, taskCount, emptyState, taskFormContainer, sortableHeaders } from './dom.js';
 import { statusColors } from '../utils/helpers.js';
+import { completeTaskDirect } from '../services/tareasService.js'; // Importamos la acción rápida para completar
 
 export function enableTaskForm() {
     taskFormContainer.style.display = 'block';
@@ -54,33 +55,50 @@ export function updateTaskCount(tasks) {
     taskCount.textContent = tasks.length === 1 ? "1 tarea" : `${tasks.length} tareas`;
 }
 
+// createTaskElement(task, callbacks)
+//   ¿Qué cambió aquí? 
+//     1. Se lee "task.assignedUsers" (un array) para generar etiquetas dinámicas por cada usuario.
+//     2. Se añade el botón dinámico "Completar" que ejecuta la acción directa si el estado no es 'Completada'.
 export function createTaskElement(task, { onEdit, onDelete, onSave, onCancel }) {
     const row = document.createElement('tr');
     row.style.animation = 'fadeIn 0.3s ease';
     row.dataset.taskId = task.id;
 
+    // Generar las etiquetas HTML para los múltiples usuarios asignados
+    const usersArray = task.assignedUsers || [];
+    const usersBadges = usersArray.length > 0 
+        ? usersArray.map(u => `<span class="user-badge" style="background:#e0e7ff; color:#3730a3; padding:2px 6px; margin:2px; border-radius:4px; font-size:11px; display:inline-block;">👤 ${u.name}</span>`).join('')
+        : `<span class="user-badge-empty" style="color:#9ca3af; font-style:italic; font-size:12px;">Sin asignar</span>`;
+
+    // Evaluar si mostramos el botón rápido de Completada
+    const showCompleteBtn = task.status !== 'Completada';
+
     row.innerHTML = `
         <td>
             <span class="task-title">${task.title}</span>
-            <input class="edit-input task-edit-title" type="text" value="${task.title.replace(/"/g, '&quot;')}">
+            <input class="edit-input task-edit-title" type="text" value="${task.title.replace(/"/g, '&quot;')}" style="display:none">
         </td>
         <td>
             <span class="task-desc">${task.description}</span>
-            <input class="edit-input task-edit-desc" type="text" value="${task.description.replace(/"/g, '&quot;')}">
+            <input class="edit-input task-edit-desc" type="text" value="${task.description.replace(/"/g, '&quot;')}" style="display:none">
         </td>
         <td>
             <span class="status-badge task-status" style="background: ${statusColors[task.status]}">${task.status}</span>
-            <select class="edit-input task-edit-status">
+            <select class="edit-input task-edit-status" style="display:none">
                 <option value="Pendiente" ${task.status === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
                 <option value="En progreso" ${task.status === 'En progreso' ? 'selected' : ''}>En progreso</option>
                 <option value="Completada" ${task.status === 'Completada' ? 'selected' : ''}>Completada</option>
             </select>
         </td>
         <td>
+            <div class="task-assigned-users-container">${usersBadges}</div>
+        </td>
+        <td>
             <span class="task-date">${task.createdAt || ''}</span>
         </td>
         <td class="actions-cell">
             <button class="action-btn action-btn--edit btn-edit">Editar</button>
+            ${showCompleteBtn ? `<button class="action-btn action-btn--complete btn-complete" style="background:#10b981; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Completar</button>` : ''}
             <button class="action-btn action-btn--delete btn-delete">Eliminar</button>
             <button class="action-btn action-btn--save btn-save" style="display:none">Guardar</button>
             <button class="action-btn action-btn--cancel btn-cancel" style="display:none">Cancelar</button>
@@ -91,6 +109,12 @@ export function createTaskElement(task, { onEdit, onDelete, onSave, onCancel }) 
     row.querySelector('.btn-delete').addEventListener('click', () => onDelete(task.id, row));
     row.querySelector('.btn-save').addEventListener('click', () => onSave(task.id, row));
     row.querySelector('.btn-cancel').addEventListener('click', () => onCancel(row, task));
+
+    // Si existe el botón Completar, le colgamos su evento directo del servicio
+    const btnComplete = row.querySelector('.btn-complete');
+    if (btnComplete) {
+        btnComplete.addEventListener('click', () => completeTaskDirect(task.id));
+    }
 
     taskTableBody.appendChild(row);
 }
@@ -104,6 +128,10 @@ export function enableEditMode(row, task) {
     row.querySelector('.task-edit-status').style.display = 'block';
     row.querySelector('.btn-edit').style.display = 'none';
     row.querySelector('.btn-delete').style.display = 'none';
+    
+    const btnComp = row.querySelector('.btn-complete');
+    if (btnComp) btnComp.style.display = 'none';
+
     row.querySelector('.btn-save').style.display = 'inline-block';
     row.querySelector('.btn-cancel').style.display = 'inline-block';
 }
@@ -117,6 +145,10 @@ export function cancelEdit(row, task) {
     row.querySelector('.task-edit-status').style.display = 'none';
     row.querySelector('.btn-edit').style.display = 'inline-block';
     row.querySelector('.btn-delete').style.display = 'inline-block';
+    
+    const btnComp = row.querySelector('.btn-complete');
+    if (btnComp) btnComp.style.display = 'inline-block';
+
     row.querySelector('.btn-save').style.display = 'none';
     row.querySelector('.btn-cancel').style.display = 'none';
 }
@@ -128,15 +160,6 @@ export function disableAllEditModes(tasks) {
         if (task) cancelEdit(row, task);
     });
 }
-
-
-// updateSortIcons(criteria, direction)
-//   ¿Qué hace?  Pinta el indicador visual (▲ o ▼) en el <th> que
-//               coincide con el criterio activo, y limpia los demás.
-//   Parámetros:
-//     - criteria:  'createdAt' | 'title' | 'status'
-//     - direction: 'asc' | 'desc'
-//   ¿Quién la llama?  tareasService.js → applySorting()
 
 export function updateSortIcons(criteria, direction) {
     const arrow = direction === 'asc' ? '▲' : '▼';
@@ -153,36 +176,12 @@ export function updateSortIcons(criteria, direction) {
     });
 }
 
-
-// updateSortButtonLabel(direction)
-//   ¿Qué hace?  Cambia el texto del botón de dirección para que el
-//               usuario vea el estado actual ("Ascendente" o "Descendente").
-//   ¿Quién la llama?  tareasService.js → applySorting()
-
 export function updateSortButtonLabel(direction) {
     const btn = document.getElementById('sortDirection');
     if (!btn) return;
     btn.textContent = direction === 'asc' ? '▲ Ascendente' : '▼ Descendente';
     btn.dataset.direction = direction;
 }
-
-
-// downloadJson(filename, content)
-//   ¿Qué hace?  Dispara la descarga de un archivo .json en el navegador.
-//               Crea un Blob con el contenido, genera un link temporal
-//               con la URL del Blob, hace click() y lo limpia.
-//   Parámetros:
-//     - filename: nombre del archivo a descargar (ej: "tareas.json")
-//     - content:  string con el JSON a guardar
-//   ¿Quién la llama?  tareasService.js → exportVisibleTasks()
-//
-//   Notas técnicas:
-//     - El Blob se crea con MIME 'application/json' y charset utf-8
-//     - El link se inserta al body, se hace click() y se remueve
-//     - revokeObjectURL se llama 100ms después para garantizar que
-//       el browser haya iniciado la descarga antes de liberar memoria
-//     - Esta función es la ÚNICA que toca el DOM para RF04 (separación
-//       de responsabilidades: utils → arma el JSON, ui → descarga)
 
 export function downloadJson(filename, content) {
     const blob = new Blob([content], { type: 'application/json;charset=utf-8' });
