@@ -31,6 +31,29 @@
             <div class="header__flare"></div>
         </header>
 
+        <!-- ============================================
+             NAVEGACION POR PESTAÑAS
+             Permite cambiar entre las tres secciones de la
+             pagina sin hacer scroll infinito.
+             ============================================ -->
+        <nav class="nav-tabs">
+            <button class="nav-tab nav-tab--active" data-section="tasks" id="navTasks">
+                📋 Gestión de Tareas
+            </button>
+            <button class="nav-tab" data-section="admin" id="navAdmin">
+                📊 Panel Admin
+            </button>
+            <button class="nav-tab" data-section="users" id="navUsers">
+                👥 Admin Usuarios
+            </button>
+        </nav>
+
+        <!-- ============================================
+             SECCION 1: GESTION DE TAREAS
+             Buscar usuario + formulario + tabla de tareas
+             ============================================ -->
+        <div class="section-content" id="section-tasks">
+
         <div class="col-left">
 
             <section class="form-section">
@@ -167,13 +190,15 @@
 
         </div>
 
-        <div class="divider">
-            <span class="divider__line"></span>
-            <span class="divider__sparkle">✦</span>
-            <span class="divider__line"></span>
         </div>
+        <!-- Fin section-tasks -->
 
-        <!-- ====== ADMIN PANEL ====== -->
+        <!-- ============================================
+             SECCION 2: PANEL DE ADMINISTRACION
+             Estadisticas, filtros, tabla global, distribucion
+             ============================================ -->
+        <div class="section-content" id="section-admin" style="display:none;">
+
         <div class="admin-panel" id="adminPanel">
             <div class="admin-panel__header">
                 <div class="admin-panel__beam"></div>
@@ -291,6 +316,65 @@
                 </div>
             </div>
         </div>
+
+        </div>
+        <!-- Fin section-admin -->
+
+        <!-- ============================================
+             SECCION 3: ADMINISTRACION DE USUARIOS
+             CRUD completo de usuarios del sistema
+             ============================================ -->
+        <div class="section-content" id="section-users" style="display:none;">
+
+        <div class="admin-panel" id="userAdminSection">
+            <div class="admin-panel__header">
+                <div class="admin-panel__beam"></div>
+                <h2 class="admin-panel__title">Administración de <span class="text-silver">Usuarios</span></h2>
+                <p class="admin-panel__subtitle">Gestiona los usuarios registrados en el sistema</p>
+            </div>
+
+            <div class="admin-filters">
+                <div class="admin-filters__row" style="justify-content: flex-end;">
+                    <div class="admin-filters__group admin-filters__group--btn">
+                        <button type="button" class="btn btn--primary" id="btnCreateUser">
+                            <span class="btn__icon">+</span>
+                            <span class="btn__text">Nuevo Usuario</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-table-section">
+                <div class="admin-table-section__header">
+                    <h3 class="admin-table-section__title">Usuarios Registrados</h3>
+                    <span class="messages-header__count" id="userCount">0 usuarios</span>
+                </div>
+                <div class="table-wrapper">
+                    <div class="table-wrapper__silverline"></div>
+                    <table class="task-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="messages-empty" id="userEmptyState">
+                    <div class="messages-empty__icon"></div>
+                    <p class="messages-empty__text">No hay usuarios registrados</p>
+                    <p class="messages-empty__subtext">Crea un nuevo usuario para comenzar.</p>
+                </div>
+            </div>
+        </div>
+
+        </div>
+        <!-- Fin section-users -->
 
         <!-- ====== FOOTER ====== -->
         <footer class="footer">

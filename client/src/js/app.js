@@ -1,42 +1,48 @@
-// Archivo: app.js — Punto de entrada / orquestador de la app
-
-// ¿Que hace este archivo?
-//   Es el único archivo que conecta eventos del DOM con la lógica
-//   del service. Importa los módulos, registra listeners y dispara
-//   la carga inicial. NO tiene lógica de negocio ni llamadas API.
+// ============================================================
+// app.js — Orquestador principal de la aplicación
+// ============================================================
+// Conecta eventos del DOM con la lógica de negocio.
+// NO tiene lógica de negocio ni llamadas API directas.
 //
-// ¿Que no hace?
-//   NO toca la API directamente para lógica interna, NO manipula estado, 
-//   NO renderiza la tabla.
-//
-// ¿Que importa?
-//   - ui/dom.js                  → referencias a elementos HTML
-//   - services/tareasService.js  → funciones de negocio (8 exports de coordinación)
-//   - api/tareasApi.js           → solo fetchUsers() (consola en carga inicial)
-//   - ui/taskRenderer.js         → showEmptyState() (estado vacío inicial)
-//
-// Listeners que conecta (8 eventos):
-//   Búsqueda de usuario:
-//     1. click en btnSearch           → searchUser()
-//     2. keypress Enter en userIdInput → searchUser()
-//   Formulario de tareas:
-//     3. submit en taskForm           → registerTask(ev)
-//   RF02 (ordenamiento + filtro):
-//     4. change en filterStatusSelect → setFilterStatus(value)
-//     5. click en sortDirectionBtn    → toggleSortDirection()
-//     6. click en cada th.sortable    → setSortCriteria(dataset.sort)
-//   RF04 (exportación JSON):
-//     7. click en exportBtn           → exportVisibleTasks()
-//   Carga inicial:
-//     8. DOMContentLoaded             → showEmptyState + fetchUsers
-//                                       (log en consola con IDs disponibles)
+// Eventos que conecta:
+//   1. Navegación por pestañas (tasks/admin/users)
+//   2. Búsqueda de usuario
+//   3. Registro de tarea
+//   4. Filtro y ordenamiento de tareas
+//   5. Exportación JSON
+//   6. Filtros del panel admin
+//   7. CRUD de usuarios (crear, editar, eliminar, toggle)
+//   8. Carga inicial de datos
 
 import '../styles/styles.css';
-import { userIdInput, btnSearch, taskForm, filterStatusSelect, sortDirectionBtn, sortableHeaders, exportBtn, adminApplyFilters } from './ui/dom.js';
+import { userIdInput, btnSearch, taskForm, filterStatusSelect, sortDirectionBtn, sortableHeaders, exportBtn, adminApplyFilters, btnCreateUser } from './ui/dom.js';
 import { searchUser, registerTask, setSortCriteria, toggleSortDirection, setFilterStatus, exportVisibleTasks, loadAdminPanel, applyAdminFilters } from './services/tareasService.js';
 import { fetchUsers } from './api/tareasApi.js';
 import { showEmptyState } from './ui/taskRenderer.js';
+import { loadUsers, openCreateUserModal, openEditUserModal, confirmDeleteUser, handleToggleStatus } from './services/usersService.js';
 
+// ============================================================
+// Navegación por pestañas
+// Muestra/oculta secciones al hacer clic en las pestañas
+// ============================================================
+document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        const section = this.dataset.section;
+
+        // Actualizar clase activa en pestañas
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('nav-tab--active'));
+        this.classList.add('nav-tab--active');
+
+        // Mostrar sección correspondiente, ocultar las demás
+        document.querySelectorAll('.section-content').forEach(s => s.classList.remove('section-content--active'));
+        const targetSection = document.getElementById(`section-${section}`);
+        if (targetSection) targetSection.classList.add('section-content--active');
+    });
+});
+
+// ============================================================
+// Listeners de búsqueda de usuario
+// ============================================================
 btnSearch.addEventListener('click', searchUser);
 
 userIdInput.addEventListener('keypress', function(e) {
@@ -45,8 +51,14 @@ userIdInput.addEventListener('keypress', function(e) {
     }
 });
 
+// ============================================================
+// Listeners del formulario de tareas
+// ============================================================
 taskForm.addEventListener('submit', registerTask);
 
+// ============================================================
+// Listeners de filtro y ordenamiento
+// ============================================================
 if (filterStatusSelect) {
     filterStatusSelect.addEventListener('change', (e) => {
         setFilterStatus(e.target.value);
@@ -67,16 +79,36 @@ sortableHeaders.forEach(th => {
     });
 });
 
+// ============================================================
+// Listener de exportación JSON
+// ============================================================
 if (exportBtn) {
     exportBtn.addEventListener('click', () => {
         exportVisibleTasks();
     });
 }
 
+// ============================================================
+// Listeners del panel de administración
+// ============================================================
 if (adminApplyFilters) {
     adminApplyFilters.addEventListener('click', applyAdminFilters);
 }
 
+// ============================================================
+// Listeners de administración de usuarios
+// ============================================================
+if (btnCreateUser) {
+    btnCreateUser.addEventListener('click', openCreateUserModal);
+}
+
+document.addEventListener('user:edit', (e) => openEditUserModal(e.detail));
+document.addEventListener('user:delete', (e) => confirmDeleteUser(e.detail));
+document.addEventListener('user:toggle', (e) => handleToggleStatus(e.detail));
+
+// ============================================================
+// Carga inicial — se ejecuta cuando el DOM está listo
+// ============================================================
 document.addEventListener('DOMContentLoaded', async function() {
     showEmptyState([]);
 
@@ -90,4 +122,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.warn("No se pudieron precargar los IDs. ¿El backend está encendido?", error.message);
         loadAdminPanel();
     }
+
+    loadUsers();
 });
