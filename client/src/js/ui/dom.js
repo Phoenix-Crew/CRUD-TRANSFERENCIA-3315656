@@ -61,3 +61,10 @@ export const adminStatProgreso = document.getElementById('adminStatProgreso');
 export const adminGlobalBody = document.getElementById('adminGlobalBody');
 export const adminUserDistBody = document.getElementById('adminUserDistBody');
 export const adminGlobalCount = document.getElementById('adminGlobalCount');
+
+// User Admin
+export const userAdminSection = document.getElementById('userAdminSection');
+export const userTableBody = document.getElementById('userTableBody');
+export const userEmptyState = document.getElementById('userEmptyState');
+export const btnCreateUser = document.getElementById('btnCreateUser');
+export const userCount = document.getElementById('userCount');

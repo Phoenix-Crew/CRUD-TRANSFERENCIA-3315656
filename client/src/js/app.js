@@ -32,10 +32,11 @@
 //                                       (log en consola con IDs disponibles)
 
 import '../styles/styles.css';
-import { userIdInput, btnSearch, taskForm, filterStatusSelect, sortDirectionBtn, sortableHeaders, exportBtn, adminApplyFilters } from './ui/dom.js';
+import { userIdInput, btnSearch, taskForm, filterStatusSelect, sortDirectionBtn, sortableHeaders, exportBtn, adminApplyFilters, btnCreateUser } from './ui/dom.js';
 import { searchUser, registerTask, setSortCriteria, toggleSortDirection, setFilterStatus, exportVisibleTasks, loadAdminPanel, applyAdminFilters } from './services/tareasService.js';
 import { fetchUsers } from './api/tareasApi.js';
 import { showEmptyState } from './ui/taskRenderer.js';
+import { loadUsers, openCreateUserModal, openEditUserModal, confirmDeleteUser, handleToggleStatus } from './services/usersService.js';
 
 btnSearch.addEventListener('click', searchUser);
 
@@ -77,6 +78,14 @@ if (adminApplyFilters) {
     adminApplyFilters.addEventListener('click', applyAdminFilters);
 }
 
+if (btnCreateUser) {
+    btnCreateUser.addEventListener('click', openCreateUserModal);
+}
+
+document.addEventListener('user:edit', (e) => openEditUserModal(e.detail));
+document.addEventListener('user:delete', (e) => confirmDeleteUser(e.detail));
+document.addEventListener('user:toggle', (e) => handleToggleStatus(e.detail));
+
 document.addEventListener('DOMContentLoaded', async function() {
     showEmptyState([]);
 
@@ -90,4 +99,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         console.warn("No se pudieron precargar los IDs. ¿El backend está encendido?", error.message);
         loadAdminPanel();
     }
+
+    loadUsers();
 });
