@@ -15,13 +15,14 @@ const userController = require('../controllers/user.controller');
 
 router.post('/',          userController.create);
 router.get('/',           userController.getAll);
+
+// IMPORTANTE: /:userId/tasks DEBE ir antes de /:id para que Express
+// no interprete "tasks" como un ID de usuario.
+router.get('/:userId/tasks', userController.getUserTasks);
+
 router.get('/:id',        userController.getById);
 router.put('/:id',        userController.update);
 router.delete('/:id',     userController.remove);
 router.patch('/:id/status', userController.toggleStatus);
-
-// Ruta para consultar las tareas asignadas a un usuario específico
-// Ej: GET /api/users/5/tasks  → devuelve las tareas donde el usuario ID 5 está asignado
-router.get('/:userId/tasks', userController.getUserTasks);
 
 module.exports = router;

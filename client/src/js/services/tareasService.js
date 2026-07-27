@@ -429,6 +429,7 @@ function renderUserDistribution(porUsuario) {
 }
 
 async function loadAdminPanel() {
+    // Cargar usuarios para el filtro del panel admin
     try {
         const users = await fetchUsers();
         adminFilterUser.innerHTML = '<option value="">Todos los usuarios</option>';
@@ -441,13 +442,22 @@ async function loadAdminPanel() {
     } catch (e) {
         console.warn('No se pudieron cargar usuarios para el filtro admin', e);
     }
+
+    // Cargar dashboard (estadisticas y distribucion por usuario)
     try {
         const dashboard = await fetchDashboard();
         renderAdminStats(dashboard);
-        renderGlobalTable([]);
         renderUserDistribution(dashboard.porUsuario);
     } catch (e) {
         console.warn('No se pudo cargar el dashboard', e);
+    }
+
+    // Cargar todas las tareas para la tabla global (sin filtros)
+    try {
+        const allTasks = await fetchTasksFiltered({});
+        renderGlobalTable(allTasks);
+    } catch (e) {
+        console.warn('No se pudieron cargar las tareas globales', e);
     }
 }
 
