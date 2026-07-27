@@ -81,6 +81,27 @@
                                 <option value="Completada">Completada</option>
                             </select>
                         </div>
+
+                        <!-- ============================================
+                             SELECTOR MULTI-USUARIO (checkboxes)
+                             Aparece cuando se busca un usuario.
+                             Permite asignar la tarea a varios usuarios
+                             marcando sus checkboxes. El usuario buscado
+                             aparece pre-seleccionado por defecto.
+                             ============================================ -->
+                        <div class="form__group" id="assignedUsersGroup" style="display:none;">
+                            <label class="form__label">Asignar tarea a:</label>
+                            <div class="multi-user-select" id="assignedUsersContainer">
+                                <!-- Los checkboxes se renderizan aca
+                                     dinamicamente desde tareasService.js
+                                     con la funcion renderUserCheckboxes() -->
+                                <p class="form__hint" id="assignedUsersHint">
+                                    Selecciona los usuarios que realizaran esta tarea
+                                </p>
+                            </div>
+                            <span class="field-error" id="assignedUsersError"></span>
+                        </div>
+
                         <button type="submit" class="btn btn--primary btn--submit">
                             <span class="btn__text">Registrar Tarea</span>
                             <span class="btn__icon">+</span>

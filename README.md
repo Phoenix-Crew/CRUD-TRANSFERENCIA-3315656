@@ -5,13 +5,13 @@
 **Proyecto:** Construcción de software integrador de tecnologías orientadas a servicios  
 **Fase:** Ejecución  
 **Competencia:** Desarrollar la solución de software según diseño y metodologías de desarrollo  
-**Versión:** v3.0 — Panel de administración con Express
+**Versión:** v4.0 — Asignación multi-usuario y administración completa
 
 ---
 
 ## 1. Descripción del producto
 
-Aplicación web que permite gestionar tareas de forma dinámica mediante una interfaz moderna con temática **Silver Emerald**, conectada a una **API REST propia con Express**. Los usuarios pueden buscar compañeros por documento, asignarles tareas, editarlas mediante un modal interactivo, filtrarlas, ordenarlas y exportar los datos. Además, incluye un **Panel de Administración** global con estadísticas en tiempo real, filtros combinados y distribución de tareas por usuario — todo sin recargar la página.
+Aplicación web que permite gestionar tareas de forma dinámica mediante una interfaz moderna con temática **Silver Emerald**, conectada a una **API REST propia con Express**. Los usuarios pueden buscar compañeros por documento, asignarles tareas a **uno o varios usuarios** usando checkboxes intuitivos, editarlas mediante un modal interactivo, filtrarlas, ordenarlas y exportar los datos. Además, incluye un **Panel de Administración** global con estadísticas en tiempo real, filtros combinados y distribución de tareas por usuario, más un **módulo completo de administración de usuarios** con CRUD y activación/desactivación — todo sin recargar la página.
 
 ---
 
@@ -47,8 +47,8 @@ Aplicación web que permite gestionar tareas de forma dinámica mediante una int
 
 #### Paso a paso:
 
-1. **Buscar usuario** — Escribe el número de documento (1 al 5 en datos de prueba) y presiona "Buscar" o Enter.
-2. **Registrar tarea** — Una vez encontrado el usuario, aparecerá un formulario para crear tareas con título, descripción y estado.
+1. **Buscar usuario** — Escribe el número de documento y presiona "Buscar" o Enter.
+2. **Registrar tarea** — Una vez encontrado el usuario, aparecerá un formulario para crear tareas con título, descripción y estado. Además, se mostrará una lista de **checkboxes** con todos los usuarios del sistema: el usuario buscado aparece **pre-seleccionado** y puedes marcar/desmarcar a otros para asignar la tarea a varios compañeros.
 3. **Editar tarea** — Haz clic en "Editar" sobre cualquier tarea. Se abrirá un **modal** donde puedes cambiar título, descripción y estado.
 4. **Eliminar tarea** — Haz clic en "Eliminar". Aparecerá un modal de confirmación.
 5. **Filtrar y ordenar** — Usa el selector de estado y los botones de ordenamiento para organizar la tabla.
@@ -71,6 +71,7 @@ Ubicado al final de la página, muestra:
 |---------------|-------------|
 | **Buscar usuario** | Ingresa un número de documento y obtén su información y tareas |
 | **Registrar tarea** | Crea tareas con título, descripción y estado |
+| **Asignación multi-usuario** | Asigna una tarea a varios usuarios usando checkboxes intuitivos |
 | **Editar tarea (modal)** | Edición mediante ventana modal con validación visual |
 | **Eliminar tarea** | Eliminación con confirmación mediante modal interactivo |
 | **Filtrar por estado** | Filtra por Pendiente, En progreso o Completada |
@@ -79,6 +80,7 @@ Ubicado al final de la página, muestra:
 | **Notificaciones toast** | Feedback visual animado de éxito, error o información |
 | **Panel de Administración** | Estadísticas globales, filtros combinados, tabla global, distribución por usuario |
 | **Filtros combinados** | Filtra tareas por estado + usuario + rango de fechas simultáneamente |
+| **Admin de usuarios** | CRUD completo de usuarios: crear, editar, eliminar, activar/desactivar |
 
 ---
 
@@ -101,13 +103,16 @@ Ubicado al final de la página, muestra:
 │           ├── 📁 core/
 │           │   └── 📄 NotificationManager.js  → Patrón observador
 │           ├── 📁 api/
-│           │   └── 📄 tareasApi.js     → Capa HTTP (fetch)
+│           │   ├── 📄 tareasApi.js     → Capa HTTP tareas (fetch)
+│           │   └── 📄 usersApi.js      → Capa HTTP usuarios (fetch)
 │           ├── 📁 services/
-│           │   └── 📄 tareasService.js → Lógica de negocio + estado
+│           │   ├── 📄 tareasService.js → Lógica de negocio + estado tareas
+│           │   └── 📄 usersService.js  → Lógica de negocio + estado usuarios
 │           ├── 📁 ui/
 │           │   ├── 📄 dom.js           → Referencias a elementos HTML
 │           │   ├── 📄 notifications.js → Toasts y feedback visual
-│           │   ├── 📄 taskRenderer.js  → Renderizado de la tabla
+│           │   ├── 📄 taskRenderer.js  → Renderizado de la tabla de tareas
+│           │   ├── 📄 userRenderer.js  → Renderizado de tabla de usuarios y formulario modal
 │           │   ├── 📄 confirmDialog.js → Modal de confirmación reutilizable
 │           │   └── 📄 editModal.js     → Modal de edición con formulario
 │           └── 📁 utils/
@@ -156,13 +161,16 @@ Ubicado al final de la página, muestra:
 |--------|----------------|
 | **app.js** | Orquestador: conecta eventos del DOM con la lógica de negocio |
 | **NotificationManager** | Gestor de eventos con patrón observador (pub/sub) |
-| **tareasApi** | Comunicación HTTP con el backend (fetch) |
-| **tareasService** | Estado global y lógica de negocio: coordina API + UI |
+| **tareasApi** | Comunicación HTTP con el backend para tareas (fetch) |
+| **usersApi** | Comunicación HTTP con el backend para usuarios (fetch) |
+| **tareasService** | Estado global y lógica de negocio de tareas: coordina API + UI |
+| **usersService** | Lógica de negocio de usuarios: CRUD, modal de formulario |
 | **dom** | Referencias centralizadas a elementos del HTML |
 | **notifications** | Mensajes al usuario: toasts, errores, datos de usuario |
-| **taskRenderer** | Manipulación del DOM: tabla, contadores, ordenamiento |
+| **taskRenderer** | Manipulación del DOM: tabla de tareas, contadores, ordenamiento |
+| **userRenderer** | Renderizado de tabla de usuarios y formulario modal |
 | **confirmDialog** | Modal de confirmación reutilizable con Promise |
-| **editModal** | Modal de edición con formulario y validación visual |
+| **editModal** | Modal de edición de tareas con formulario y validación visual |
 | **helpers** | Funciones puras: fechas, filtros, ordenamiento, colores |
 
 ### 4.3 Flujo de datos
@@ -170,11 +178,14 @@ Ubicado al final de la página, muestra:
 ```
 Usuario (clic/teclado)
   → app.js (event listener)
-    → tareasService.js (lógica de negocio + estado)
-      ├── api/tareasApi.js (fetch HTTP → backend)
+    → tareasService.js (lógica de negocio + estado tareas)
+    → usersService.js (lógica de negocio + estado usuarios)
+      ├── api/tareasApi.js (fetch HTTP tareas → backend)
+      ├── api/usersApi.js (fetch HTTP usuarios → backend)
       ├── utils/helpers.js (filtros, ordenamiento, fechas)
       ├── ui/notifications.js (toasts, feedback)
-      ├── ui/taskRenderer.js (pintar tabla, contadores)
+      ├── ui/taskRenderer.js (pintar tabla tareas, contadores)
+      ├── ui/userRenderer.js (pintar tabla usuarios, formulario modal)
       ├── ui/confirmDialog.js (confirmación eliminar)
       └── ui/editModal.js (edición con modal)
 ```
@@ -185,15 +196,27 @@ Usuario (clic/teclado)
 
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
+| **Usuarios** | | |
+| POST | `/api/users` | Crear un nuevo usuario |
 | GET | `/api/users` | Lista todos los usuarios |
 | GET | `/api/users/{id}` | Busca usuario por ID |
+| PUT | `/api/users/{id}` | Actualizar un usuario |
+| DELETE | `/api/users/{id}` | Eliminar un usuario |
+| PATCH | `/api/users/{id}/status` | Activar/desactivar un usuario |
 | GET | `/api/users/{userId}/tasks` | Tareas de un usuario específico |
-| POST | `/api/tasks` | Crea una nueva tarea |
+| **Tareas** | | |
+| POST | `/api/tasks` | Crea una nueva tarea (con assignedUsers) |
 | GET | `/api/tasks` | Lista todas las tareas |
 | GET | `/api/tasks/filter?status=&userId=&dateFrom=&dateTo=` | Filtro combinado de tareas |
 | GET | `/api/tasks/{id}` | Obtiene una tarea por ID |
+| PUT | `/api/tasks/{id}` | Actualizar una tarea |
 | PATCH | `/api/tasks/{id}` | Actualiza una tarea |
+| PATCH | `/api/tasks/{id}/status` | Actualizar estado de una tarea |
 | DELETE | `/api/tasks/{id}` | Elimina una tarea |
+| POST | `/api/tasks/{taskId}/assign` | Asignar usuario(s) a una tarea |
+| GET | `/api/tasks/{taskId}/users` | Usuarios asignados a una tarea |
+| DELETE | `/api/tasks/{taskId}/users/{userId}` | Eliminar asignación de usuario |
+| **Dashboard** | | |
 | GET | `/api/dashboard` | Estadísticas globales (total, por estado, por usuario) |
 
 ---
@@ -304,6 +327,8 @@ npm run preview
 | **7. Backend propio** | v3.0 | Migración de json-server a Express con controladores, rutas y modelos propios |
 | **8. Panel Admin** | v3.0 | Estadísticas globales, filtros combinados, tabla global, distribución por usuario |
 | **9. Edición modal** | v3.0 | Reemplazo de edición inline por modal interactivo con validación |
+| **10. Admin usuarios** | v3.0 | Módulo completo de administración de usuarios: CRUD + activación/desactivación |
+| **11. Multi-usuario** | v4.0 | Asignación de tareas a múltiples usuarios mediante checkboxes intuitivos |
 
 ### 9.2 Análisis inicial (Parte 1)
 

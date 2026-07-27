@@ -61,3 +61,24 @@ export const adminStatProgreso = document.getElementById('adminStatProgreso');
 export const adminGlobalBody = document.getElementById('adminGlobalBody');
 export const adminUserDistBody = document.getElementById('adminUserDistBody');
 export const adminGlobalCount = document.getElementById('adminGlobalCount');
+
+
+// User Admin
+export const userAdminSection = document.getElementById('userAdminSection');
+export const userTableBody = document.getElementById('userTableBody');
+export const userEmptyState = document.getElementById('userEmptyState');
+export const btnCreateUser = document.getElementById('btnCreateUser');
+export const userCount = document.getElementById('userCount');
+
+// ============================================================
+// Multi-usuario (asignacion de tareas a varios usuarios)
+// Agregados en la Fase de Transferencia (v4.0)
+// ============================================================
+//   - assignedUsersGroup    → contenedor visible del grupo de checkboxes
+//   - assignedUsersContainer → donde se renderizan los checkboxes
+//   - assignedUsersHint     → texto de ayuda (se oculta al cargar)
+//   - assignedUsersError    → mensaje de error si no se selecciona ninguno
+export const assignedUsersGroup = document.getElementById('assignedUsersGroup');
+export const assignedUsersContainer = document.getElementById('assignedUsersContainer');
+export const assignedUsersHint = document.getElementById('assignedUsersHint');
+export const assignedUsersError = document.getElementById('assignedUsersError');
