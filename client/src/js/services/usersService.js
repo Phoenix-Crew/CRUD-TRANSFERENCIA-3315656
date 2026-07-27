@@ -12,6 +12,7 @@ import { showConfirmDialog } from '../ui/confirmDialog.js';
 
 let users = [];
 
+// loadUsers — Obtiene todos los usuarios de la API y renderiza la tabla
 export async function loadUsers() {
     try {
         users = await fetchUsers();
@@ -21,6 +22,7 @@ export async function loadUsers() {
     }
 }
 
+// openCreateUserModal — Muestra el modal para crear usuario, y si se confirma lo crea via API
 export async function openCreateUserModal() {
     const result = await showUserFormModal(null);
     if (!result) return;
@@ -39,6 +41,7 @@ export async function openCreateUserModal() {
     }
 }
 
+// openEditUserModal — Muestra el modal con datos del usuario, y si se confirma lo actualiza
 export async function openEditUserModal(user) {
     const result = await showUserFormModal(user);
     if (!result) return;
@@ -57,6 +60,7 @@ export async function openEditUserModal(user) {
     }
 }
 
+// confirmDeleteUser — Muestra confirmacion y si acepta, elimina el usuario via API
 export async function confirmDeleteUser(user) {
     const confirmed = await showConfirmDialog({
         title: 'Eliminar usuario',
@@ -79,6 +83,7 @@ export async function confirmDeleteUser(user) {
     }
 }
 
+// handleToggleStatus — Activa o desactiva un usuario segun su estado actual
 export async function handleToggleStatus(user) {
     const newStatus = !(user.active !== false);
     const actionText = newStatus ? 'activar' : 'desactivar';

@@ -32,6 +32,7 @@ class NotificationManager {
         this._subscribers = [];
     }
 
+    // add — Agrega una notificacion a la cola y notifica a los suscriptores
     add(type, message) {
         const notification = {
             id: Date.now() + Math.random(),
@@ -44,6 +45,7 @@ class NotificationManager {
         return notification;
     }
 
+    // subscribe — Registra un callback que se ejecuta al añadir una notificacion; retorna funcion para anular
     subscribe(callback) {
         this._subscribers.push(callback);
         const unsubscribe = () => {
@@ -52,18 +54,22 @@ class NotificationManager {
         return unsubscribe;
     }
 
+    // unsubscribe — Elimina un callback de la lista de suscriptores
     unsubscribe(callback) {
         this._subscribers = this._subscribers.filter(cb => cb !== callback);
     }
 
+    // getAll — Retorna una copia de todas las notificaciones acumuladas
     getAll() {
         return this._notifications.slice();
     }
 
+    // clear — Vacía la cola de notificaciones
     clear() {
         this._notifications = [];
     }
 
+    // _notify — Interno: ejecuta todos los callbacks suscritos con la notificacion
     _notify(notification) {
         this._subscribers.forEach(cb => {
             try {

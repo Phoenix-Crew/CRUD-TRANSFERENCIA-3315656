@@ -1,3 +1,10 @@
+// ============================================================
+// index.js (server) — Punto de entrada del backend Express
+// ============================================================
+// Monta los routers de auth, usuarios y tareas, expone el
+// endpoint /api/dashboard y arranca el servidor en el puerto
+// definido por PORT (por defecto 3002).
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -17,8 +24,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
 
+// GET /api/dashboard — Estadisticas globales (total, por estado, distribucion por usuario)
 app.get('/api/dashboard', taskController.getDashboard);
 
+// GET /api/users/:userId/tasks — Tareas de un usuario especifico (filtra por userIds o userId)
 app.get('/api/users/:userId/tasks', (req, res) => {
   const { readDB } = require('./models');
   const { tasks } = readDB();
@@ -29,10 +38,12 @@ app.get('/api/users/:userId/tasks', (req, res) => {
   res.json(userTasks);
 });
 
+// GET /api — Health check basico de la API
 app.get('/api', (req, res) => {
   res.json({ message: 'API REST - Gestión de Tareas v3.0', status: 'running' });
 });
 
+// Inicia el servidor en todas las interfaces de red
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

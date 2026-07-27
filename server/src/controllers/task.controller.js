@@ -1,5 +1,12 @@
+// ============================================================
+// task.controller.js — Controlador CRUD de tareas
+// ============================================================
+// Cada funcion maneja la logica de negocio de un endpoint.
+// Lee/escribe en db.json a traves de readDB/writeDB.
+
 const { readDB, writeDB } = require('../models');
 
+// create — POST /api/tasks — Crea una nueva tarea con assignedUsers
 exports.create = (req, res) => {
   try {
     const { title, description, assignedUsers } = req.body;
@@ -24,11 +31,13 @@ exports.create = (req, res) => {
   }
 };
 
+// getAll — GET /api/tasks — Retorna todas las tareas
 exports.getAll = (req, res) => {
   const { tasks } = readDB();
   res.json(tasks);
 };
 
+// getById — GET /api/tasks/:id — Retorna una tarea por su ID
 exports.getById = (req, res) => {
   const { tasks } = readDB();
   const task = tasks.find(t => t.id === req.params.id);
@@ -36,6 +45,7 @@ exports.getById = (req, res) => {
   res.json(task);
 };
 
+// update — PUT|PATCH /api/tasks/:id — Actualiza parcial o totalmente una tarea
 exports.update = (req, res) => {
   try {
     const db = readDB();
@@ -54,6 +64,7 @@ exports.update = (req, res) => {
   }
 };
 
+// remove — DELETE /api/tasks/:id — Elimina una tarea del array
 exports.remove = (req, res) => {
   try {
     const db = readDB();
@@ -67,6 +78,7 @@ exports.remove = (req, res) => {
   }
 };
 
+// updateStatus — PATCH /api/tasks/:id/status — Cambia solo el estado de una tarea
 exports.updateStatus = (req, res) => {
   try {
     const { status } = req.body;
@@ -85,6 +97,7 @@ exports.updateStatus = (req, res) => {
   }
 };
 
+// assignUsers — POST /api/tasks/:taskId/assign — Agrega un usuario al array assignedUsers
 exports.assignUsers = (req, res) => {
   try {
     const db = readDB();
@@ -103,6 +116,7 @@ exports.assignUsers = (req, res) => {
   }
 };
 
+// getAssignedUsers — GET /api/tasks/:taskId/users — Retorna los usuarios asignados a una tarea
 exports.getAssignedUsers = (req, res) => {
   const { tasks } = readDB();
   const task = tasks.find(t => t.id === req.params.taskId);
@@ -110,6 +124,7 @@ exports.getAssignedUsers = (req, res) => {
   res.json(task.assignedUsers || []);
 };
 
+// removeUserAssignment — DELETE /api/tasks/:taskId/users/:userId — Quita un usuario de assignedUsers
 exports.removeUserAssignment = (req, res) => {
   try {
     const db = readDB();
@@ -126,6 +141,7 @@ exports.removeUserAssignment = (req, res) => {
   }
 };
 
+// filter — GET /api/tasks/filter — Filtra tareas por status, userId, dateFrom y dateTo
 exports.filter = (req, res) => {
   let { tasks } = readDB();
   const { status, userId, dateFrom, dateTo } = req.query;
@@ -150,6 +166,7 @@ exports.filter = (req, res) => {
   res.json(tasks);
 };
 
+// getDashboard — GET /api/dashboard — Estadisticas globales: totales por estado y por usuario
 exports.getDashboard = (req, res) => {
   const { tasks, users } = readDB();
   const total = tasks.length;

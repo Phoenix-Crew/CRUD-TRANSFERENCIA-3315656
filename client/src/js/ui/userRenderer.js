@@ -7,10 +7,10 @@
 
 import { userTableBody, userEmptyState, userCount } from './dom.js';
 
+// renderUserTable — Recibe un array de usuarios y pinta la tabla completa con botones de accion
 export function renderUserTable(users) {
     userTableBody.innerHTML = '';
 
-    // Mostrar estado vacio si no hay usuarios
     if (users.length === 0) {
         userEmptyState.style.display = 'block';
         userCount.textContent = '0 usuarios';
@@ -41,7 +41,6 @@ export function renderUserTable(users) {
             </td>
         `;
 
-        // Disparar eventos personalizados para que app.js los maneje
         row.querySelector('.btn-user-edit').addEventListener('click', () => {
             const event = new CustomEvent('user:edit', { detail: user });
             document.dispatchEvent(event);
@@ -61,10 +60,12 @@ export function renderUserTable(users) {
     });
 }
 
+// renderUserCount — Actualiza el contador de usuarios
 export function renderUserCount(users) {
     userCount.textContent = users.length === 1 ? '1 usuario' : `${users.length} usuarios`;
 }
 
+// showUserFormModal — Retorna una Promise que resuelve con los datos del formulario o null si se cancela
 export function showUserFormModal(user) {
     const isEditing = !!user;
     return new Promise(resolve => {
@@ -117,6 +118,7 @@ export function showUserFormModal(user) {
 
         let closed = false;
 
+        // clearUserFormErrors — Limpia los mensajes de error del formulario de usuarios
         function clearUserFormErrors() {
             ['userFormNameError', 'userFormEmailError', 'userFormRolError', 'userFormPasswordError'].forEach(id => {
                 const el = document.getElementById(id);
@@ -125,6 +127,7 @@ export function showUserFormModal(user) {
             overlay.querySelectorAll('.form__input.error').forEach(el => el.classList.remove('error'));
         }
 
+        // showUserFormError — Marca un campo como erroneo y muestra su mensaje
         function showUserFormError(inputId, errorId, message) {
             const input = document.getElementById(inputId);
             const errorEl = document.getElementById(errorId);
@@ -132,6 +135,7 @@ export function showUserFormModal(user) {
             if (errorEl) errorEl.textContent = message;
         }
 
+        // close — Cierra el modal con animacion y resuelve la Promise con el resultado
         const close = (result) => {
             if (closed) return;
             closed = true;
@@ -191,7 +195,6 @@ export function showUserFormModal(user) {
             close(data);
         });
 
-        // Cerrar al hacer click fuera o presionar Escape
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) close(null);
         });

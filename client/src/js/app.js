@@ -21,56 +21,48 @@ import { fetchUsers } from './api/tareasApi.js';
 import { showEmptyState } from './ui/taskRenderer.js';
 import { loadUsers, openCreateUserModal, openEditUserModal, confirmDeleteUser, handleToggleStatus } from './services/usersService.js';
 
-// ============================================================
-// Navegación por pestañas
-// Muestra/oculta secciones al hacer clic en las pestañas
-// ============================================================
+// Navegacion por pestanas: al hacer clic cambia la seccion activa
 document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.addEventListener('click', function() {
         const section = this.dataset.section;
 
-        // Actualizar clase activa en pestañas
         document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('nav-tab--active'));
         this.classList.add('nav-tab--active');
 
-        // Mostrar sección correspondiente, ocultar las demás
         document.querySelectorAll('.section-content').forEach(s => s.classList.remove('section-content--active'));
         const targetSection = document.getElementById(`section-${section}`);
         if (targetSection) targetSection.classList.add('section-content--active');
     });
 });
 
-// ============================================================
-// Listeners de búsqueda de usuario
-// ============================================================
+// Listener: boton de busqueda de usuario
 btnSearch.addEventListener('click', searchUser);
 
+// Listener: tecla Enter en el campo de ID de usuario
 userIdInput.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         searchUser();
     }
 });
 
-// ============================================================
-// Listeners del formulario de tareas
-// ============================================================
+// Listener: envio del formulario de registro de tareas
 taskForm.addEventListener('submit', registerTask);
 
-// ============================================================
-// Listeners de filtro y ordenamiento
-// ============================================================
+// Listener: cambio en el selector de filtro por estado
 if (filterStatusSelect) {
     filterStatusSelect.addEventListener('change', (e) => {
         setFilterStatus(e.target.value);
     });
 }
 
+// Listener: clic en el boton de direccion de ordenamiento
 if (sortDirectionBtn) {
     sortDirectionBtn.addEventListener('click', () => {
         toggleSortDirection();
     });
 }
 
+// Listeners: clic en encabezados ordenables de la tabla
 sortableHeaders.forEach(th => {
     th.addEventListener('click', () => {
         const criteria = th.dataset.sort;
@@ -79,36 +71,29 @@ sortableHeaders.forEach(th => {
     });
 });
 
-// ============================================================
-// Listener de exportación JSON
-// ============================================================
+// Listener: boton de exportacion JSON
 if (exportBtn) {
     exportBtn.addEventListener('click', () => {
         exportVisibleTasks();
     });
 }
 
-// ============================================================
-// Listeners del panel de administración
-// ============================================================
+// Listener: boton de aplicar filtros del panel admin
 if (adminApplyFilters) {
     adminApplyFilters.addEventListener('click', applyAdminFilters);
 }
 
-// ============================================================
-// Listeners de administración de usuarios
-// ============================================================
+// Listener: boton de crear usuario
 if (btnCreateUser) {
     btnCreateUser.addEventListener('click', openCreateUserModal);
 }
 
+// Listeners de eventos personalizados para CRUD de usuarios
 document.addEventListener('user:edit', (e) => openEditUserModal(e.detail));
 document.addEventListener('user:delete', (e) => confirmDeleteUser(e.detail));
 document.addEventListener('user:toggle', (e) => handleToggleStatus(e.detail));
 
-// ============================================================
-// Carga inicial — se ejecuta cuando el DOM está listo
-// ============================================================
+// Carga inicial al cargar el DOM: muestra IDs disponibles, carga panel admin y usuarios
 document.addEventListener('DOMContentLoaded', async function() {
     showEmptyState([]);
 

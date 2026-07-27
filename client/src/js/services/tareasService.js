@@ -12,14 +12,11 @@ let filterStatus = 'all';
 let sortCriteria = 'createdAt';
 let sortDirection = 'desc';
 
+// clearUserInfo — Resetea la interfaz: borra info del usuario, oculta formulario y limpia tabla
 function clearUserInfo() {
-    // Limpia la informacion del usuario mostrado
     userInfo.innerHTML = '';
-    // Oculta el formulario de registro de tareas
     taskFormContainer.style.display = 'none';
-    // Limpia los checkboxes de seleccion multiple de usuarios
     clearUserCheckboxes();
-    // Reinicia el estado actual
     currentUser = null;
     tasks = [];
     taskTableBody.innerHTML = '';
@@ -30,6 +27,7 @@ function clearUserInfo() {
     setExportBtnState(false);
 }
 
+// bindCallbacks — Retorna funciones edit/delete para pasarlas a createTaskElement
 function bindCallbacks() {
     return {
         onEdit: editTaskViaModal,

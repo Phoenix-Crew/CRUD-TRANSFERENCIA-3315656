@@ -33,6 +33,7 @@ import 'dayjs/locale/es';
 
 dayjs.locale('es');
 
+// getCurrentTimestamp — Devuelve la fecha/hora actual formateada para Colombia (DD/MM/YYYY, hh:mm a)
 export function getCurrentTimestamp() {
     return dayjs().format('DD/MM/YYYY, hh:mm a');
 }

@@ -2,6 +2,7 @@
 import { userInfo, taskFormContainer, toastContainer } from './dom.js';
 import notificationManager from '../core/NotificationManager.js';
 
+// createToastElement — Construye un toast visual y lo agrega al contenedor con auto-destruccion
 function createToastElement(notification) {
     const toast = document.createElement('div');
     toast.className = `toast toast--${notification.type}`;
@@ -22,10 +23,12 @@ function createToastElement(notification) {
 
 const unsubscribe = notificationManager.subscribe(createToastElement);
 
+// showToast — Añade una notificacion de tipo success/error/warning/info al gestor
 export function showToast(message, type = 'success') {
     notificationManager.add(type, message);
 }
 
+// showUserInfo — Muestra los datos del usuario encontrado en la UI
 export function showUserInfo(user) {
     userInfo.innerHTML = `
         <div class="user-feedback user-feedback--success">
@@ -37,6 +40,7 @@ export function showUserInfo(user) {
     `;
 }
 
+// showUserNotFound — Indica que el usuario buscado no existe
 export function showUserNotFound() {
     userInfo.innerHTML = `
         <div class="user-feedback user-feedback--error">
@@ -46,6 +50,7 @@ export function showUserNotFound() {
     taskFormContainer.style.display = 'none';
 }
 
+// showValidationError — Muestra un mensaje de advertencia (ej. ID invalido)
 export function showValidationError(message) {
     userInfo.innerHTML = `
         <div class="user-feedback user-feedback--warning">
@@ -54,11 +59,13 @@ export function showValidationError(message) {
     `;
 }
 
+// clearFieldErrors — Limpia todos los errores de validacion del formulario
 export function clearFieldErrors() {
     document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
     document.querySelectorAll('.form__input.error').forEach(el => el.classList.remove('error'));
 }
 
+// showFieldError — Marca un campo como erroneo y muestra el mensaje de error
 export function showFieldError(inputId, errorId, message) {
     const input = document.getElementById(inputId);
     const errorEl = document.getElementById(errorId);
