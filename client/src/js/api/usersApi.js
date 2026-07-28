@@ -1,11 +1,9 @@
 // ============================================================
 // usersApi.js — Capa HTTP para el módulo de usuarios
 // ============================================================
-// [F1 - Joser] El backend ahora responde con:
-//   { success, message, data, errors }
-// Donde antes respondía con el objeto directamente.
-// Cada función debe adaptarse para extraer .data de la respuesta.
-// ============================================================
+// Funciones de comunicación con el backend para el CRUD
+// de usuarios. Cada función retorna una Promise con la
+// respuesta del servidor.
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
