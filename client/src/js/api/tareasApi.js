@@ -1,8 +1,12 @@
 // ============================================================
 // tareasApi.js — Capa HTTP para el módulo de tareas
 // ============================================================
-// Cada función llama a un endpoint del backend y retorna
-// la respuesta (Response o JSON). Ninguna manipula el DOM.
+// [F1 - Joser] El backend ahora responde con:
+//   { success, message, data, errors }
+// Donde antes respondía con el objeto directamente.
+// Cada función debe adaptarse para extraer .data de la respuesta.
+// Ejemplo: return response.json() → return response.json().then(r => r.data)
+// ============================================================
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 

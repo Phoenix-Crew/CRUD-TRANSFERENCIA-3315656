@@ -261,12 +261,13 @@ Combinación de **verde esmeralda institucional SENA** con **plateado (silver)**
 ### Instalación y ejecución
 
 ```bash
-# 1. Servidor (API REST con Express)
-cd server
+# 1. Servidor (API REST con Express) — repo separado
+#    https://github.com/Phoenix-Crew/Backend.git
+cd ../backend
 npm install
-npm run dev              # http://localhost:3002
+npm start                # http://localhost:3002
 
-# 2. Cliente (desarrollo con Vite)
+# 2. Cliente (desarrollo con Vite) — este repo
 cd client
 npm install
 npm run dev              # http://localhost:5173
@@ -277,11 +278,13 @@ npm run build
 npm run preview
 ```
 
+<!-- [F2 - Brian] Actualizar según configuración final con BD -->
+
 ### Variables de entorno
 
 | Variable | Desarrollo | Producción |
 |----------|-----------|------------|
-| `VITE_API_URL` | `/api` (proxy Vite → localhost:3002) | `http://10.5.225.75:3002` |
+| `VITE_API_URL` | `/api` (proxy Vite → localhost:3002) | `http://localhost:3002` |
 
 ---
 
