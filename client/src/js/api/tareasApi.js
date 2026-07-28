@@ -3,6 +3,14 @@
 // ============================================================
 // Cada función llama a un endpoint del backend y retorna
 // la respuesta (Response o JSON). Ninguna manipula el DOM.
+//
+// [F1 - Joser] Probar endpoints contra backend con BD
+// ============================================================
+// 1. Cuando Stiven migre el backend a BD, probar cada función
+// 2. Verificar que las respuestas sigan el mismo formato
+// 3. Si el backend cambia el formato, ajustar aquí (extraer .data)
+// 4. Reportar errores de integración
+// ============================================================
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
