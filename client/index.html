@@ -31,6 +31,29 @@
             <div class="header__flare"></div>
         </header>
 
+        <!-- ============================================
+             NAVEGACION POR PESTAÑAS
+             Permite cambiar entre las tres secciones de la
+             pagina sin hacer scroll infinito.
+             ============================================ -->
+        <nav class="nav-tabs">
+            <button class="nav-tab nav-tab--active" data-section="tasks" id="navTasks">
+                Gestión de Tareas
+            </button>
+            <button class="nav-tab" data-section="admin" id="navAdmin">
+                Panel Admin
+            </button>
+            <button class="nav-tab" data-section="users" id="navUsers">
+                Admin Usuarios
+            </button>
+        </nav>
+
+        <!-- ============================================
+             SECCION 1: GESTION DE TAREAS
+             Buscar usuario + formulario + tabla de tareas
+             ============================================ -->
+        <div class="section-content section-content--active" id="section-tasks">
+
         <div class="col-left">
 
             <section class="form-section">
@@ -81,6 +104,27 @@
                                 <option value="Completada">Completada</option>
                             </select>
                         </div>
+
+                        <!-- ============================================
+                             SELECTOR MULTI-USUARIO (checkboxes)
+                             Aparece cuando se busca un usuario.
+                             Permite asignar la tarea a varios usuarios
+                             marcando sus checkboxes. El usuario buscado
+                             aparece pre-seleccionado por defecto.
+                             ============================================ -->
+                        <div class="form__group" id="assignedUsersGroup" style="display:none;">
+                            <label class="form__label">Asignar tarea a:</label>
+                            <div class="multi-user-select" id="assignedUsersContainer">
+                                <!-- Los checkboxes se renderizan aca
+                                     dinamicamente desde tareasService.js
+                                     con la funcion renderUserCheckboxes() -->
+                                <p class="form__hint" id="assignedUsersHint">
+                                    Selecciona los usuarios que realizaran esta tarea
+                                </p>
+                            </div>
+                            <span class="field-error" id="assignedUsersError"></span>
+                        </div>
+
                         <button type="submit" class="btn btn--primary btn--submit">
                             <span class="btn__text">Registrar Tarea</span>
                             <span class="btn__icon">+</span>
@@ -146,13 +190,15 @@
 
         </div>
 
-        <div class="divider">
-            <span class="divider__line"></span>
-            <span class="divider__sparkle">✦</span>
-            <span class="divider__line"></span>
         </div>
+        <!-- Fin section-tasks -->
 
-        <!-- ====== ADMIN PANEL ====== -->
+        <!-- ============================================
+             SECCION 2: PANEL DE ADMINISTRACION
+             Estadisticas, filtros, tabla global, distribucion
+             ============================================ -->
+        <div class="section-content" id="section-admin">
+
         <div class="admin-panel" id="adminPanel">
             <div class="admin-panel__header">
                 <div class="admin-panel__beam"></div>
@@ -271,7 +317,15 @@
             </div>
         </div>
 
-        <!-- ====== USER ADMIN SECTION ====== -->
+        </div>
+        <!-- Fin section-admin -->
+
+        <!-- ============================================
+             SECCION 3: ADMINISTRACION DE USUARIOS
+             CRUD completo de usuarios del sistema
+             ============================================ -->
+        <div class="section-content" id="section-users">
+
         <div class="admin-panel" id="userAdminSection">
             <div class="admin-panel__header">
                 <div class="admin-panel__beam"></div>
@@ -318,6 +372,9 @@
                 </div>
             </div>
         </div>
+
+        </div>
+        <!-- Fin section-users -->
 
         <!-- ====== FOOTER ====== -->
         <footer class="footer">

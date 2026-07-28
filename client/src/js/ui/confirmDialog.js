@@ -1,4 +1,4 @@
-
+// showConfirmDialog — Muestra ventana modal de confirmacion; retorna Promise<boolean>
 export function showConfirmDialog({
     title = 'Confirmar acción',
     message = '¿Estás seguro?',
@@ -28,6 +28,7 @@ export function showConfirmDialog({
 
         let closed = false;
 
+        // close — Cierra el modal, elimina el overlay y resuelve la Promise
         const close = (result) => {
             if (closed) return;
             closed = true;

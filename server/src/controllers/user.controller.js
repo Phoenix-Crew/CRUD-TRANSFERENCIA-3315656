@@ -1,5 +1,13 @@
+// ============================================================
+// user.controller.js — Controlador de usuarios
+// ============================================================
+// CRUD completo de usuarios + consulta de tareas por usuario.
+// Cada funcion recibe (req, res), lee/escribe en db.json
+// y retorna JSON con los datos del usuario (sin password).
+
 const { readDB, writeDB } = require('../models');
 
+// POST /api/users — Crear un nuevo usuario
 exports.create = (req, res) => {
   try {
     const { name, email, rol, password } = req.body;
@@ -36,12 +44,14 @@ exports.create = (req, res) => {
   }
 };
 
+// GET /api/users — Listar todos los usuarios (sin password)
 exports.getAll = (req, res) => {
   const { users } = readDB();
   const safeUsers = users.map(({ password, ...u }) => u);
   res.json(safeUsers);
 };
 
+// GET /api/users/:id — Obtener un usuario por ID (sin password)
 exports.getById = (req, res) => {
   const { users } = readDB();
   const user = users.find(u => u.id === req.params.id);
@@ -50,6 +60,7 @@ exports.getById = (req, res) => {
   res.json(safeUser);
 };
 
+// PUT /api/users/:id — Actualizar un usuario
 exports.update = (req, res) => {
   try {
     const db = readDB();
@@ -83,6 +94,7 @@ exports.update = (req, res) => {
   }
 };
 
+// DELETE /api/users/:id — Eliminar un usuario
 exports.remove = (req, res) => {
   try {
     const db = readDB();
@@ -96,6 +108,7 @@ exports.remove = (req, res) => {
   }
 };
 
+// PATCH /api/users/:id/status — Activar/desactivar un usuario
 exports.toggleStatus = (req, res) => {
   try {
     const db = readDB();
@@ -116,11 +129,19 @@ exports.toggleStatus = (req, res) => {
   }
 };
 
+// GET /api/users/:userId/tasks — Tareas asignadas a un usuario
 exports.getUserTasks = (req, res) => {
   const { tasks } = readDB();
   const userTasks = tasks.filter(t => {
-    if (Array.isArray(t.userIds)) return t.userIds.includes(req.params.userId);
-    if (Array.isArray(t.assignedUsers)) return t.assignedUsers.some(u => String(u.id) === String(req.params.userId));
+    // Formato nuevo: assignedUsers como array de objetos { id, name }
+    if (Array.isArray(t.assignedUsers)) {
+      return t.assignedUsers.some(u => String(u.id) === String(req.params.userId));
+    }
+    // Formato alternativo: userIds como array de strings
+    if (Array.isArray(t.userIds)) {
+      return t.userIds.includes(req.params.userId);
+    }
+    // Formato legacy: userId como string
     return String(t.userId) === String(req.params.userId);
   });
   res.json(userTasks);

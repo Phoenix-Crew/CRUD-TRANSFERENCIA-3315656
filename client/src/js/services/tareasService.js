@@ -1,4 +1,4 @@
-import { userIdInput, btnSearch, userInfo, taskFormContainer, taskForm, taskTableBody, exportBtn, adminFilterStatus, adminFilterUser, adminFilterDateFrom, adminFilterDateTo, adminApplyFilters, adminStatTotal, adminStatCompletadas, adminStatPendientes, adminStatProgreso, adminGlobalBody, adminUserDistBody, adminGlobalCount } from '../ui/dom.js';
+import { userIdInput, btnSearch, userInfo, taskFormContainer, taskForm, taskTableBody, exportBtn, adminFilterStatus, adminFilterUser, adminFilterDateFrom, adminFilterDateTo, adminApplyFilters, adminStatTotal, adminStatCompletadas, adminStatPendientes, adminStatProgreso, adminGlobalBody, adminUserDistBody, adminGlobalCount, assignedUsersGroup, assignedUsersContainer, assignedUsersHint, assignedUsersError } from '../ui/dom.js';
 import { fetchUsers, fetchTasksByUser, createTask, updateTask, deleteTaskFromApi, assignTask, removeUserFromTask, fetchTasksFiltered, fetchDashboard } from '../api/tareasApi.js';
 import { showToast, showUserInfo, showUserNotFound, showValidationError, clearFieldErrors, showFieldError } from '../ui/notifications.js';
 import { showConfirmDialog } from '../ui/confirmDialog.js';
@@ -12,9 +12,11 @@ let filterStatus = 'all';
 let sortCriteria = 'createdAt';
 let sortDirection = 'desc';
 
+// clearUserInfo — Resetea la interfaz: borra info del usuario, oculta formulario y limpia tabla
 function clearUserInfo() {
     userInfo.innerHTML = '';
     taskFormContainer.style.display = 'none';
+    clearUserCheckboxes();
     currentUser = null;
     tasks = [];
     taskTableBody.innerHTML = '';
@@ -25,11 +27,88 @@ function clearUserInfo() {
     setExportBtnState(false);
 }
 
+// bindCallbacks — Retorna funciones edit/delete para pasarlas a createTaskElement
 function bindCallbacks() {
     return {
         onEdit: editTaskViaModal,
         onDelete: deleteTask
     };
+}
+
+// ============================================================
+// clearUserCheckboxes — Limpia el selector multi-usuario
+// Oculta el grupo de checkboxes, borra el contenido y
+// reinicia el mensaje de error.
+// ============================================================
+function clearUserCheckboxes() {
+    if (assignedUsersGroup) assignedUsersGroup.style.display = 'none';
+    if (assignedUsersContainer) assignedUsersContainer.innerHTML = '';
+    if (assignedUsersHint) assignedUsersHint.style.display = '';
+    if (assignedUsersError) assignedUsersError.textContent = '';
+}
+
+// ============================================================
+// renderUserCheckboxes — Renderiza los checkboxes de usuarios
+//
+// ¿Que hace?
+//   Obtiene todos los usuarios desde la API y crea un checkbox
+//   por cada uno. El usuario que se acaba de buscar (userId)
+//   aparece pre-seleccionado. Los demas aparecen sin marcar
+//   para que el usuario pueda elegir a quienes asignar la tarea.
+//
+// ¿Por que checkboxes?
+//   Porque son intuitivos: un clic para marcar, otro para
+//   desmarcar. No requieren combinaciones de teclado (Ctrl+click)
+//   como los select multiple, lo que evita confusiones en
+//   usuarios no tecnicos.
+//
+// ¿Como se usa?
+//   Se llama desde searchUser() cuando se encuentra un usuario.
+//   registerTask() luego lee los checkboxes marcados para
+//   construir el array assignedUsers.
+// ============================================================
+async function renderUserCheckboxes(preSelectedUserId) {
+    try {
+        // Obtener todos los usuarios del sistema
+        const users = await fetchUsers();
+
+        // Mostrar el contenedor de checkboxes
+        if (assignedUsersGroup) assignedUsersGroup.style.display = 'block';
+        if (assignedUsersContainer) assignedUsersContainer.innerHTML = '';
+        if (assignedUsersHint) assignedUsersHint.style.display = 'none';
+        if (assignedUsersError) assignedUsersError.textContent = '';
+
+        // Crear un checkbox por cada usuario
+        users.forEach(user => {
+            // label contenedor para mejor experiencia de click
+            const label = document.createElement('label');
+            label.className = 'multi-user-checkbox';
+
+            // input tipo checkbox
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = user.id;
+            checkbox.dataset.name = user.name;
+            checkbox.id = `user-chk-${user.id}`;
+
+            // Si el ID del usuario coincide con el buscado, se marca por defecto
+            if (String(user.id) === String(preSelectedUserId)) {
+                checkbox.checked = true;
+            }
+
+            // Texto con el nombre del usuario
+            const span = document.createElement('span');
+            span.textContent = `${user.name} (${user.rol})`;
+
+            // Armar la estructura: input + texto dentro del label
+            label.appendChild(checkbox);
+            label.appendChild(span);
+            assignedUsersContainer.appendChild(label);
+        });
+    } catch (error) {
+        console.warn('No se pudieron cargar usuarios para checkboxes:', error.message);
+        if (assignedUsersGroup) assignedUsersGroup.style.display = 'none';
+    }
 }
 
 function setExportBtnState(enabled) {
@@ -121,6 +200,9 @@ async function searchUser() {
             currentUser = user;
             showUserInfo(user);
             enableTaskForm();
+            // Cargar los checkboxes con todos los usuarios,
+            // marcando por defecto al usuario que se acaba de buscar
+            await renderUserCheckboxes(user.id);
             const savedTasks = await fetchTasksByUser(userId);
             tasks = savedTasks;
             applySorting();
@@ -139,12 +221,15 @@ async function searchUser() {
 async function registerTask(event) {
     event.preventDefault();
     clearFieldErrors();
+
     const titleInput = document.getElementById('taskTitle');
     const descriptionInput = document.getElementById('taskDescription');
     const statusInput = document.getElementById('taskStatus');
     const title = titleInput.value.trim();
     const description = descriptionInput.value.trim();
     const status = statusInput.value;
+
+    // Validar campos obligatorios
     let hasError = false;
     if (!title) {
         showFieldError('taskTitle', 'titleError', 'El título es obligatorio.');
@@ -154,14 +239,41 @@ async function registerTask(event) {
         showFieldError('taskDescription', 'descError', 'La descripción es obligatoria.');
         hasError = true;
     }
+
+    // ============================================================
+    // Leer los checkboxes de usuarios marcados
+    // Busca dentro del contenedor todos los input[type=checkbox]
+    // que esten checkeados y arma el array assignedUsers
+    // con la estructura { id, name } que espera el backend.
+    // ============================================================
+    const checkedBoxes = assignedUsersContainer
+        ? assignedUsersContainer.querySelectorAll('input[type="checkbox"]:checked')
+        : [];
+
+    if (checkedBoxes.length === 0) {
+        // Si no se selecciono ningun usuario, mostrar error directamente
+        // (no usamos showFieldError porque el contenedor de checkboxes
+        //  no es un input normal, asi que manejamos el error manualmente)
+        if (assignedUsersError) assignedUsersError.textContent = 'Debes seleccionar al menos un usuario.';
+        hasError = true;
+    }
+
     if (hasError) return;
+
+    // Construir el array de usuarios asignados desde los checkboxes marcados
+    const assignedUsers = Array.from(checkedBoxes).map(cb => ({
+        id: cb.value,
+        name: cb.dataset.name
+    }));
+
     const taskData = {
         title,
         description,
         status,
         createdAt: getCurrentTimestamp(),
-        assignedUsers: currentUser ? [{ id: String(currentUser.id), name: currentUser.name }] : []
+        assignedUsers
     };
+
     try {
         const response = await createTask(taskData);
         if (response.ok) {
@@ -315,6 +427,7 @@ function renderUserDistribution(porUsuario) {
 }
 
 async function loadAdminPanel() {
+    // Cargar usuarios para el filtro del panel admin
     try {
         const users = await fetchUsers();
         adminFilterUser.innerHTML = '<option value="">Todos los usuarios</option>';
@@ -327,13 +440,22 @@ async function loadAdminPanel() {
     } catch (e) {
         console.warn('No se pudieron cargar usuarios para el filtro admin', e);
     }
+
+    // Cargar dashboard (estadisticas y distribucion por usuario)
     try {
         const dashboard = await fetchDashboard();
         renderAdminStats(dashboard);
-        renderGlobalTable([]);
         renderUserDistribution(dashboard.porUsuario);
     } catch (e) {
         console.warn('No se pudo cargar el dashboard', e);
+    }
+
+    // Cargar todas las tareas para la tabla global (sin filtros)
+    try {
+        const allTasks = await fetchTasksFiltered({});
+        renderGlobalTable(allTasks);
+    } catch (e) {
+        console.warn('No se pudieron cargar las tareas globales', e);
     }
 }
 

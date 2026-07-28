@@ -2,24 +2,29 @@ import { taskTableBody, taskCount, emptyState, taskFormContainer, sortableHeader
 import { statusColors } from '../utils/helpers.js';
 import { completeTaskDirect } from '../services/tareasService.js';
 
+// enableTaskForm — Muestra el formulario de registro de tareas
 export function enableTaskForm() {
     taskFormContainer.style.display = 'block';
 }
 
+// hideEmptyState — Oculta el mensaje de "sin tareas"
 export function hideEmptyState() {
     emptyState.style.display = 'none';
 }
 
+// showEmptyState — Muestra el mensaje de "sin tareas" si la lista esta vacia
 export function showEmptyState(tasks) {
     if (tasks.length === 0) {
         emptyState.style.display = 'block';
     }
 }
 
+// updateTaskCount — Actualiza el contador de tareas visibles
 export function updateTaskCount(tasks) {
     taskCount.textContent = tasks.length === 1 ? "1 tarea" : `${tasks.length} tareas`;
 }
 
+// createTaskElement — Crea una fila en la tabla con datos de la tarea y botones de accion
 export function createTaskElement(task, { onEdit, onDelete }) {
     const row = document.createElement('tr');
     row.style.animation = 'fadeIn 0.3s ease';
@@ -57,6 +62,7 @@ export function createTaskElement(task, { onEdit, onDelete }) {
     taskTableBody.appendChild(row);
 }
 
+// updateSortIcons — Actualiza los indicadores visuales de ordenamiento en los encabezados
 export function updateSortIcons(criteria, direction) {
     const arrow = direction === 'asc' ? '▲' : '▼';
     sortableHeaders.forEach(th => {
@@ -72,6 +78,7 @@ export function updateSortIcons(criteria, direction) {
     });
 }
 
+// updateSortButtonLabel — Actualiza el texto del boton de direccion de ordenamiento
 export function updateSortButtonLabel(direction) {
     const btn = document.getElementById('sortDirection');
     if (!btn) return;
@@ -79,6 +86,7 @@ export function updateSortButtonLabel(direction) {
     btn.dataset.direction = direction;
 }
 
+// downloadJson — Descarga un archivo JSON en el navegador usando un Blob
 export function downloadJson(filename, content) {
     const blob = new Blob([content], { type: 'application/json;charset=utf-8' });
     const url = URL.createObjectURL(blob);

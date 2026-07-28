@@ -1,4 +1,4 @@
-
+// showEditModal — Muestra modal para editar titulo, descripcion y estado de una tarea; retorna Promise con los datos
 export function showEditModal({ title = '', description = '', status = 'Pendiente', onSave, onCancel }) {
     return new Promise(resolve => {
         const overlay = document.createElement('div');
@@ -40,6 +40,7 @@ export function showEditModal({ title = '', description = '', status = 'Pendient
 
         let closed = false;
 
+        // close — Cierra el modal con animacion y resuelve la Promise
         const close = (result) => {
             if (closed) return;
             closed = true;

@@ -1,35 +1,18 @@
-// Archivo: app.js — Punto de entrada / orquestador de la app
-
-// ¿Que hace este archivo?
-//   Es el único archivo que conecta eventos del DOM con la lógica
-//   del service. Importa los módulos, registra listeners y dispara
-//   la carga inicial. NO tiene lógica de negocio ni llamadas API.
+// ============================================================
+// app.js — Orquestador principal de la aplicación
+// ============================================================
+// Conecta eventos del DOM con la lógica de negocio.
+// NO tiene lógica de negocio ni llamadas API directas.
 //
-// ¿Que no hace?
-//   NO toca la API directamente para lógica interna, NO manipula estado, 
-//   NO renderiza la tabla.
-//
-// ¿Que importa?
-//   - ui/dom.js                  → referencias a elementos HTML
-//   - services/tareasService.js  → funciones de negocio (8 exports de coordinación)
-//   - api/tareasApi.js           → solo fetchUsers() (consola en carga inicial)
-//   - ui/taskRenderer.js         → showEmptyState() (estado vacío inicial)
-//
-// Listeners que conecta (8 eventos):
-//   Búsqueda de usuario:
-//     1. click en btnSearch           → searchUser()
-//     2. keypress Enter en userIdInput → searchUser()
-//   Formulario de tareas:
-//     3. submit en taskForm           → registerTask(ev)
-//   RF02 (ordenamiento + filtro):
-//     4. change en filterStatusSelect → setFilterStatus(value)
-//     5. click en sortDirectionBtn    → toggleSortDirection()
-//     6. click en cada th.sortable    → setSortCriteria(dataset.sort)
-//   RF04 (exportación JSON):
-//     7. click en exportBtn           → exportVisibleTasks()
-//   Carga inicial:
-//     8. DOMContentLoaded             → showEmptyState + fetchUsers
-//                                       (log en consola con IDs disponibles)
+// Eventos que conecta:
+//   1. Navegación por pestañas (tasks/admin/users)
+//   2. Búsqueda de usuario
+//   3. Registro de tarea
+//   4. Filtro y ordenamiento de tareas
+//   5. Exportación JSON
+//   6. Filtros del panel admin
+//   7. CRUD de usuarios (crear, editar, eliminar, toggle)
+//   8. Carga inicial de datos
 
 import '../styles/styles.css';
 import { userIdInput, btnSearch, taskForm, filterStatusSelect, sortDirectionBtn, sortableHeaders, exportBtn, adminApplyFilters, btnCreateUser } from './ui/dom.js';
@@ -38,28 +21,48 @@ import { fetchUsers } from './api/tareasApi.js';
 import { showEmptyState } from './ui/taskRenderer.js';
 import { loadUsers, openCreateUserModal, openEditUserModal, confirmDeleteUser, handleToggleStatus } from './services/usersService.js';
 
+// Navegacion por pestanas: al hacer clic cambia la seccion activa
+document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        const section = this.dataset.section;
+
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('nav-tab--active'));
+        this.classList.add('nav-tab--active');
+
+        document.querySelectorAll('.section-content').forEach(s => s.classList.remove('section-content--active'));
+        const targetSection = document.getElementById(`section-${section}`);
+        if (targetSection) targetSection.classList.add('section-content--active');
+    });
+});
+
+// Listener: boton de busqueda de usuario
 btnSearch.addEventListener('click', searchUser);
 
+// Listener: tecla Enter en el campo de ID de usuario
 userIdInput.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         searchUser();
     }
 });
 
+// Listener: envio del formulario de registro de tareas
 taskForm.addEventListener('submit', registerTask);
 
+// Listener: cambio en el selector de filtro por estado
 if (filterStatusSelect) {
     filterStatusSelect.addEventListener('change', (e) => {
         setFilterStatus(e.target.value);
     });
 }
 
+// Listener: clic en el boton de direccion de ordenamiento
 if (sortDirectionBtn) {
     sortDirectionBtn.addEventListener('click', () => {
         toggleSortDirection();
     });
 }
 
+// Listeners: clic en encabezados ordenables de la tabla
 sortableHeaders.forEach(th => {
     th.addEventListener('click', () => {
         const criteria = th.dataset.sort;
@@ -68,24 +71,29 @@ sortableHeaders.forEach(th => {
     });
 });
 
+// Listener: boton de exportacion JSON
 if (exportBtn) {
     exportBtn.addEventListener('click', () => {
         exportVisibleTasks();
     });
 }
 
+// Listener: boton de aplicar filtros del panel admin
 if (adminApplyFilters) {
     adminApplyFilters.addEventListener('click', applyAdminFilters);
 }
 
+// Listener: boton de crear usuario
 if (btnCreateUser) {
     btnCreateUser.addEventListener('click', openCreateUserModal);
 }
 
+// Listeners de eventos personalizados para CRUD de usuarios
 document.addEventListener('user:edit', (e) => openEditUserModal(e.detail));
 document.addEventListener('user:delete', (e) => confirmDeleteUser(e.detail));
 document.addEventListener('user:toggle', (e) => handleToggleStatus(e.detail));
 
+// Carga inicial al cargar el DOM: muestra IDs disponibles, carga panel admin y usuarios
 document.addEventListener('DOMContentLoaded', async function() {
     showEmptyState([]);
 

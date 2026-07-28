@@ -1,5 +1,13 @@
+// ============================================================
+// userRenderer.js — Renderizado de la tabla de usuarios
+// ============================================================
+// Se encarga de pintar la tabla de usuarios en el DOM,
+// y de mostrar/ocultar el estado vacio. Tambien contiene
+// el modal de formulario para crear/editar usuarios.
+
 import { userTableBody, userEmptyState, userCount } from './dom.js';
 
+// renderUserTable — Recibe un array de usuarios y pinta la tabla completa con botones de accion
 export function renderUserTable(users) {
     userTableBody.innerHTML = '';
 
@@ -52,10 +60,12 @@ export function renderUserTable(users) {
     });
 }
 
+// renderUserCount — Actualiza el contador de usuarios
 export function renderUserCount(users) {
     userCount.textContent = users.length === 1 ? '1 usuario' : `${users.length} usuarios`;
 }
 
+// showUserFormModal — Retorna una Promise que resuelve con los datos del formulario o null si se cancela
 export function showUserFormModal(user) {
     const isEditing = !!user;
     return new Promise(resolve => {
@@ -108,6 +118,7 @@ export function showUserFormModal(user) {
 
         let closed = false;
 
+        // clearUserFormErrors — Limpia los mensajes de error del formulario de usuarios
         function clearUserFormErrors() {
             ['userFormNameError', 'userFormEmailError', 'userFormRolError', 'userFormPasswordError'].forEach(id => {
                 const el = document.getElementById(id);
@@ -116,6 +127,7 @@ export function showUserFormModal(user) {
             overlay.querySelectorAll('.form__input.error').forEach(el => el.classList.remove('error'));
         }
 
+        // showUserFormError — Marca un campo como erroneo y muestra su mensaje
         function showUserFormError(inputId, errorId, message) {
             const input = document.getElementById(inputId);
             const errorEl = document.getElementById(errorId);
@@ -123,6 +135,7 @@ export function showUserFormModal(user) {
             if (errorEl) errorEl.textContent = message;
         }
 
+        // close — Cierra el modal con animacion y resuelve la Promise con el resultado
         const close = (result) => {
             if (closed) return;
             closed = true;
