@@ -4,6 +4,14 @@
 // Funciones de comunicación con el backend para el CRUD
 // de usuarios. Cada función retorna una Promise con la
 // respuesta del servidor.
+//
+// [F1 - Joser] Probar CRUD de usuarios contra BD
+// ============================================================
+// 1. Probar CREATE, READ, UPDATE, DELETE con BD real
+// 2. Verificar que el formato de respuesta no cambió
+// 3. Probar activar/desactivar usuario (PATCH status)
+// 4. Capturar evidencia de cada operación
+// ============================================================
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 
