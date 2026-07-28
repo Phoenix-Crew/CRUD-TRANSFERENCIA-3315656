@@ -10,8 +10,6 @@ client/dist/
 .env.local
 .env.*.local
 
-# Server database (generated)
-server/src/data/
 
 # Log files
 *.log
