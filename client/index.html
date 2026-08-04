@@ -1,41 +1,72 @@
 <!DOCTYPE html>
+<!-- ============================================================
+     index.html — Interfaz única de la aplicación (SPA con pestañas)
+     ============================================================
+     FLUJO DEL FRONTEND COMPLETO:
+       index.html (estructura) ← styles.css (estilos/animaciones)
+       app.js (orquestador de eventos, importado al final)
+         → ui/dom.js (referencias a los ids de este HTML)
+         → services/*.js (lógica de negocio)
+         → api/*.js (fetch → backend Express :3002 vía Vite proxy)
+         → MySQL → respuesta → renderizado en las tablas de este HTML
+     ============================================================ -->
 <html lang="es">
 <head>
+    <!-- Codificación de caracteres: permite tildes y ñ -->
     <meta charset="UTF-8">
+    <!-- Escalado responsive en dispositivos móviles -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Título de la pestaña del navegador -->
     <title>Grupo 4</title>
 </head>
 <body>
 
+    <!-- ============================================================
+         FONDO DECORATIVO: partículas flotantes
+         Solo visual. Los estilos y keyframes están en styles.css
+         (clase .particle + animación floatParticle).
+         ============================================================ -->
     <div class="particle particle--1"></div>
     <div class="particle particle--2"></div>
     <div class="particle particle--3"></div>
     <div class="particle particle--4"></div>
     <div class="particle particle--5"></div>
 
+    <!-- Fondo decorativo: orbes de luz difuminados (clase .bg-orb en CSS) -->
     <div class="bg-orb bg-orb--1"></div>
     <div class="bg-orb bg-orb--2"></div>
     <div class="bg-orb bg-orb--3"></div>
 
+    <!-- ============================================================
+         CONTENEDOR PRINCIPAL (grid de 2 columnas, clase .container en CSS)
+         ============================================================ -->
     <div class="container">
+
+        <!-- ============================================================
+             HEADER — Encabezado con título del módulo (solo visual)
+             ============================================================ -->
         <header class="header">
-            <div class="header__beam"></div>
+            <div class="header__beam"></div> <!-- Línea animada decorativa -->
             <div class="header__inner">
+                <!-- Insignia del grupo (estilo .header__badge) -->
                 <div class="header__badge">
                     <span class="header__badge-dot"></span>
                     Programacion de Software · 3315656 · Grupo 4
                 </div>
+                <!-- Título principal; el span .text-silver aplica el degradado animado -->
                 <h1 class="header__title">Gestión de <span class="text-silver">Tareas</span></h1>
+                <!-- Subtítulo descriptivo -->
                 <p class="header__subtitle">Consulta un usuario y asigna sus tareas pendientes</p>
             </div>
-            <div class="header__flare"></div>
+            <div class="header__flare"></div> <!-- Resplandor decorativo -->
         </header>
 
-        <!-- ============================================
-             NAVEGACION POR PESTAÑAS
-             Permite cambiar entre las tres secciones de la
-             pagina sin hacer scroll infinito.
-             ============================================ -->
+        <!-- ============================================================
+             NAVEGACION POR PESTAÑAS (3 secciones)
+             FLUJO: app.js (líneas 25-36) agrega un listener a cada
+             .nav-tab → al hacer clic cambia la clase nav-tab--active
+             y muestra la .section-content correspondiente (data-section)
+             ============================================================ -->
         <nav class="nav-tabs">
             <button class="nav-tab nav-tab--active" data-section="tasks" id="navTasks">
                 Gestión de Tareas
@@ -48,14 +79,16 @@
             </button>
         </nav>
 
-        <!-- ============================================
-             SECCION 1: GESTION DE TAREAS
+        <!-- ============================================================
+             SECCION 1: GESTION DE TAREAS (visible por defecto)
              Buscar usuario + formulario + tabla de tareas
-             ============================================ -->
+             ============================================================ -->
         <div class="section-content section-content--active" id="section-tasks">
 
+        <!-- Columna izquierda: búsqueda + formulario -->
         <div class="col-left">
 
+            <!-- Tarjeta de búsqueda de usuario -->
             <section class="form-section">
                 <div class="card card--search">
                     <div class="card__border card__border--top"></div>
@@ -66,16 +99,24 @@
                         Buscar Usuario
                     </h2>
                     <div class="form__group">
+                        <!-- Label del campo de ID -->
                         <label for="userId" class="form__label">ID del Usuario</label>
                         <div class="search-group">
+                            <!-- input del ID: lo lee ui/dom.js (userIdInput) y
+                                 tareasService.searchUser() lo usa para buscar -->
                             <input type="text" id="userId" class="form__input" placeholder="Ingresa tu documento/ID">
+                            <!-- botón Buscar: app.js le agrega el listener → searchUser() -->
                             <button type="button" class="btn btn--primary" id="btnSearch">Buscar</button>
                         </div>
+                        <!-- Contenedor de feedback (usuario encontrado/error):
+                             lo llena ui/notifications.js (showUserInfo, showUserNotFound) -->
                         <div id="userInfo" class="form__error"></div>
                     </div>
                 </div>
             </section>
 
+            <!-- Formulario de registro de tareas (oculto hasta buscar un usuario).
+                 taskFormContainer: lo muestra tareasService.enableTaskForm() -->
             <section class="form-section" id="taskFormContainer" style="display: none;">
                 <div class="card card--register">
                     <div class="card__border card__border--top"></div>
@@ -85,10 +126,13 @@
                         <span class="card__icon"></span>
                         Registrar Nueva Tarea
                     </h2>
+                    <!-- Formulario: el submit lo captura app.js → tareasService.registerTask()
+                         que valida, arma assignedUsers y llama a POST /api/tasks -->
                     <form id="taskForm" class="form" novalidate>
                         <div class="form__group">
                             <label for="taskTitle" class="form__label">Título de la tarea</label>
                             <input type="text" id="taskTitle" class="form__input" placeholder="¿Qué hay que hacer?">
+                            <!-- Mensaje de error del campo (lo llena notifications.showFieldError) -->
                             <span class="field-error" id="titleError"></span>
                         </div>
                         <div class="form__group">
@@ -98,6 +142,7 @@
                         </div>
                         <div class="form__group">
                             <label for="taskStatus" class="form__label">Estado</label>
+                            <!-- Select de estado: los 3 valores coinciden con el ENUM de MySQL -->
                             <select id="taskStatus" class="form__input">
                                 <option value="Pendiente">Pendiente</option>
                                 <option value="En progreso">En progreso</option>
@@ -105,15 +150,17 @@
                             </select>
                         </div>
 
-                        <!-- ============================================
+                        <!-- ============================================================
                              SELECTOR MULTI-USUARIO (checkboxes)
-                             Aparece cuando se busca un usuario.
-                             Permite asignar la tarea a varios usuarios
-                             marcando sus checkboxes. El usuario buscado
-                             aparece pre-seleccionado por defecto.
-                             ============================================ -->
+                             Lo renderiza tareasService.renderUserCheckboxes() después
+                             de buscar un usuario: un checkbox por cada usuario del sistema,
+                             con el usuario buscado pre-seleccionado.
+                             registerTask() lee los checkboxes marcados para construir
+                             el array assignedUsers [{ id, name }] que envía al backend.
+                             ============================================================ -->
                         <div class="form__group" id="assignedUsersGroup" style="display:none;">
                             <label class="form__label">Asignar tarea a:</label>
+                            <!-- Contenedor donde se crean los labels/checkboxes dinámicamente -->
                             <div class="multi-user-select" id="assignedUsersContainer">
                                 <!-- Los checkboxes se renderizan aca
                                      dinamicamente desde tareasService.js
@@ -122,9 +169,11 @@
                                     Selecciona los usuarios que realizaran esta tarea
                                 </p>
                             </div>
+                            <!-- Error si no se selecciona ningún usuario -->
                             <span class="field-error" id="assignedUsersError"></span>
                         </div>
 
+                        <!-- Botón de envío del formulario (type=submit → dispara registerTask) -->
                         <button type="submit" class="btn btn--primary btn--submit">
                             <span class="btn__text">Registrar Tarea</span>
                             <span class="btn__icon">+</span>
@@ -135,14 +184,19 @@
 
         </div>
 
+        <!-- Columna derecha: encabezado + tabla de tareas del usuario buscado -->
         <div class="col-right">
 
             <section class="messages-section">
+                <!-- Encabezado con contador y botón de exportación -->
                 <div class="messages-header">
                     <div class="messages-header__glow"></div>
                     <h2 class="messages-header__title"> Tareas Registradas</h2>
                     <div class="messages-header__actions">
+                        <!-- Contador de tareas (lo actualiza taskRenderer.updateTaskCount) -->
                         <span class="messages-header__count" id="taskCount">0 tareas</span>
+                        <!-- Botón exportar JSON: app.js → tareasService.exportVisibleTasks()
+                             Descarga las tareas visibles en un archivo .json -->
                         <button type="button" id="exportBtn" class="btn btn--export" disabled>
                             <span class="btn__icon"></span>
                             <span class="btn__text">Exportar JSON</span>
@@ -150,14 +204,17 @@
                     </div>
                 </div>
 
+                <!-- Controles de filtro y ordenamiento (los maneja tareasService) -->
                 <div class="sort-controls">
                     <label for="filterStatus" class="sort-controls__label">Filtrar:</label>
+                    <!-- Select de filtro: app.js → setFilterStatus() (filtro en memoria, no en BD) -->
                     <select id="filterStatus" class="sort-controls__select">
                         <option value="all">Todas</option>
                         <option value="Pendiente">Pendiente</option>
                         <option value="En progreso">En progreso</option>
                         <option value="Completada">Completada</option>
                     </select>
+                    <!-- Botón de dirección asc/desc: app.js → toggleSortDirection() -->
                     <button type="button" id="sortDirection" class="sort-controls__btn" data-direction="desc">
                         ▼ Descendente
                     </button>
@@ -166,9 +223,13 @@
                 <div class="messages-container">
                     <div class="table-wrapper">
                         <div class="table-wrapper__silverline"></div>
+                        <!-- Tabla de tareas: el tbody lo llena taskRenderer.createTaskElement()
+                             (llamado desde tareasService.applySorting) -->
                         <table class="task-table">
                             <thead>
                                 <tr>
+                                    <!-- th.sortable = encabezados clickeables: app.js → setSortCriteria()
+                                         con data-sort para saber por qué campo ordenar -->
                                     <th data-sort="title" class="sortable">Título <span class="sort-icon"></span></th>
                                     <th>Descripción</th>
                                     <th data-sort="status" class="sortable">Estado <span class="sort-icon"></span></th>
@@ -176,10 +237,12 @@
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
+                            <!-- Cuerpo de la tabla: filas dinámicas con botones Editar/Completar/Eliminar -->
                             <tbody id="taskTableBody"></tbody>
                         </table>
                     </div>
 
+                    <!-- Estado vacío: "No hay tareas" (lo muestra/oculta taskRenderer.showEmptyState) -->
                     <div class="messages-empty" id="emptyState">
                         <div class="messages-empty__icon"></div>
                         <p class="messages-empty__text">No hay tareas asignadas</p>
@@ -193,20 +256,25 @@
         </div>
         <!-- Fin section-tasks -->
 
-        <!-- ============================================
+        <!-- ============================================================
              SECCION 2: PANEL DE ADMINISTRACION
-             Estadisticas, filtros, tabla global, distribucion
-             ============================================ -->
+             Estadísticas, filtros combinados, tabla global y distribución
+             FLUJO: la carga la dispara app.js (DOMContentLoaded → loadAdminPanel)
+             → services/tareasService.js → api/tareasApi.js
+             (fetchDashboard + fetchTasksFiltered) → renderizado aquí
+             ============================================================ -->
         <div class="section-content" id="section-admin">
 
         <div class="admin-panel" id="adminPanel">
+            <!-- Encabezado del panel -->
             <div class="admin-panel__header">
                 <div class="admin-panel__beam"></div>
                 <h2 class="admin-panel__title"> Panel de <span class="text-silver">Administración</span></h2>
                 <p class="admin-panel__subtitle">Visión general de todas las tareas del sistema</p>
             </div>
 
-            <!-- Stats Cards -->
+            <!-- Tarjetas de estadísticas: los valores los llena
+                 tareasService.renderAdminStats(dashboard) desde GET /api/dashboard -->
             <div class="admin-stats">
                 <div class="admin-stat-card admin-stat-card--total">
                     <div class="admin-stat-card__icon"></div>
@@ -238,7 +306,8 @@
                 </div>
             </div>
 
-            <!-- Filters -->
+            <!-- Filtros combinados: aplican en el BACKEND (GET /api/tasks/filter)
+                 vía tareasService.applyAdminFilters() (botón) -->
             <div class="admin-filters">
                 <div class="admin-filters__title">Filtros Combinados</div>
                 <div class="admin-filters__row">
@@ -253,6 +322,7 @@
                     </div>
                     <div class="admin-filters__group">
                         <label for="adminFilterUser" class="form__label">Usuario</label>
+                        <!-- Opciones dinámicas: las llena loadAdminPanel() desde GET /api/users -->
                         <select id="adminFilterUser" class="form__input">
                             <option value="">Todos los usuarios</option>
                         </select>
@@ -267,20 +337,23 @@
                     </div>
                     <div class="admin-filters__group admin-filters__group--btn">
                         <label class="form__label">&nbsp;</label>
+                        <!-- Botón Aplicar: app.js → tareasService.applyAdminFilters() -->
                         <button type="button" class="btn btn--primary" id="adminApplyFilters">Aplicar Filtros</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Global Table + User Distribution -->
+            <!-- Tabla global + distribución por usuario -->
             <div class="admin-grid">
                 <div class="admin-table-section">
                     <div class="admin-table-section__header">
                         <h3 class="admin-table-section__title">Todas las Tareas</h3>
+                        <!-- Contador global (renderGlobalTable lo actualiza) -->
                         <span class="messages-header__count" id="adminGlobalCount">0 tareas</span>
                     </div>
                     <div class="table-wrapper">
                         <div class="table-wrapper__silverline"></div>
+                        <!-- Tabla global: tbody lo llena renderGlobalTable() (tareasService) -->
                         <table class="task-table">
                             <thead>
                                 <tr>
@@ -303,6 +376,7 @@
                     </div>
                     <div class="table-wrapper">
                         <div class="table-wrapper__silverline"></div>
+                        <!-- Distribución: tbody lo llena renderUserDistribution(dashboard.porUsuario) -->
                         <table class="task-table">
                             <thead>
                                 <tr>
@@ -320,10 +394,14 @@
         </div>
         <!-- Fin section-admin -->
 
-        <!-- ============================================
-             SECCION 3: ADMINISTRACION DE USUARIOS
-             CRUD completo de usuarios del sistema
-             ============================================ -->
+        <!-- ============================================================
+             SECCION 3: ADMINISTRACION DE USUARIOS (CRUD)
+             FLUJO: app.js (DOMContentLoaded → loadUsers)
+             → services/usersService.js → api/usersApi.js → /api/users
+             La tabla la pinta ui/userRenderer.renderUserTable()
+             Los botones de la tabla disparan eventos personalizados
+             (user:edit, user:delete, user:toggle) que escucha app.js
+             ============================================================ -->
         <div class="section-content" id="section-users">
 
         <div class="admin-panel" id="userAdminSection">
@@ -333,6 +411,8 @@
                 <p class="admin-panel__subtitle">Gestiona los usuarios registrados en el sistema</p>
             </div>
 
+            <!-- Botón Nuevo Usuario: app.js → usersService.openCreateUserModal()
+                 (abre modal de userRenderer.showUserFormModal → POST /api/users) -->
             <div class="admin-filters">
                 <div class="admin-filters__row" style="justify-content: flex-end;">
                     <div class="admin-filters__group admin-filters__group--btn">
@@ -347,10 +427,12 @@
             <div class="admin-table-section">
                 <div class="admin-table-section__header">
                     <h3 class="admin-table-section__title">Usuarios Registrados</h3>
+                    <!-- Contador de usuarios (renderUserTable lo actualiza) -->
                     <span class="messages-header__count" id="userCount">0 usuarios</span>
                 </div>
                 <div class="table-wrapper">
                     <div class="table-wrapper__silverline"></div>
+                    <!-- Tabla de usuarios: tbody lo llena userRenderer.renderUserTable() -->
                     <table class="task-table">
                         <thead>
                             <tr>
@@ -365,6 +447,7 @@
                     </table>
                 </div>
 
+                <!-- Estado vacío de la tabla de usuarios -->
                 <div class="messages-empty" id="userEmptyState">
                     <div class="messages-empty__icon"></div>
                     <p class="messages-empty__text">No hay usuarios registrados</p>
@@ -385,7 +468,18 @@
         </footer>
     </div>
 
+    <!-- ============================================================
+         CONTENEDOR DE NOTIFICACIONES TOAST
+         Los toasts los crea ui/notifications.js (createToastElement)
+         que se SUSCRIBE a core/NotificationManager.js (patrón observador)
+         ============================================================ -->
     <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ============================================================
+         PUNTO DE ENTRADA DEL JAVASCRIPT
+         type="module" → carga app.js (orquestador) y desde ahí
+         todo el árbol: ui/dom.js, services, api, renderers...
+         ============================================================ -->
     <script type="module" src="src/js/app.js"></script>
 </body>
 </html>
