@@ -31,11 +31,6 @@
             <div class="header__flare"></div>
         </header>
 
-        <!-- ============================================
-             NAVEGACION POR PESTAÑAS
-             Permite cambiar entre las tres secciones de la
-             pagina sin hacer scroll infinito.
-             ============================================ -->
         <nav class="nav-tabs">
             <button class="nav-tab nav-tab--active" data-section="tasks" id="navTasks">
                 Gestión de Tareas
@@ -48,10 +43,6 @@
             </button>
         </nav>
 
-        <!-- ============================================
-             SECCION 1: GESTION DE TAREAS
-             Buscar usuario + formulario + tabla de tareas
-             ============================================ -->
         <div class="section-content section-content--active" id="section-tasks">
 
         <div class="col-left">
@@ -105,24 +96,18 @@
                             </select>
                         </div>
 
-                        <!-- ============================================
-                             SELECTOR MULTI-USUARIO (checkboxes)
-                             Aparece cuando se busca un usuario.
-                             Permite asignar la tarea a varios usuarios
-                             marcando sus checkboxes. El usuario buscado
-                             aparece pre-seleccionado por defecto.
-                             ============================================ -->
-                        <div class="form__group" id="assignedUsersGroup" style="display:none;">
-                            <label class="form__label">Asignar tarea a:</label>
-                            <div class="multi-user-select" id="assignedUsersContainer">
-                                <!-- Los checkboxes se renderizan aca
-                                     dinamicamente desde tareasService.js
-                                     con la funcion renderUserCheckboxes() -->
-                                <p class="form__hint" id="assignedUsersHint">
-                                    Selecciona los usuarios que realizaran esta tarea
+                        <!-- Este comentario HTML inicia la sección de "asignar la tarea a usuarios": aquí es donde el usuario final elige quién realizará la tarea -->
+                        <!-- En el archivo tareasService.js, la función "renderUserCheckboxes" llena esta sección: crea un checkbox por cada usuario del sistema -->
+                        <!-- El div "assignedUsersGroup" es el bloque que aparece o desaparece; "style" con "display:none" lo deja oculto hasta que se busca un usuario y "enableTaskForm" lo hace visible -->
+                        <div class="form__group" id="assignedUsersGroup" style="display:none;"> <!-- la etiqueta "div" es un contenedor; "class" le da la clase de estilo "form__group"; "id" lo identifica como "assignedUsersGroup" (el grupo de asignación); "style" aplica el atributo "display:none" para que no se vea inicialmente -->
+                            <label class="form__label">Asignar tarea a:</label> <!-- "label" es la etiqueta del grupo; su clase "form__label" la estiliza; el texto "Asignar tarea a:" le indica al usuario qué hacer en esta sección -->
+                            <div class="multi-user-select" id="assignedUsersContainer"> <!-- "div" es el contenedor; "class" con "multi-user-select" lo estiliza como el selector de varios usuarios; "id" lo identifica como "assignedUsersContainer", el espacio donde el JavaScript dibuja los checkboxes con "appendChild" -->
+                                <!-- Los checkboxes se renderizan aquí desde renderUserCheckboxes() --> <!-- comentario de referencia: la función "renderUserCheckboxes" (de tareasService.js) inyecta aquí un "label" con su "checkbox" por cada usuario del sistema -->
+                                <p class="form__hint" id="assignedUsersHint"> <!-- "p" es un párrafo; "class" con "form__hint" lo estiliza como texto de ayuda; "id" lo identifica como "assignedUsersHint", el aviso que se oculta cuando ya se cargaron los checkboxes -->
+                                    Selecciona los usuarios que realizaran esta tarea <!-- este texto es la instrucción que ve el usuario para saber que debe marcar a quién se le asigna la tarea -->
                                 </p>
                             </div>
-                            <span class="field-error" id="assignedUsersError"></span>
+                            <span class="field-error" id="assignedUsersError"></span> <!-- "span" es un elemento de texto; "class" con "field-error" lo estiliza como mensaje de error; "id" lo identifica como "assignedUsersError", el lugar donde se muestra el aviso si el usuario no marcó a nadie -->
                         </div>
 
                         <button type="submit" class="btn btn--primary btn--submit">
@@ -172,7 +157,9 @@
                                     <th data-sort="title" class="sortable">Título <span class="sort-icon"></span></th>
                                     <th>Descripción</th>
                                     <th data-sort="status" class="sortable">Estado <span class="sort-icon"></span></th>
-                                    <th>Asignados</th> <th data-sort="createdAt" class="sortable">Fecha <span class="sort-icon"></span></th>
+                                    <!-- La columna "Asignados" es donde se ve el resultado de la asignación: por cada usuario asignado a la tarea se dibuja un badge con su nombre -->
+                                    <th>Asignados</th> <!-- "th" es el encabezado de la columna; su texto "Asignados" le da nombre a la columna donde el JavaScript, en "createTaskElement", muestra los badges de los usuarios a quienes se asignó la tarea -->
+                                    <th data-sort="createdAt" class="sortable">Fecha <span class="sort-icon"></span></th> <!-- "th" es el encabezado de la fecha; "data-sort" indica el campo de ordenación; "class" con "sortable" lo hace ordenable al hacer clic -->
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -191,12 +178,7 @@
         </div>
 
         </div>
-        <!-- Fin section-tasks -->
 
-        <!-- ============================================
-             SECCION 2: PANEL DE ADMINISTRACION
-             Estadisticas, filtros, tabla global, distribucion
-             ============================================ -->
         <div class="section-content" id="section-admin">
 
         <div class="admin-panel" id="adminPanel">
@@ -206,7 +188,6 @@
                 <p class="admin-panel__subtitle">Visión general de todas las tareas del sistema</p>
             </div>
 
-            <!-- Stats Cards -->
             <div class="admin-stats">
                 <div class="admin-stat-card admin-stat-card--total">
                     <div class="admin-stat-card__icon"></div>
@@ -238,7 +219,6 @@
                 </div>
             </div>
 
-            <!-- Filters -->
             <div class="admin-filters">
                 <div class="admin-filters__title">Filtros Combinados</div>
                 <div class="admin-filters__row">
@@ -272,7 +252,6 @@
                 </div>
             </div>
 
-            <!-- Global Table + User Distribution -->
             <div class="admin-grid">
                 <div class="admin-table-section">
                     <div class="admin-table-section__header">
@@ -318,12 +297,7 @@
         </div>
 
         </div>
-        <!-- Fin section-admin -->
 
-        <!-- ============================================
-             SECCION 3: ADMINISTRACION DE USUARIOS
-             CRUD completo de usuarios del sistema
-             ============================================ -->
         <div class="section-content" id="section-users">
 
         <div class="admin-panel" id="userAdminSection">
@@ -374,9 +348,7 @@
         </div>
 
         </div>
-        <!-- Fin section-users -->
 
-        <!-- ====== FOOTER ====== -->
         <footer class="footer">
             <div class="footer__inner">
                 <div class="footer__beam"></div>
