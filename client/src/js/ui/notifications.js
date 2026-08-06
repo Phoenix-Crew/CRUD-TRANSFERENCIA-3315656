@@ -26,22 +26,24 @@ export function showToast(message, type = 'success') {
 }
 
 export function showUserInfo(user) { // "export" hace pública la función; "function" declara; "showUserInfo" muestra la información del usuario; "user" recibe el objeto del usuario buscado; la llave abre el bloque
-    userInfo.innerHTML = ` // "userInfo" es el espacio de la tarjeta; ".innerHTML" le asigna contenido HTML; la plantilla (acento grave) permite escribir HTML y meter valores
-        <div class="user-feedback user-feedback--success"> // etiqueta "div" con la clase "user-feedback" y el modificador "--success" que la pinta de verde
-            <strong>✅ Usuario encontrado:</strong><br> // "strong" resalta el texto de confirmación; "<br>" hace un salto de línea
-            <strong>Nombre:</strong> ${user.name}<br> // "strong" resalta la etiqueta "Nombre:" y "${user.name}" muestra el nombre del usuario; "<br>" salta de línea
-            <strong>Rol:</strong> ${user.rol}<br> // "strong" resalta la etiqueta "Rol:" y "${user.rol}" muestra el rol del usuario; "<br>" salta de línea
-            <strong>Ficha:</strong> ${user.ficha} // "strong" resalta la etiqueta "Ficha:" y "${user.ficha}" muestra la ficha del usuario
-        </div> // la etiqueta de cierre termina el contenedor de la tarjeta
-    `; // el acento grave cierra la plantilla HTML
+    // "userInfo" es el espacio de la tarjeta; ".innerHTML" le asigna contenido HTML; la plantilla (acento grave) permite escribir HTML y meter valores de "user" como el nombre, el rol y la ficha
+    userInfo.innerHTML = `
+        <div class="user-feedback user-feedback--success">
+            <strong>✅ Usuario encontrado:</strong><br>
+            <strong>Nombre:</strong> ${user.name}<br>
+            <strong>Rol:</strong> ${user.rol}<br>
+            <strong>Ficha:</strong> ${user.ficha}
+        </div>
+    `; // la etiqueta "div" con la clase "user-feedback" y el modificador "--success" pinta la tarjeta de verde; "strong" resalta cada dato y "<br>" hace el salto de línea; el acento grave cierra la plantilla HTML
 }
 
 export function showUserNotFound() { // "export" hace pública la función; "function" declara; "showUserNotFound" avisa que no se encontró al usuario; la llave abre el bloque
-    userInfo.innerHTML = ` // "userInfo" es el espacio de la tarjeta; ".innerHTML" le asigna contenido; la plantilla permite escribir HTML
-        <div class="user-feedback user-feedback--error"> // etiqueta "div" con la clase "user-feedback" y el modificador "--error" que la pinta de rojo
-            ❌ El usuario no está registrado en el sistema. // el icono y el texto le comunican al usuario que su documento no está en el sistema
-        </div> // la etiqueta de cierre termina el contenedor
-    `; // el acento grave cierra la plantilla HTML
+    // "userInfo" es el espacio de la tarjeta; ".innerHTML" le asigna contenido; la plantilla permite escribir HTML con el icono y el texto del error
+    userInfo.innerHTML = `
+        <div class="user-feedback user-feedback--error">
+            ❌ El usuario no está registrado en el sistema.
+        </div>
+    `; // la etiqueta "div" con la clase "user-feedback" y el modificador "--error" pinta la tarjeta de rojo y muestra el mensaje; el acento grave cierra la plantilla HTML
     taskFormContainer.style.display = 'none'; // "taskFormContainer" es el contenedor del formulario de registrar tarea; ".style" accede a los estilos; ".display" controla la visibilidad; "= 'none'" lo oculta porque, sin un usuario válido, no se puede asignar ninguna tarea
 }
 

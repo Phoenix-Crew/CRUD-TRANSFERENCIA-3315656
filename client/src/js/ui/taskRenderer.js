@@ -30,17 +30,18 @@ export function createTaskElement(task, { onEdit, onDelete }) { // "export" hace
         ? usersArray.map(u => `<span class="user-badge" style="background:rgba(16,185,129,0.15); color:#6ee7b7; padding:2px 8px; margin:2px; border-radius:4px; font-size:11px; display:inline-block;">${u.name}</span>`).join('') // el signo "?" significa "si tiene asignados": "usersArray.map" recorre cada asignado; "u" es cada usuario; la plantilla crea un "span" con clase "user-badge" y estilos en línea (fondo verde claro, texto verde y márgenes); "${u.name}" muestra el nombre del usuario asignado; ".join('')" une todos los badges sin separadores
         : `<span style="color:var(--ink-faint); font-size:12px;">—</span>`; // el signo ":" significa "si NO tiene asignados": crea un "span" con texto gris "—" para indicar que no hay nadie asignado
     const showCompleteBtn = task.status !== 'Completada'; // "const" declara; "showCompleteBtn" decide si se muestra el botón; "task.status" es el estado; "!==" pregunta si es distinto; "'Completada'" es el estado final; si no está completada, el botón se muestra
-    row.innerHTML = ` // "row" es la fila; ".innerHTML" asigna el contenido HTML; la plantilla (acento grave) permite escribir etiquetas y meter valores
-        <td><span class="task-title">${task.title}</span></td> // "<td>" es una celda de la tabla; muestra el título de la tarea con la clase "task-title" y el valor "task.title"
-        <td><span class="task-desc">${task.description}</span></td> // otra celda muestra la descripción de la tarea con el valor "task.description"
-        <td><span class="status-badge" style="background:${bgColor}">${task.status}</span></td> // celda del estado: "status-badge" es la clase y el fondo usa "bgColor" (el color del estado), mostrando "task.status"
-        <td><div class="task-assigned-users-container">${usersBadges}</div></td> // celda de asignados: un "div" con la clase "task-assigned-users-container" muestra "usersBadges", o sea los badges de los usuarios a quienes se asignó la tarea
-        <td><span class="task-date">${task.createdAt || ''}</span></td> // celda de la fecha de creación: muestra "task.createdAt" o, si no existe, queda vacía
-        <td class="actions-cell"> // celda con clase "actions-cell" que contiene los botones de acciones
-            <button class="action-btn action-btn--edit btn-edit">Editar</button> // botón "Editar" con sus clases; la clase "btn-edit" sirve para encontrarlo después
-            ${showCompleteBtn ? `<button class="action-btn action-btn--complete btn-complete" style="background:#10b981;">Completar</button>` : ''} // "showCompleteBtn" decide: si es verdadero se pinta el botón "Completar" (verde, con clase "btn-complete"); si es falso, el ":" deja la cadena vacía y no se muestra
-            <button class="action-btn action-btn--delete btn-delete">Eliminar</button> // botón "Eliminar" con la clase "btn-delete" para encontrarlo después
-        </td> // cierra la celda de acciones
+    // "row" es la fila; ".innerHTML" asigna el contenido HTML; la plantilla (acento grave) permite escribir las celdas de la tabla y meter los valores de la tarea: "<td>" es una celda, "task-title" muestra el título, "task-desc" la descripción, "status-badge" el estado con su color "bgColor", "task-assigned-users-container" los badges "usersBadges" de los asignados, "task-date" la fecha, y "actions-cell" los botones Editar, Completar y Eliminar
+    row.innerHTML = `
+        <td><span class="task-title">${task.title}</span></td>
+        <td><span class="task-desc">${task.description}</span></td>
+        <td><span class="status-badge" style="background:${bgColor}">${task.status}</span></td>
+        <td><div class="task-assigned-users-container">${usersBadges}</div></td>
+        <td><span class="task-date">${task.createdAt || ''}</span></td>
+        <td class="actions-cell">
+            <button class="action-btn action-btn--edit btn-edit">Editar</button>
+            ${showCompleteBtn ? `<button class="action-btn action-btn--complete btn-complete" style="background:#10b981;">Completar</button>` : ''}
+            <button class="action-btn action-btn--delete btn-delete">Eliminar</button>
+        </td>
     `; // el acento grave cierra la plantilla HTML de la fila
     row.querySelector('.btn-edit').addEventListener('click', () => onEdit(task)); // "row" es la fila; ".querySelector" busca el botón con clase "btn-edit"; ".addEventListener" escucha el evento; "'click'" se dispara al hacer clic; "=>" abre la función que llama a "onEdit(task)" para editar la tarea
     row.querySelector('.btn-delete').addEventListener('click', () => onDelete(task.id)); // "row" es la fila; ".querySelector" busca el botón "btn-delete"; ".addEventListener" escucha; "'click'" dispara al hacer clic; "=>" abre la función que llama a "onDelete(task.id)" para eliminar la tarea
