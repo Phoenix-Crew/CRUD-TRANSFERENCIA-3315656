@@ -1,9 +1,21 @@
-export const userIdInput = document.getElementById('userId'); // "export" hace pública la referencia; "const" la fija; "userIdInput" es el campo; "document.getElementById('userId')" busca en el HTML el elemento con ese id, donde se digita el id del usuario a buscar
-export const btnSearch = document.getElementById('btnSearch'); // "export" y "const" como antes; "btnSearch" es el botón; "getElementById('btnSearch')" lo encuentra: al presionarlo se dispara la búsqueda del usuario
-export const userInfo = document.getElementById('userInfo'); // "export" y "const"; "userInfo" es el espacio; "getElementById('userInfo')" lo encuentra: ahí se muestra la tarjeta con los datos del usuario buscado
-export const taskFormContainer = document.getElementById('taskFormContainer'); // "export" y "const"; "taskFormContainer" es el contenedor; "getElementById('taskFormContainer')" lo encuentra: es el bloque donde se muestra el formulario de registro, visible cuando el usuario existe
-export const taskForm = document.getElementById('taskForm'); // "export" y "const"; "taskForm" es el formulario; "getElementById('taskForm')" lo encuentra: al enviarlo se dispara el evento que registra y asigna la tarea
-export const taskTableBody = document.getElementById('taskTableBody'); // "export" y "const"; "taskTableBody" es el cuerpo de la tabla; "getElementById('taskTableBody')" lo encuentra: ahí se dibujan las filas de tareas con los badges de usuarios asignados
+// Cómo se lee: "Const userIdInput se asigna a document punto getElementById, con userId como argumento."
+// Qué es: la referencia al campo donde se digita el id del usuario a buscar.
+export const userIdInput = document.getElementById('userId');
+// Cómo se lee: "Const btnSearch se asigna a document punto getElementById, con btnSearch como argumento."
+// Qué es: el botón Buscar: al presionarlo se dispara la búsqueda del usuario.
+export const btnSearch = document.getElementById('btnSearch');
+// Cómo se lee: "Const userInfo se asigna a document punto getElementById, con userInfo como argumento."
+// Qué es: el espacio donde aparece la tarjeta con los datos del usuario buscado.
+export const userInfo = document.getElementById('userInfo');
+// Cómo se lee: "Const taskFormContainer se asigna a document punto getElementById, con taskFormContainer como argumento."
+// Qué es: el contenedor del formulario de registro, visible cuando el usuario existe.
+export const taskFormContainer = document.getElementById('taskFormContainer');
+// Cómo se lee: "Const taskForm se asigna a document punto getElementById, con taskForm como argumento."
+// Qué es: el formulario de la tarea; al enviarlo se dispara el evento que registra y asigna la tarea.
+export const taskForm = document.getElementById('taskForm');
+// Cómo se lee: "Const taskTableBody se asigna a document punto getElementById, con taskTableBody como argumento."
+// Qué es: el cuerpo de la tabla donde se dibujan las filas de tareas con los badges de usuarios asignados.
+export const taskTableBody = document.getElementById('taskTableBody');
 export const taskCount = document.getElementById('taskCount');
 export const emptyState = document.getElementById('emptyState');
 export const toastContainer = document.getElementById('toastContainer');
@@ -32,8 +44,15 @@ export const userEmptyState = document.getElementById('userEmptyState');
 export const btnCreateUser = document.getElementById('btnCreateUser');
 export const userCount = document.getElementById('userCount');
 
-// "//" inicia un comentario en JavaScript: el texto de abajo explica dónde empieza la sección de los elementos del selector multi-usuario, que es el corazón del flujo de asignar tarea
-export const assignedUsersGroup = document.getElementById('assignedUsersGroup'); // "export" hace pública la referencia; "const" la fija; "assignedUsersGroup" es el grupo; "getElementById('assignedUsersGroup')" lo encuentra: es el contenedor que se muestra u oculta para ver el selector de asignación
-export const assignedUsersContainer = document.getElementById('assignedUsersContainer'); // "export" y "const"; "assignedUsersContainer" es el contenedor; "getElementById('assignedUsersContainer')" lo encuentra: es donde se dibujan los checkboxes de todos los usuarios disponibles para asignar
-export const assignedUsersHint = document.getElementById('assignedUsersHint'); // "export" y "const"; "assignedUsersHint" es el texto de ayuda; "getElementById('assignedUsersHint')" lo encuentra: es la indicación que se oculta cuando los checkboxes ya están cargados
-export const assignedUsersError = document.getElementById('assignedUsersError'); // "export" y "const"; "assignedUsersError" es el mensaje de error; "getElementById('assignedUsersError')" lo encuentra: ahí se avisa si no se marcó ningún usuario para asignar
+// Cómo se lee: "Const assignedUsersGroup: la referencia al contenedor del selector multi-usuario".
+// Qué es: el corazón del flujo: el bloque donde el usuario elige a quién se le asigna la tarea.
+export const assignedUsersGroup = document.getElementById('assignedUsersGroup');
+// Cómo se lee: "Const assignedUsersContainer: el contenedor donde viven las casillas".
+// Qué es: aquí renderUserCheckboxes dibuja un checkbox por cada usuario disponible.
+export const assignedUsersContainer = document.getElementById('assignedUsersContainer');
+// Cómo se lee: "Const assignedUsersHint: el texto de ayuda del selector".
+// Qué es: la indicación que se oculta cuando ya aparecen los checkboxes.
+export const assignedUsersHint = document.getElementById('assignedUsersHint');
+// Cómo se lee: "Const assignedUsersError: el lugar del mensaje de error del selector".
+// Qué es: ahí aparece el aviso si no se marca ningún usuario para asignar.
+export const assignedUsersError = document.getElementById('assignedUsersError');

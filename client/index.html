@@ -99,15 +99,15 @@
                         <!-- Este comentario HTML inicia la sección de "asignar la tarea a usuarios": aquí es donde el usuario final elige quién realizará la tarea -->
                         <!-- En el archivo tareasService.js, la función "renderUserCheckboxes" llena esta sección: crea un checkbox por cada usuario del sistema -->
                         <!-- El div "assignedUsersGroup" es el bloque que aparece o desaparece; "style" con "display:none" lo deja oculto hasta que se busca un usuario y "enableTaskForm" lo hace visible -->
-                        <div class="form__group" id="assignedUsersGroup" style="display:none;"> <!-- la etiqueta "div" es un contenedor; "class" le da la clase de estilo "form__group"; "id" lo identifica como "assignedUsersGroup" (el grupo de asignación); "style" aplica el atributo "display:none" para que no se vea inicialmente -->
-                            <label class="form__label">Asignar tarea a:</label> <!-- "label" es la etiqueta del grupo; su clase "form__label" la estiliza; el texto "Asignar tarea a:" le indica al usuario qué hacer en esta sección -->
-                            <div class="multi-user-select" id="assignedUsersContainer"> <!-- "div" es el contenedor; "class" con "multi-user-select" lo estiliza como el selector de varios usuarios; "id" lo identifica como "assignedUsersContainer", el espacio donde el JavaScript dibuja los checkboxes con "appendChild" -->
+                        <div class="form__group" id="assignedUsersGroup" style="display:none;"> <!-- el grupo de asignación: agrupa el selector; "style" con "display:none" lo deja oculto hasta que "enableTaskForm" lo muestre -->
+                            <label class="form__label">Asignar tarea a:</label> <!-- la etiqueta del grupo: el texto le indica al usuario qué hacer en esta sección -->
+                            <div class="multi-user-select" id="assignedUsersContainer"> <!-- el selector de varios usuarios: el espacio donde el JavaScript dibuja los checkboxes con "appendChild" -->
                                 <!-- Los checkboxes se renderizan aquí desde renderUserCheckboxes() --> <!-- comentario de referencia: la función "renderUserCheckboxes" (de tareasService.js) inyecta aquí un "label" con su "checkbox" por cada usuario del sistema -->
-                                <p class="form__hint" id="assignedUsersHint"> <!-- "p" es un párrafo; "class" con "form__hint" lo estiliza como texto de ayuda; "id" lo identifica como "assignedUsersHint", el aviso que se oculta cuando ya se cargaron los checkboxes -->
+                                <p class="form__hint" id="assignedUsersHint"> <!-- el aviso de ayuda, que se oculta cuando ya se cargaron los checkboxes -->
                                     Selecciona los usuarios que realizaran esta tarea <!-- este texto es la instrucción que ve el usuario para saber que debe marcar a quién se le asigna la tarea -->
                                 </p>
                             </div>
-                            <span class="field-error" id="assignedUsersError"></span> <!-- "span" es un elemento de texto; "class" con "field-error" lo estiliza como mensaje de error; "id" lo identifica como "assignedUsersError", el lugar donde se muestra el aviso si el usuario no marcó a nadie -->
+                            <span class="field-error" id="assignedUsersError"></span> <!-- el espacio donde se muestra el aviso si el usuario no marcó a nadie -->
                         </div>
 
                         <button type="submit" class="btn btn--primary btn--submit">
@@ -157,9 +157,9 @@
                                     <th data-sort="title" class="sortable">Título <span class="sort-icon"></span></th>
                                     <th>Descripción</th>
                                     <th data-sort="status" class="sortable">Estado <span class="sort-icon"></span></th>
-                                    <!-- La columna "Asignados" es donde se ve el resultado de la asignación: por cada usuario asignado a la tarea se dibuja un badge con su nombre -->
-                                    <th>Asignados</th> <!-- "th" es el encabezado de la columna; su texto "Asignados" le da nombre a la columna donde el JavaScript, en "createTaskElement", muestra los badges de los usuarios a quienes se asignó la tarea -->
-                                    <th data-sort="createdAt" class="sortable">Fecha <span class="sort-icon"></span></th> <!-- "th" es el encabezado de la fecha; "data-sort" indica el campo de ordenación; "class" con "sortable" lo hace ordenable al hacer clic -->
+                                    <!-- La columna "Asignados" muestra el resultado de la asignación: por cada usuario asignado a la tarea, "createTaskElement" dibuja un badge con su nombre -->
+                                    <th>Asignados</th> <!-- el encabezado de la columna donde se ven los badges de los usuarios a quienes se asignó la tarea -->
+                                    <th data-sort="createdAt" class="sortable">Fecha <span class="sort-icon"></span></th> <!-- el encabezado de la fecha: "data-sort" indica el campo de ordenación; "sortable" lo hace ordenable al hacer clic -->
                                     <th>Acciones</th>
                                 </tr>
                             </thead>

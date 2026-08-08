@@ -33,42 +33,63 @@ function bindCallbacks() {
     };
 }
 
-function clearUserCheckboxes() { // "function" declara una función; "clearUserCheckboxes" es su nombre: borra los checkboxes de asignación; la llave "{" abre el bloque de la función
-    if (assignedUsersGroup) assignedUsersGroup.style.display = 'none'; // "if" pregunta si existe el grupo de checkboxes; "assignedUsersGroup" es ese contenedor; ".style" accede a los estilos; ".display" controla si se ve o no; "= 'none'" lo oculta
-    if (assignedUsersContainer) assignedUsersContainer.innerHTML = ''; // "if" verifica que exista el contenedor de checkboxes; ".innerHTML" es el contenido interno; "= ''" lo deja vacío para quitar todos los checkboxes que había
-    if (assignedUsersHint) assignedUsersHint.style.display = ''; // "if" verifica el texto de ayuda; "assignedUsersHint" es ese texto; ".display" se deja vacío para volver a mostrarlo
-    if (assignedUsersError) assignedUsersError.textContent = ''; // "if" verifica el mensaje de error; ".textContent" es el texto del mensaje; "= ''" borra cualquier error anterior
+// Cómo se lee: "Si el contenedor del selector existe, se oculta y se limpia."
+function clearUserCheckboxes() {
+    if (assignedUsersGroup) assignedUsersGroup.style.display = 'none'; // Qué hace: oculta el grupo de casillas
+    if (assignedUsersContainer) assignedUsersContainer.innerHTML = ''; // Qué hace: vacía las casillas
+    if (assignedUsersHint) assignedUsersHint.style.display = ''; // Qué hace: restaura el texto de ayuda
+    if (assignedUsersError) assignedUsersError.textContent = ''; // Qué hace: borra el mensaje de error
 }
 
-async function renderUserCheckboxes(preSelectedUserId) { // "async" indica que dentro usaremos "await"; "function" declara la función; "renderUserCheckboxes" la dibuja en pantalla; "preSelectedUserId" recibe el id del usuario que se buscó; la llave abre el bloque
-    try { // "try" empieza un bloque de código protegido: si algo falla aquí adentro, pasa al "catch"
-        const users = await fetchUsers(); // "const" crea una constante; "users" guarda el resultado; "await" pausa el código hasta que la llamada termine; "fetchUsers()" trae la lista de todos los usuarios del sistema
-        if (assignedUsersGroup) assignedUsersGroup.style.display = 'block'; // "if" pregunta si existe el grupo; ".style.display" controla la visibilidad; "= 'block'" lo hace visible
-        if (assignedUsersContainer) assignedUsersContainer.innerHTML = ''; // "if" pregunta si existe el contenedor; ".innerHTML" es su contenido; "= ''" lo vacía para empezar de cero
-        if (assignedUsersHint) assignedUsersHint.style.display = 'none'; // "if" pregunta si existe el texto de ayuda; ".display" controla la visibilidad; "= 'none'" lo oculta porque ya vamos a listar usuarios
-        if (assignedUsersError) assignedUsersError.textContent = ''; // "if" pregunta si existe el mensaje de error; ".textContent" es su texto; "= ''" lo limpia
+// Cómo se lee: "Async function renderUserCheckboxes, con preSelectedUserId como parámetro."
+// Qué es preSelectedUserId: el id del usuario que buscamos; su casilla viene ya marcada.
+async function renderUserCheckboxes(preSelectedUserId) { // Qué hace: es el motor del selector: trae todos los usuarios y crea una casilla por cada uno.
+    try { // Qué hace: intenta cargar los usuarios; si falla, va al catch.
+        // Cómo se lee: "Const users se asigna a await fetchUsers."
+        // Qué es fetchUsers: una función de api/tareasApi. Vamos a su definición con Ctrl+Click.
+        const users = await fetchUsers(); // Qué hace: pide todos los usuarios al backend, que serán los posibles destinatarios.
+        if (assignedUsersGroup) assignedUsersGroup.style.display = 'block'; // Qué hace: hace visible el contenedor que agrupa las casillas
+        if (assignedUsersContainer) assignedUsersContainer.innerHTML = ''; // Qué hace: limpia casillas que pudieran sobrar de un intento anterior
+        if (assignedUsersHint) assignedUsersHint.style.display = 'none'; // Qué hace: oculta el texto de ayuda porque ya vamos a mostrar las casillas
+        if (assignedUsersError) assignedUsersError.textContent = ''; // Qué hace: borra el mensaje de error anterior
 
-        users.forEach(user => { // "users.forEach" recorre cada usuario de la lista; "user" es el usuario de esta vuelta; "=>" abre la función anónima que se ejecuta por cada uno
-            const label = document.createElement('label'); // "const" crea una constante; "label" es una etiqueta; "document.createElement" crea un elemento del HTML; "'label'" indica que ese elemento es una etiqueta
-            label.className = 'multi-user-checkbox'; // "label" es la etiqueta; ".className" le asigna la clase CSS; "'multi-user-checkbox'" es la clase que la estiliza
-            const checkbox = document.createElement('input'); // "const" crea otra constante; "checkbox" es la casilla; "document.createElement('input')" crea un elemento de entrada de texto o casilla
-            checkbox.type = 'checkbox'; // "checkbox" es la casilla; ".type" define qué tipo de entrada es; "'checkbox'" indica que será una casilla de verificación
-            checkbox.value = user.id; // "checkbox" es la casilla; ".value" guarda un valor en ella; "user.id" le asigna el id del usuario, así sabemos a quién representa
-            checkbox.dataset.name = user.name; // "checkbox" es la casilla; ".dataset" guarda datos personalizados; ".name" crea el atributo data-name; "user.name" le asigna el nombre del usuario, que luego se envía al backend
-            checkbox.id = `user-chk-${user.id}`; // "checkbox" es la casilla; ".id" le da un identificador único; "user-chk-" es un prefijo fijo y "${user.id}" completa el id con el número del usuario
-            if (String(user.id) === String(preSelectedUserId)) { // "if" pregunta si el id del usuario, convertido a texto con "String", es exactamente igual ("===") al id preseleccionado convertido a texto; si es el mismo usuario, entra al bloque
-                checkbox.checked = true; // "checkbox" es la casilla; ".checked" controla si está marcada; "= true" la deja marcada, así el usuario buscado ya viene asignado por defecto
-            } // la llave "}" cierra el bloque del "if"
-            const span = document.createElement('span'); // "const" crea una constante; "span" es un elemento de texto; "document.createElement('span')" crea ese elemento
-            span.textContent = `${user.name} (${user.rol})`; // "span" es el texto; ".textContent" le asigna contenido; "user.name" es el nombre del usuario y "${user.rol}" su rol, ambos entre paréntesis para mostrarlos juntos
-            label.appendChild(checkbox); // "label" es la etiqueta; ".appendChild" agrega un hijo; "checkbox" se mete dentro de la etiqueta: primero la casilla
-            label.appendChild(span); // "label" es la etiqueta; ".appendChild" agrega otro hijo; "span" con el nombre se coloca después de la casilla
-            assignedUsersContainer.appendChild(label); // "assignedUsersContainer" es el contenedor de asignación; ".appendChild" agrega; "label" con su casilla y su nombre se mete al contenedor
-        }); // la llave cierra el "forEach" y el ")" cierra la llamada, terminando el recorrido por todos los usuarios
-    } catch (error) { // "catch" atrapa cualquier error que haya ocurrido dentro del "try"; "error" es ese error
-        console.warn('No se pudieron cargar usuarios para checkboxes:', error.message); // "console.warn" muestra una advertencia en la consola; el primer texto explica el problema y "error.message" agrega el detalle técnico
-        if (assignedUsersGroup) assignedUsersGroup.style.display = 'none'; // "if" pregunta si existe el grupo; ".style.display" controla la visibilidad; "= 'none'" lo oculta para que no se vea un selector vacío
-    } // la llave cierra el bloque del "catch"
+        // Cómo se lee: "Users invoca forEach, y por cada user crea una etiqueta."
+        users.forEach(user => { // Qué hace: una casilla por usuario; cada una guarda id y nombre escondidos.
+            // Cómo se lee: "Const label se asigna a document punto createElement, pasando label como argumento."
+            const label = document.createElement('label'); // Qué hace: crea la etiqueta que va a envolver la casilla y el nombre
+            // Cómo se lee: "label punto className se asigna a la clase multi-user-checkbox."
+            label.className = 'multi-user-checkbox'; // Qué hace: le aplica los estilos del selector de usuarios
+            // Cómo se lee: "Const checkbox se asigna a document punto createElement, con input como argumento."
+            const checkbox = document.createElement('input'); // Qué hace: crea la casilla de verificación de este usuario
+            // Cómo se lee: "checkbox punto type se asigna a checkbox."
+            checkbox.type = 'checkbox'; // Qué hace: la define como casilla de verificación
+            // Cómo se lee: "checkbox punto value se asigna a user punto id."
+            checkbox.value = user.id; // Qué hace: guarda escondido el id del usuario en la casilla
+            // Cómo se lee: "checkbox punto dataset punto name se asigna a user punto name."
+            checkbox.dataset.name = user.name; // Qué hace: guarda escondido el nombre del usuario en la casilla
+            // Cómo se lee: "checkbox punto id se asigna a la plantilla user-chk-más el id."
+            checkbox.id = `user-chk-${user.id}`; // Qué hace: le pone un id único a cada casilla para identificarla
+            // Cómo se lee: "If, con la condición String de user punto id es exactamente igual a String de preSelectedUserId."
+            if (String(user.id) === String(preSelectedUserId)) { // Qué hace: compara el id de este usuario con el id que nos dieron al llamar
+                // Cómo se lee: "checkbox punto checked se asigna a true."
+                checkbox.checked = true; // Qué hace: el usuario que buscamos llega ya con la casilla marcada
+            }
+            // Cómo se lee: "Const span se asigna a document punto createElement, con span como argumento."
+            const span = document.createElement('span'); // Qué hace: crea el texto con el nombre del usuario
+            // Cómo se lee: "span punto textContent se asigna a la plantilla con user punto name y user punto rol."
+            span.textContent = `${user.name} (${user.rol})`; // Qué hace: muestra el nombre y el rol dentro de la etiqueta
+            // Cómo se lee: "label punto appendChild, pasando checkbox."
+            label.appendChild(checkbox); // Qué hace: mete la casilla dentro de la etiqueta
+            // Cómo se lee: "label punto appendChild, pasando span."
+            label.appendChild(span); // Qué hace: mete el nombre después de la casilla
+            // Cómo se lee: "assignedUsersContainer punto appendChild, pasando label."
+            assignedUsersContainer.appendChild(label); // Qué hace: mete la etiqueta completa dentro del contenedor de asignación
+        });
+    } catch (error) {
+        // Cómo se lee: "Console punto warn, con el mensaje y error punto message."
+        console.warn('No se pudieron cargar usuarios para checkboxes:', error.message); // Qué hace: avisa en consola si no se pudieron cargar los usuarios
+        if (assignedUsersGroup) assignedUsersGroup.style.display = 'none'; // Qué hace: si algo falla, oculta el selector para no dejar un cajón vacío
+    }
 }
 
 function setExportBtnState(enabled) {
@@ -108,18 +129,27 @@ function exportVisibleTasks() {
     }
 }
 
-function applySorting() {
-    taskTableBody.innerHTML = '';
-    const filtered = filterTasksByStatus(tasks, filterStatus);
-    const ordered = sortTasks(filtered, sortCriteria, sortDirection);
-    if (ordered.length > 0) {
-        hideEmptyState();
-        ordered.forEach(task => createTaskElement(task, bindCallbacks())); // Renderiza cada tarea (incluye sus asignados)
+// Cómo se lee: "Function applySorting."
+function applySorting() { // Qué hace: vuelve a pintar la tabla completa con las tareas filtradas y ordenadas; refleja los asignados.
+    // Cómo se lee: "taskTableBody punto innerHTML se asigna a comilla vacía."
+    taskTableBody.innerHTML = ''; // Qué hace: limpia la tabla para volverla a dibujar desde cero
+    // Cómo se lee: "Const filtered se asigna a filterTasksByStatus, pasando tasks y filterStatus."
+    const filtered = filterTasksByStatus(tasks, filterStatus); // Qué hace: filtra las tareas según el estado elegido (todas, pendientes, etc.)
+    // Cómo se lee: "Const ordered se asigna a sortTasks, pasando filtered, sortCriteria y sortDirection."
+    const ordered = sortTasks(filtered, sortCriteria, sortDirection); // Qué hace: ordena las tareas ya filtradas por columna y dirección (fecha, estado, etc.)
+    // Cómo se lee: "If, con la condición ordered punto length es mayor que 0."
+    if (ordered.length > 0) { // Qué hace: si hay tareas que mostrar, las pinta; si no, va al else
+        // Cómo se lee: "hideEmptyState."
+        hideEmptyState(); // Qué hace: oculta el mensaje de "no hay tareas" porque ya hay datos
+        // Cómo se lee: "Ordered invoca forEach, y por cada task llama a createTaskElement con la tarea y los callbacks."
+        ordered.forEach(task => createTaskElement(task, bindCallbacks())); // Qué hace: crea la fila de cada tarea (incluye los badges de asignados) y la mete en la tabla
     } else {
         showEmptyState(ordered);
     }
-    updateTaskCount(ordered);
-    updateSortIcons(sortCriteria, sortDirection);
+    // Cómo se lee: "updateTaskCount, pasando ordered como argumento."
+    updateTaskCount(ordered); // Qué hace: actualiza el contador "X tareas" con la cantidad visible
+    // Cómo se lee: "UpdateSortIcons, pasando sortCriteria y sortDirection; updateSortButtonLabel con sortDirection."
+    updateSortIcons(sortCriteria, sortDirection); // Qué hace: refresca las flechitas de orden en la fila de la tabla
     updateSortButtonLabel(sortDirection);
 }
 
@@ -143,98 +173,168 @@ function toggleSortDirection() {
     applySorting();
 }
 
+// Cómo se lee: "async function searchUser."
+// Qué hace: es el PASO 1 del flujo: encuentra al usuario por su id, muestra sus datos, prepara
+// los checkboxes de asignación y carga las tareas que ya tiene. Llegamos con Ctrl+Click desde app.js.
+// Cómo se lee: "Async function searchUser."
+// Qué es: es el PASO 1 del flujo: encuentra al usuario por su id, muestra sus datos, prepara
+// los checkboxes de asignación y carga las tareas que ya tiene. Llegamos con Ctrl+Click desde app.js.
 async function searchUser() {
-    const userId = userIdInput.value;
-    if (!isValidInput(userId)) {
-        showValidationError('Por favor ingresa un documento/ID válido');
-        return;
+    // Cómo se lee: "Const userId se asigna a userIdInput punto value."
+    const userId = userIdInput.value; // Qué hace: lee el documento/ID que el usuario escribió en el campo de buscar
+    // Cómo se lee: "If, con la condición no isValidInput, pasando userId como argumento."
+    if (!isValidInput(userId)) { // Qué hace: si el id no es válido (vacío o con caracteres raros) corta aquí y muestra el error
+        // Cómo se lee: "ShowValidationError, pasando el mensaje como argumento."
+        showValidationError('Por favor ingresa un documento/ID válido'); // Qué hace: muestra un error en pantalla pidiendo un documento válido
+        // Cómo se lee: "Return."
+        return; // Qué hace: termina la función aquí; no continúa el flujo
     }
-    btnSearch.disabled = true;
-    btnSearch.textContent = 'Buscando...';
-    userInfo.innerHTML = '';
-    taskFormContainer.style.display = 'none';
-    try {
-        const users = await fetchUsers(); // "const" crea una constante; "users" guarda el resultado; "await" pausa el código hasta que termine la llamada; "fetchUsers()" trae todos los usuarios del sistema
-        const user = users.find(u => String(u.id).trim() === userId.trim()); // "const" declara; "user" guarda el hallazgo; "users.find" recorre la lista y devuelve el primero que cumpla la condición; "u" es cada usuario; "String(u.id).trim()" convierte el id a texto y le quita espacios; "===" pregunta si es exactamente igual; "userId.trim()" es el id digitado sin espacios
-        if (user) { // "if" pregunta si "user" existe, o sea si se encontró el usuario en la lista
-            currentUser = user; // "currentUser" es la variable que recuerda al usuario actual; "= user" le asigna el usuario encontrado
-            showUserInfo(user); // "showUserInfo" muestra la tarjeta con los datos del usuario; "user" es quien se muestra
-            enableTaskForm(); // "enableTaskForm" hace visible el formulario de registrar tarea, que es donde se va a asignar
-            await renderUserCheckboxes(user.id); // "await" espera a que termine; "renderUserCheckboxes" dibuja los checkboxes para asignar la tarea; "user.id" le pasa el id del usuario buscado para que aparezca ya marcado
-            const savedTasks = await fetchTasksByUser(userId); // "const" declara; "savedTasks" guarda el resultado; "await" espera la llamada; "fetchTasksByUser(userId)" pide al backend las tareas ya asignadas a ese usuario
-            tasks = savedTasks; // "tasks" es la lista de tareas de la aplicación; "= savedTasks" la reemplaza por las tareas que ya tiene asignadas el usuario
-            applySorting(); // "applySorting" reordena y redibuja la tabla de tareas, mostrando sus asignados
-            setExportBtnState(true); // "setExportBtnState" habilita el botón de exportar; "true" lo activa porque ya hay un usuario cargado
-        } else { // "else" se ejecuta cuando el "if" fue falso, es decir cuando el usuario NO se encontró
-            showUserNotFound(); // "showUserNotFound" muestra el mensaje de que el usuario no está registrado en el sistema
-        } // la llave cierra el bloque del "else"
+    // Cómo se lee: "btnSearch punto disabled se asigna a true."
+    btnSearch.disabled = true; // Qué hace: desactiva el botón mientras busca, para que no opriman doble
+    // Cómo se lee: "btnSearch punto textContent se asigna a Buscando con puntos suspensivos."
+    btnSearch.textContent = 'Buscando...'; // Qué hace: cambia la etiqueta del botón para avisar que está trabajando
+    // Cómo se lee: "userInfo punto innerHTML se asigna a comilla vacía."
+    userInfo.innerHTML = ''; // Qué hace: limpia la tarjeta de datos del usuario anterior
+    // Cómo se lee: "taskFormContainer punto style punto display se asigna a none."
+    taskFormContainer.style.display = 'none'; // Qué hace: oculta el formulario hasta que aparezca un usuario válido
+    try { // Qué hace: inicia el bloque que intenta la búsqueda; si falla, va al catch
+        // Cómo se lee: "Const users se asigna a await fetchUsers."
+        // Qué es fetchUsers: una función de api/tareasApi. Vamos a su definición con Ctrl+Click.
+        const users = await fetchUsers(); // Qué hace: pide al backend TODOS los usuarios para buscar en esa lista
+        // Cómo se lee: "Const user se asigna a users punto find, con una función flecha que recibe u, donde
+        // String de u punto id con trim es exactamente igual a String de userId con trim."
+        const user = users.find(u => String(u.id).trim() === userId.trim()); // Qué hace: recorre los usuarios y devuelve el primero cuyo id (ya sin espacios) coincida con lo digitado
+        // Cómo se lee: "If, con la condición de que exista user."
+        if (user) { // Qué hace: si encontramos un usuario, entra a mostrar todo su contexto
+            // Cómo se lee: "currentUser se asigna a user."
+            currentUser = user; // Qué hace: guarda en el estado global quién es el usuario que estamos manejando
+            // Cómo se lee: "ShowUserInfo, pasando user como argumento."
+            showUserInfo(user); // Qué hace: pinta los datos del usuario (nombre, rol, ficha) en la tarjeta
+            // Cómo se lee: "enableTaskForm."
+            enableTaskForm(); // Qué hace: hace visible el formulario de tarea, ya hay un usuario válido a quien asignar
+            // Cómo se lee: "Await renderUserCheckboxes, pasando user punto id como argumento."
+            // Qué es: de aquí salen los posibles "asignados" para la tarea.
+            await renderUserCheckboxes(user.id); // Qué hace: dibuja las casillas de destinatarios, con este usuario ya marcado
+            // Cómo se lee: "Const savedTasks se asigna a await fetchTasksByUser, pasando userId como argumento."
+            // Qué es fetchTasksByUser: está en la API. Vamos a su definición con Ctrl+Click.
+            const savedTasks = await fetchTasksByUser(userId); // Qué hace: pide al backend las tareas que este usuario ya tiene asignadas
+            // Cómo se lee: "Tasks se asigna a savedTasks."
+            tasks = savedTasks; // Qué hace: reemplaza la lista global de tareas por las que trajo el backend
+            // Cómo se lee: "applySorting."
+            applySorting(); // Qué hace: pinta la tabla con las tareas del usuario
+            // Cómo se lee: "SetExportBtnState, pasando true como argumento."
+            setExportBtnState(true); // Qué hace: habilita el botón de exportar porque ya hay datos
+        } else {
+            // Cómo se lee: "ShowUserNotFound."
+            showUserNotFound(); // Qué hace: muestra un mensaje de que no existe un usuario con ese id
+        }
     } catch (error) {
-        showValidationError('Error de conexión: ' + error.message + '. Verifica que el servidor esté corriendo.');
+        // Cómo se lee: "ShowValidationError, pasando el mensaje con error punto message."
+        showValidationError('Error de conexión: ' + error.message + '. Verifica que el servidor esté corriendo.'); // Qué hace: avisa por si falla la conexión con el backend
     } finally {
-        btnSearch.disabled = false;
-        btnSearch.textContent = 'Buscar';
+        // Cómo se lee: "btnSearch punto disabled se asigna a false."
+        btnSearch.disabled = false; // Qué hace: siempre (pase lo que pase) vuelve a activar el botón
+        // Cómo se lee: "btnSearch punto textContent se asigna a Buscar."
+        btnSearch.textContent = 'Buscar'; // Qué hace: restaura el texto normal del botón
     }
 }
 
-async function registerTask(event) { // "async" indica que adentro usaremos "await"; "function" declara la función; "registerTask" es su nombre: registra la tarea y la asigna; "event" recibe el objeto del evento que se disparó al enviar el formulario; la llave abre el bloque
-    event.preventDefault(); // "event" es el evento del formulario; ".preventDefault" le dice al navegador que no haga la acción por defecto, o sea que no recargue la página
-    clearFieldErrors(); // "clearFieldErrors" borra los mensajes de error de un intento anterior para empezar limpio
+// Cómo se lee: "Async function registerTask, con event como parámetro."
+// Qué es: es el PASO 2 del flujo: valida los campos, lee las casillas marcadas, arma la lista de
+// asignados y envía la tarea al backend. Llegamos con Ctrl+Click desde taskForm.
+async function registerTask(event) {
+    // Cómo se lee: "Event punto preventDefault."
+    event.preventDefault(); // Qué hace: evita que el navegador recargue la página al enviar el formulario
+    // Cómo se lee: "clearFieldErrors."
+    clearFieldErrors(); // Qué hace: borra los mensajes de error de intentos anteriores para empezar limpio
 
-    const titleInput = document.getElementById('taskTitle'); // "const" declara una constante; "titleInput" guarda el campo; "document.getElementById" busca un elemento por su id; "'taskTitle'" es el id del campo de título
-    const descriptionInput = document.getElementById('taskDescription'); // "const" declara; "descriptionInput" guarda el campo; "getElementById" busca por id; "'taskDescription'" es el id del campo de descripción
-    const statusInput = document.getElementById('taskStatus'); // "const" declara; "statusInput" guarda el campo; "getElementById" busca por id; "'taskStatus'" es el id del selector de estado
-    const title = titleInput.value.trim(); // "const" declara; "title" es el nombre donde se guarda el valor; "titleInput" es el campo; ".value" lee lo que escribió el usuario; ".trim()" quita los espacios sobrantes al inicio y al final
-    const description = descriptionInput.value.trim(); // "const" declara; "description" guarda el valor; "descriptionInput" es el campo; ".value" lee lo escrito; ".trim()" quita espacios sobrantes
-    const status = statusInput.value; // "const" declara; "status" guarda el valor; "statusInput" es el selector; ".value" lee la opción que eligió el usuario
+    // Cómo se lee: "Const titleInput se asigna a document punto getElementById, pasando el id como argumento."
+    const titleInput = document.getElementById('taskTitle'); // Qué hace: busca el campo de título en el HTML y lo guarda en titleInput
+    // Cómo se lee: "Const descriptionInput se asigna a document punto getElementById, pasando el id como argumento."
+    const descriptionInput = document.getElementById('taskDescription'); // Qué hace: busca el campo de descripción del formulario
+    // Cómo se lee: "Const statusInput se asigna a document punto getElementById, pasando el id como argumento."
+    const statusInput = document.getElementById('taskStatus'); // Qué hace: busca el selector de estado del formulario
+    // Cómo se lee: "Const title se asigna a titleInput punto value punto trim."
+    const title = titleInput.value.trim(); // Qué hace: toma el texto del título y le quita los espacios de sobra
+    // Cómo se lee: "Const description se asigna a descriptionInput punto value punto trim."
+    const description = descriptionInput.value.trim(); // Qué hace: toma la descripción y le quita espacios de sobra
+    // Cómo se lee: "Const status se asigna a statusInput punto value."
+    const status = statusInput.value; // Qué hace: lee el estado elegido (Pendiente, En progreso, Completada)
 
-    let hasError = false; // "let" crea una variable que puede cambiar; "hasError" es el semáforo de errores; "= false" inicia en falso, o sea sin errores
-    if (!title) { // "if" pregunta si "title" está vacío; el signo "!" niega, así que "!title" significa "si el título está vacío"
-        showFieldError('taskTitle', 'titleError', 'El título es obligatorio.'); // "showFieldError" marca el campo y muestra el mensaje; "taskTitle" es el campo, "titleError" el lugar del mensaje y el texto avisa que el título es obligatorio
-        hasError = true; // "hasError" el semáforo; "= true" se enciende porque hubo un error
-    } // la llave cierra el bloque del primer "if"
-    if (!description) { // "if" pregunta si "description" está vacía; "!description" niega y significa "si la descripción está vacía"
-        showFieldError('taskDescription', 'descError', 'La descripción es obligatoria.'); // "showFieldError" marca el campo; "taskDescription" es el campo, "descError" el lugar del mensaje y el texto avisa que la descripción es obligatoria
-        hasError = true; // "hasError" el semáforo; "= true" se enciende porque también hubo error aquí
-    } // la llave cierra el segundo "if"
+    // Cómo se lee: "Let hasError se asigna a false."
+    let hasError = false; // Qué hace: bandera que dice si algo está mal; empieza en falso (todo ok)
+    // Cómo se lee: "If, con la condición no title."
+    if (!title) { // Qué hace: si el título llegó vacío, corta aquí y muestra el error
+        // Cómo se lee: "ShowFieldError, pasando el id del campo, el id del error y el mensaje."
+        showFieldError('taskTitle', 'titleError', 'El título es obligatorio.'); // Qué hace: pinta bajo el título el mensaje de que es obligatorio
+        // Cómo se lee: "hasError se asigna a true."
+        hasError = true; // Qué hace: marca que hubo un error para no enviar el formulario
+    }
+    // Cómo se lee: "If, con la condición no description."
+    if (!description) { // Qué hace: si la descripción llegó vacía hace lo mismo que el título
+        showFieldError('taskDescription', 'descError', 'La descripción es obligatoria.');
+        hasError = true;
+    }
 
-    const checkedBoxes = assignedUsersContainer // "const" declara una constante; "checkedBoxes" guardará los checkboxes marcados; "assignedUsersContainer" es el contenedor donde están los checkboxes
-        ? assignedUsersContainer.querySelectorAll('input[type="checkbox"]:checked') // el signo "?" significa "si el contenedor existe, haz esto": "querySelectorAll" busca todos los elementos que cumplan el selector; "input[type='checkbox']:checked" selecciona solo los checkboxes marcados
-        : []; // el signo ":" significa "si el contenedor no existe, haz esto": devuelve un array vacío para que la lista no esté indefinida
+    // Cómo se lee: "Const checkedBoxes se asigna a ternario: si assignedUsersContainer existe, se asigna a su
+    // querySelectorAll de checkboxes marcados, y si no, se asigna a un array vacío."
+    const checkedBoxes = assignedUsersContainer
+        ? assignedUsersContainer.querySelectorAll('input[type="checkbox"]:checked') // Qué hace: trae SOLO las casillas tildadas dentro del selector de asignación
+        : [];
 
-    if (checkedBoxes.length === 0) { // "if" pregunta si la cantidad de checkboxes marcados es exactamente cero ("length === 0"), es decir que no marcaron a nadie
-        if (assignedUsersError) assignedUsersError.textContent = 'Debes seleccionar al menos un usuario.'; // "if" pregunta si existe el mensaje de error; "assignedUsersError" es ese lugar; ".textContent" es su texto; "= 'Debes seleccionar al menos un usuario.'" avisa que hay que marcar a alguien
-        hasError = true; // "hasError" el semáforo; "= true" se enciende porque falta la asignación
-    } // la llave cierra el bloque del "if"
+    // Cómo se lee: "If, con la condición checkedBoxes punto length es exactamente igual a 0."
+    if (checkedBoxes.length === 0) { // Qué hace: si no marcaron a nadie, entra a advertir
+        // Cómo se lee: "Si assignedUsersError existe, su textContent se asigna al mensaje."
+        if (assignedUsersError) assignedUsersError.textContent = 'Debes seleccionar al menos un usuario.'; // Qué hace: pinta bajo el selector el aviso
+        // Cómo se lee: "hasError se asigna a true."
+        hasError = true; // Qué hace: registra el error para frenar el envío
+    }
 
-    if (hasError) return; // "if" pregunta si el semáforo está encendido; "return" termina la función aquí mismo, sin enviar nada al backend
+    // Cómo se lee: "If hasError, return."
+    if (hasError) return; // Qué hace: si hubo algún error, termina la función aquí y no se manda nada
 
-    const assignedUsers = Array.from(checkedBoxes).map(cb => ({ // "const" declara; "assignedUsers" guardará el array final de asignados; "Array.from" convierte la lista de checkboxes en un array real; ".map" recorre cada uno; "cb" es cada checkbox; "=>" abre la función que transforma cada casilla en un objeto
-        id: cb.value, // "id" es la propiedad del objeto; "cb.value" lee el id del usuario que guardamos en el atributo value del checkbox
-        name: cb.dataset.name // "name" es la otra propiedad; "cb.dataset.name" lee el nombre del usuario que guardamos en data-name del checkbox
-    })); // la llave cierra el objeto, el paréntesis cierra la función del "map" y el otro cierra la llamada, quedando algo como [{ id, name }, ...]
+    // Cómo se lee: "Const assignedUsers se asigna a Array punto from de checkedBoxes, punto map, y por cada cb
+    // devuelve un objeto con id se asigna a cb punto value y name se asigna a cb punto dataset punto name."
+    // Qué es: LA LÍNEA MÁS IMPORTANTE: así queda la lista de a quién se le asigna la tarea.
+    const assignedUsers = Array.from(checkedBoxes).map(cb => ({
+        id: cb.value,
+        name: cb.dataset.name
+    }));
 
-    const taskData = { // "const" declara; "taskData" es el paquete de datos de la tarea; la llave abre el objeto
-        title, // "title" es la propiedad y toma el valor del título que se leyó antes
-        description, // "description" es la propiedad y toma el valor de la descripción
-        status, // "status" es la propiedad y toma el estado elegido
-        createdAt: getCurrentTimestamp(), // "createdAt" es la fecha de creación; "getCurrentTimestamp()" genera la fecha y hora actual formateada
-        assignedUsers // "assignedUsers" es la propiedad clave: contiene los usuarios a quienes se les asigna la tarea y se envía al backend
-    }; // la llave cierra el objeto "taskData"
+    // Cómo se lee: "Const taskData se asigna a un objeto con title, description, status, createdAt y assignedUsers."
+    // Qué es: el paquete que viaja al backend; "assignedUsers" es la clave del flujo.
+    const taskData = {
+        title,
+        description,
+        status,
+        createdAt: getCurrentTimestamp(),
+        assignedUsers
+    };
 
-    try { // "try" abre el bloque protegido: cualquier error dentro pasa al "catch"
-        const response = await createTask(taskData); // "const" declara; "response" guardará lo que devuelva la llamada; "await" pausa hasta que termine; "createTask(taskData)" envía la tarea y sus asignados con POST /api/tasks
-        if (response.ok) { // "if" pregunta si la respuesta del servidor fue exitosa; "response" es la respuesta; ".ok" es verdadero cuando el servidor respondió correctamente
-            const savedTask = await response.json(); // "const" declara; "savedTask" guarda el resultado; "await" espera; "response.json()" convierte la respuesta en objeto, que ya trae la tarea con sus asignados
-            tasks.push(savedTask); // "tasks" es la lista de tareas; ".push" agrega al final; "savedTask" es la tarea recién creada con sus asignados
-            applySorting(); // "applySorting" reordena y redibuja la tabla: aquí es donde se ven los badges de los usuarios asignados
-            taskForm.reset(); // "taskForm" es el formulario; ".reset" limpia todos los campos para poder registrar otra tarea
-            showToast('Tarea registrada exitosamente', 'success'); // "showToast" muestra una notificación; el texto confirma el éxito y "'success'" define el color verde
-        } else { // "else" se ejecuta si la respuesta NO fue exitosa
-            showToast('Error al guardar la tarea en el servidor', 'error'); // "showToast" muestra una notificación; el texto avisa del error al guardar y "'error'" define el color rojo
-        } // la llave cierra el bloque del "else"
-    } catch (error) { // "catch" atrapa cualquier error de conexión que haya ocurrido en el "try"; "error" es ese error
-        showToast('Error de conexión: no se pudo guardar la tarea', 'error'); // "showToast" muestra una notificación; el texto avisa que no hubo conexión y no se pudo guardar, en color rojo
-    } // la llave cierra el bloque del "catch"
+    try { // Qué hace: intenta el envío al backend; si falla, salta al catch
+        // Cómo se lee: "Const response se asigna a await createTask, pasando taskData como argumento."
+        // Qué es createTask: la que hace POST /api/tasks. Ctrl+Click para ir a su definición.
+        const response = await createTask(taskData);
+        // Cómo se lee: "If, con la condición response punto ok."
+        if (response.ok) { // Qué hace: si el servidor respondió bien (202) entra al éxito
+            // Cómo se lee: "Const savedTask se asigna a await response punto json."
+            const savedTask = await response.json(); // Qué hace: convierte la respuesta en la tarea ya guardada (con sus asignados)
+            // Cómo se lee: "Tasks punto push, pasando savedTask como argumento."
+            tasks.push(savedTask); // Qué hace: agrega la tarea nueva a la lista local
+            // Cómo se lee: "applySorting."
+            applySorting(); // Qué hace: repinta la tabla para que aparezca con sus badges de asignados
+            // Cómo se lee: "taskForm punto reset."
+            taskForm.reset(); // Qué hace: deja el formulario en blanco para el siguiente
+            // Cómo se lee: "ShowToast, pasando el mensaje y success como argumentos."
+            showToast('Tarea registrada exitosamente', 'success'); // Qué hace: muestra el aviso verde de que todo salió bien
+        } else {
+            // Cómo se lee: "ShowToast con el mensaje y error."
+            showToast('Error al guardar la tarea en el servidor', 'error'); // Qué hace: avisa que el servidor respondió pero algo falló
+        }
+    } catch (error) {
+        // Cómo se lee: "ShowToast con el error de conexión."
+        showToast('Error de conexión: no se pudo guardar la tarea', 'error'); // Qué hace: avisa si el backend no está disponible
+    }
 }
 
 async function editTaskViaModal(task) {

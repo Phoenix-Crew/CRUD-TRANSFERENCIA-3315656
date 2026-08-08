@@ -2,8 +2,10 @@ import { taskTableBody, taskCount, emptyState, taskFormContainer, sortableHeader
 import { statusColors } from '../utils/helpers.js';
 import { completeTaskDirect } from '../services/tareasService.js';
 
-export function enableTaskForm() {
-    taskFormContainer.style.display = 'block';
+// Cómo se lee: "Export function enableTaskForm."
+export function enableTaskForm() { // Qué hace: hace visible el formulario de tarea; se llama en searchUser cuando hay usuario válido.
+    // Cómo se lee: "TaskFormContainer punto style punto display se asigna a block."
+    taskFormContainer.style.display = 'block'; // Qué hace: pasa de oculto a visible el contenedor donde está el formulario
 }
 
 export function hideEmptyState() {
@@ -20,17 +22,29 @@ export function updateTaskCount(tasks) {
     taskCount.textContent = tasks.length === 1 ? "1 tarea" : `${tasks.length} tareas`;
 }
 
-export function createTaskElement(task, { onEdit, onDelete }) { // "export" hace pública la función; "function" declara; "createTaskElement" crea la fila de una tarea en la tabla; "task" recibe el objeto de la tarea (que incluye "assignedUsers"); las llaves desestructuran el segundo parámetro en "onEdit" y "onDelete", que son las acciones de los botones; la llave abre el bloque
-    const row = document.createElement('tr'); // "const" declara; "row" es la fila; "document.createElement('tr')" crea un elemento de fila de tabla
-    row.style.animation = 'fadeIn 0.3s ease'; // "row" es la fila; ".style" accede a los estilos; ".animation" controla la animación; "'fadeIn 0.3s ease'" hace que aparezca con una transición suave
-    row.dataset.taskId = task.id; // "row" es la fila; ".dataset" guarda datos personalizados; ".taskId" crea el atributo data-task-id; "task.id" le asigna el id de la tarea para identificarla luego
-    const bgColor = statusColors[task.status] || '#6b7280'; // "const" declara; "bgColor" guarda el color; "statusColors" es el mapa de colores; "[task.status]" busca el color del estado de la tarea; "||" si no existe usa el gris "'#6b7280'" como color por defecto
-    const usersArray = task.assignedUsers || []; // "const" declara; "usersArray" guarda la lista; "task.assignedUsers" es la propiedad que llega del backend con los usuarios asignados a esta tarea; "||" si no viene usa un array vacío
-    const usersBadges = usersArray.length > 0 // "const" declara; "usersBadges" guardará las etiquetas visuales; "usersArray.length" cuenta cuántos asignados hay; "> 0" pregunta si hay más de cero, o sea si tiene asignados
-        ? usersArray.map(u => `<span class="user-badge" style="background:rgba(16,185,129,0.15); color:#6ee7b7; padding:2px 8px; margin:2px; border-radius:4px; font-size:11px; display:inline-block;">${u.name}</span>`).join('') // el signo "?" significa "si tiene asignados": "usersArray.map" recorre cada asignado; "u" es cada usuario; la plantilla crea un "span" con clase "user-badge" y estilos en línea (fondo verde claro, texto verde y márgenes); "${u.name}" muestra el nombre del usuario asignado; ".join('')" une todos los badges sin separadores
-        : `<span style="color:var(--ink-faint); font-size:12px;">—</span>`; // el signo ":" significa "si NO tiene asignados": crea un "span" con texto gris "—" para indicar que no hay nadie asignado
-    const showCompleteBtn = task.status !== 'Completada'; // "const" declara; "showCompleteBtn" decide si se muestra el botón; "task.status" es el estado; "!==" pregunta si es distinto; "'Completada'" es el estado final; si no está completada, el botón se muestra
-    // "row" es la fila; ".innerHTML" asigna el contenido HTML; la plantilla (acento grave) permite escribir las celdas de la tabla y meter los valores de la tarea: "<td>" es una celda, "task-title" muestra el título, "task-desc" la descripción, "status-badge" el estado con su color "bgColor", "task-assigned-users-container" los badges "usersBadges" de los asignados, "task-date" la fecha, y "actions-cell" los botones Editar, Completar y Eliminar
+// Cómo se lee: "Export function createTaskElement, con task y un objeto con onEdit y onDelete."
+// Qué es: crea la fila de la tarea y pinta los badges de los usuarios asignados.
+// Qué es task.assignedUsers: la propiedad que trae del backend con la lista de asignados.
+export function createTaskElement(task, { onEdit, onDelete }) {
+    // Cómo se lee: "Const row se asigna a document punto createElement, con tr como argumento."
+    const row = document.createElement('tr'); // Qué hace: crea la fila de la tabla para esta tarea
+    // Cómo se lee: "Row punto style punto animation se asigna al efecto fadeIn."
+    row.style.animation = 'fadeIn 0.3s ease'; // Qué hace: le da una pequeña animación de entrada a la fila
+    // Cómo se lee: "Row punto dataset punto taskId se asigna a task punto id."
+    row.dataset.taskId = task.id; // Qué hace: guarda en la fila el id de la tarea para identificarla después
+    // Cómo se lee: "Const bgColor se asigna a statusColors, posicionando con task punto status, o un gris si no existe."
+    const bgColor = statusColors[task.status] || '#6b7280'; // Qué hace: busca el color que corresponde al estado de la tarea
+    // Cómo se lee: "Const usersArray = task punto assignedUsers o array vacío."
+    const usersArray = task.assignedUsers || []; // Qué hace: toma la lista de asignados; si no trae, usa vacía para no romper
+    // Cómo se lee: "Const usersBadges se asigna a ternario: si hay asignados, un span badge por cada uno
+    // unidos, y si no, un guion."
+    const usersBadges = usersArray.length > 0 // Qué hace: convierte la lista de asignados en etiquetas visuales verdes con el nombre
+        ? usersArray.map(u => `<span class="user-badge" style="background:rgba(16,185,129,0.15); color:#6ee7b7; padding:2px 8px; margin:2px; border-radius:4px; font-size:11px; display:inline-block;">${u.name}</span>`).join('')
+        : `<span style="color:var(--ink-faint); font-size:12px;">—</span>`;
+    // Cómo se lee: "Const showCompleteBtn se asigna a task punto status no es exactamente igual a Completada."
+    const showCompleteBtn = task.status !== 'Completada'; // Qué hace: solo muestra el botón Completar si la tarea aún no está completada
+    // Cómo se lee: "Row punto innerHTML se asigna a la plantilla de la fila con título, descripción, estado,
+    // badges de asignados, fecha y botones."
     row.innerHTML = `
         <td><span class="task-title">${task.title}</span></td>
         <td><span class="task-desc">${task.description}</span></td>
@@ -42,14 +56,20 @@ export function createTaskElement(task, { onEdit, onDelete }) { // "export" hace
             ${showCompleteBtn ? `<button class="action-btn action-btn--complete btn-complete" style="background:#10b981;">Completar</button>` : ''}
             <button class="action-btn action-btn--delete btn-delete">Eliminar</button>
         </td>
-    `; // el acento grave cierra la plantilla HTML de la fila
-    row.querySelector('.btn-edit').addEventListener('click', () => onEdit(task)); // "row" es la fila; ".querySelector" busca el botón con clase "btn-edit"; ".addEventListener" escucha el evento; "'click'" se dispara al hacer clic; "=>" abre la función que llama a "onEdit(task)" para editar la tarea
-    row.querySelector('.btn-delete').addEventListener('click', () => onDelete(task.id)); // "row" es la fila; ".querySelector" busca el botón "btn-delete"; ".addEventListener" escucha; "'click'" dispara al hacer clic; "=>" abre la función que llama a "onDelete(task.id)" para eliminar la tarea
-    const btnComplete = row.querySelector('.btn-complete'); // "const" declara; "btnComplete" guarda el botón de completar; "row.querySelector('.btn-complete')" lo busca en la fila (puede no existir si ya está completada)
-    if (btnComplete) { // "if" pregunta si el botón existe en la fila
-        btnComplete.addEventListener('click', () => completeTaskDirect(task.id)); // "btnComplete" es el botón; ".addEventListener" escucha; "'click'" dispara al hacer clic; "=>" abre la función que llama a "completeTaskDirect(task.id)" para marcarla como completada
-    } // la llave cierra el bloque del "if"
-    taskTableBody.appendChild(row); // "taskTableBody" es el cuerpo de la tabla; ".appendChild" agrega; "row" (con sus celdas y badges de asignados) se inserta al final de la tabla
+    `;
+    // Cómo se lee: "Row punto querySelector punto btn-edit invoca addEventListener, y al hacer clic llama a onEdit con task."
+    row.querySelector('.btn-edit').addEventListener('click', () => onEdit(task)); // Qué hace: el botón Editar abre el modal de edición con la tarea
+    // Cómo se lee: "Row punto querySelector punto btn-delete addEventListener, y al hacer clic llama a onDelete con el id."
+    row.querySelector('.btn-delete').addEventListener('click', () => onDelete(task.id)); // Qué hace: el botón Eliminar borra la tarea
+    // Cómo se lee: "Const btnComplete = row punto querySelector punto btn-complete."
+    const btnComplete = row.querySelector('.btn-complete'); // Qué hace: busca el botón Completar, que puede no existir
+    // Cómo se lee: "Si btnComplete existe, entra."
+    if (btnComplete) {
+        // Cómo se lee: "BtnComplete addEventListener, y al hacer clic llama a completeTaskDirect con el id."
+        btnComplete.addEventListener('click', () => completeTaskDirect(task.id)); // Qué hace: completa la tarea directamente desde la fila
+    }
+    // Cómo se lee: "TaskTableBody punto appendChild pasando row."
+taskTableBody.appendChild(row); // Qué hace: mete la fila terminada dentro del cuerpo de la tabla
 }
 
 export function updateSortIcons(criteria, direction) {

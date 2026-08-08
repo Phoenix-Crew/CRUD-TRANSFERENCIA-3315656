@@ -18,15 +18,23 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     });
 });
 
-btnSearch.addEventListener('click', searchUser); // "btnSearch" es el botón de buscar; ".addEventListener" le asigna un escuchador; "'click'" se dispara al presionar el botón; "searchUser" es la función que busca al usuario: carga sus tareas y prepara los checkboxes para asignar la tarea
+// Cómo se lee: "btnSearch invoca addEventListener, con 'click' como evento y searchUser como callback."
+// Qué es searchUser: es una función importada de tareasService. Vamos a su definición con Ctrl+Click.
+btnSearch.addEventListener('click', searchUser); // Qué hace: registra el clic y ejecuta searchUser cuando se presione el botón.
 
-userIdInput.addEventListener('keypress', function(e) { // "userIdInput" es el campo donde se digita el id; ".addEventListener" escucha; "'keypress'" se dispara al presionar una tecla; "function(e)" recibe el evento de la tecla; la llave abre la función
-    if (e.key === 'Enter') { // "if" pregunta; "e.key" es la tecla presionada; "===" pregunta si es exactamente igual; "'Enter'" es la tecla de enter; si la presionan, entra al bloque
-        searchUser(); // "searchUser()" ejecuta la misma búsqueda que hace el botón, para que enter también funcione
-    } // la llave cierra el bloque del "if"
+// Cómo se lee: "userIdInput invoca addEventListener, con 'keypress' como evento y una función anónima que recibe el evento e."
+// Qué es e: el objeto del evento; e.key trae la tecla que se presionó.
+userIdInput.addEventListener('keypress', function(e) {
+    // Cómo se lee: "If, con la condición e punto key es exactamente igual a Enter."
+    if (e.key === 'Enter') { // Qué hace: comprueba si la tecla presionada es Enter (=== compara tipo y valor) para disparar la búsqueda.
+        searchUser();
+    }
 });
 
-taskForm.addEventListener('submit', registerTask); // "taskForm" es el formulario; ".addEventListener" escucha; "'submit'" se dispara al enviar el formulario; "registerTask" es la función que registra la tarea y la asigna a los usuarios marcados: es el evento principal del flujo "asignar tarea"
+// Cómo se lee: "taskForm invoca addEventListener, con 'submit' como evento y registerTask como callback."
+// Qué es registerTask: es la función que arma la lista assignedUsers y la envía al backend. Lo veremos con Ctrl+Click.
+// Qué es: esta línea inicia el flujo de asignación: aquí guardamos la tarea para los usuarios marcados.
+taskForm.addEventListener('submit', registerTask); // Qué hace: al enviar el formulario ejecuta registerTask, que registra la tarea y la asigna a los usuarios marcados.
 
 if (filterStatusSelect) {
     filterStatusSelect.addEventListener('change', (e) => {
@@ -69,16 +77,24 @@ document.addEventListener('user:toggle', (e) => handleToggleStatus(e.detail));
 document.addEventListener('DOMContentLoaded', async function() {
     showEmptyState([]);
 
-    try { // "try" abre el bloque protegido: si algo falla, pasa al "catch"
-        const users = await fetchUsers(); // "const" declara; "users" guarda la lista; "await" espera a que termine; "fetchUsers()" pide al backend todos los usuarios, que son quienes luego se pueden asignar a las tareas
-        console.group("IDs DISPONIBLES PARA BUSCAR (Carga Inicial)"); // "console.group" abre un grupo en la consola; el texto indica que se listan los ids disponibles para buscar
-        console.table(users.map(u => ({ ID: u.id, Nombre: u.name, Rol: u.rol }))); // "console.table" muestra una tabla en la consola; "users.map" recorre cada usuario y "u" es cada uno; las llaves crean un objeto con "ID", "Nombre" y "Rol" del usuario para verlos ordenados
-        console.groupEnd(); // "console.groupEnd" cierra el grupo abierto antes en la consola
-        loadAdminPanel(); // "loadAdminPanel" carga el panel de administración con los datos ya disponibles
-    } catch (error) { // "catch" atrapa el error; "error" es ese error
-        console.warn("No se pudieron precargar los IDs. ¿El backend está encendido?", error.message); // "console.warn" muestra una advertencia; el texto avisa que no se pudieron precargar los ids y "error.message" agrega el detalle técnico
-        loadAdminPanel(); // "loadAdminPanel" carga el panel igualmente para no dejar la interfaz sin datos
-    } // la llave cierra el bloque del "catch"
+    // Cómo se lee: "Try, con la condición de intentar la carga inicial."
+    try { // Qué hace: protege la carga inicial por si el backend no responde; si falla, pasa al catch.
+        // Cómo se lee: "Const users se asigna a await fetchUsers."
+        const users = await fetchUsers(); // Qué hace: pide al backend todos los usuarios y los guarda; son quienes luego se pueden asignar a las tareas.
+        // Cómo se lee: "console punto group, con el texto 'IDs DISPONIBLES PARA BUSCAR (Carga Inicial)'."
+        console.group("IDs DISPONIBLES PARA BUSCAR (Carga Inicial)"); // Qué hace: abre un grupo en la consola para listar los ids disponibles.
+        // Cómo se lee: "console punto table, con users punto map, pasando cada usuario u como objeto con ID, Nombre y Rol."
+        console.table(users.map(u => ({ ID: u.id, Nombre: u.name, Rol: u.rol }))); // Qué hace: muestra en tabla el id, nombre y rol de cada usuario.
+        // Cómo se lee: "console punto groupEnd."
+        console.groupEnd(); // Qué hace: cierra el grupo abierto antes en la consola.
+        // Cómo se lee: "loadAdminPanel."
+        loadAdminPanel(); // Qué hace: carga el panel de administración con los datos ya disponibles.
+    } catch (error) {
+        // Cómo se lee: "Catch, con error: si el try falló, entra aquí."
+        console.warn("No se pudieron precargar los IDs. ¿El backend está encendido?", error.message); // Qué hace: muestra en consola una advertencia con el detalle técnico del error.
+        // Cómo se lee: "loadAdminPanel."
+        loadAdminPanel(); // Qué hace: carga el panel igualmente para no dejar la interfaz sin datos.
+    }
 
     loadUsers();
 });

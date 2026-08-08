@@ -471,55 +471,55 @@ body::before {
 }
 
 /* Este comentario CSS marca el inicio de la sección del selector multi-usuario: es la caja donde el usuario final marca a quién se le asigna la tarea */
-.multi-user-select { /* el selector ".multi-user-select" escribe las reglas para todo elemento que tenga esa clase, que en el HTML es el div "assignedUsersContainer" donde se dibujan los checkboxes; la llave abre el bloque de reglas */
-    display: flex; /* "display" define cómo se acomodan los elementos hijos; "flex" los pone uno debajo del otro en columna flexible */
-    flex-direction: column; /* "flex-direction" cambia la dirección del flex; "column" apila los checkboxes verticalmente, uno por fila */
-    gap: 6px; /* "gap" es el espacio entre un checkbox y el siguiente; "6px" deja una separación pequeña */
-    padding: 8px 4px; /* "padding" es el espacio interno; "8px" arriba y abajo, "4px" a los lados, para que los checkboxes no queden pegados al borde */
-    max-height: 200px; /* "max-height" limita la altura máxima; "200px" hace que, si hay muchos usuarios, el contenedor no crezca infinito */
-    overflow-y: auto; /* "overflow-y" controla el desborde vertical; "auto" muestra una barra de desplazamiento solo cuando hace falta, para recorrer la lista de usuarios */
-    background: rgba(2, 44, 34, 0.15); /* "background" es el color de fondo; "rgba" indica rojo, verde, azul y transparencia; estos valores dan un verde oscuro muy suave y semi-transparente */
-    border: 1.5px solid rgba(16, 185, 129, 0.06); /* "border" dibuja el borde; "1.5px" de grosor, "solid" de línea continua y un color verde muy tenue con 6% de opacidad */
-    border-radius: var(--radius); /* "border-radius" redondea las esquinas; "var(--radius)" usa la variable de la esquina redondeada que ya define el tema */
+.multi-user-select { /* el selector ".multi-user-select" estiliza el div "assignedUsersContainer" del HTML, donde se dibujan los checkboxes */
+    display: flex; /* apila los elementos hijos con flex */
+    flex-direction: column; /* dirección de columna: cada checkbox va en una fila propia */
+    gap: 6px; /* separación de 6px entre un checkbox y el siguiente */
+    padding: 8px 4px; /* espacio interno: 8px arriba y abajo, 4px a los lados, para que los checkboxes no queden pegados al borde */
+    max-height: 200px; /* altura máxima: si hay muchos usuarios, el contenedor no crece infinito */
+    overflow-y: auto; /* si se desborda, aparece barra de desplazamiento vertical para recorrer la lista de usuarios */
+    background: rgba(2, 44, 34, 0.15); /* fondo verde oscuro suave y semi-transparente */
+    border: 1.5px solid rgba(16, 185, 129, 0.06); /* borde verde muy tenue con 6% de opacidad */
+    border-radius: var(--radius); /* esquinas redondeadas con la variable del tema */
 }
 
-.multi-user-select::-webkit-scrollbar { /* "::-webkit-scrollbar" selecciona la barra de desplazamiento del contenedor en el navegador Chrome; la llave abre el bloque */
-    width: 6px; /* "width" define el ancho de la barra de desplazamiento; "6px" la deja delgada para que no estorbe la lista */
+.multi-user-select::-webkit-scrollbar { /* estilo de la barra de desplazamiento del contenedor en Chrome */
+    width: 6px; /* barra delgada para que no estorbe la lista */
 }
 
-.multi-user-select::-webkit-scrollbar-track { /* "::-webkit-scrollbar-track" selecciona el riel (la pista) por donde se desliza la barra; la llave abre el bloque */
-    background: rgba(2, 44, 34, 0.3); /* "background" pinta el riel; "rgba" con verde oscuro y 30% de opacidad lo hace sutil */
-    border-radius: 3px; /* "border-radius" redondea las esquinas del riel; "3px" de curvatura */
+.multi-user-select::-webkit-scrollbar-track { /* el riel (la pista) por donde se desliza la barra */
+    background: rgba(2, 44, 34, 0.3); /* riel verde oscuro sutil */
+    border-radius: 3px; /* esquinas del riel redondeadas */
 }
 
-.multi-user-select::-webkit-scrollbar-thumb { /* "::-webkit-scrollbar-thumb" selecciona la parte que se arrastra con el mouse; la llave abre el bloque */
-    background: rgba(16, 185, 129, 0.3); /* "background" pinta el pulgar de la barra; "rgba" con verde y 30% de opacidad lo hace visible pero discreto */
-    border-radius: 3px; /* "border-radius" redondea el pulgar; "3px" de curvatura */
+.multi-user-select::-webkit-scrollbar-thumb { /* la parte que se arrastra con el mouse */
+    background: rgba(16, 185, 129, 0.3); /* pulgar verde visible pero discreto */
+    border-radius: 3px; /* esquinas del pulgar redondeadas */
 }
 
-.multi-user-checkbox { /* ".multi-user-checkbox" es la clase de cada fila que arma la función "renderUserCheckboxes" con un "label" por usuario; la llave abre el bloque */
-    display: flex; /* "display" define cómo se acomodan los hijos; "flex" alinea en fila la casilla y el nombre del usuario */
-    align-items: center; /* "align-items" alinea verticalmente; "center" centra la casilla con respecto al texto del nombre */
-    gap: 10px; /* "gap" es el espacio entre la casilla y el nombre; "10px" de separación */
-    padding: 8px 12px; /* "padding" es el espacio interno; "8px" arriba y abajo, "12px" a los lados, para hacer clicable toda la fila */
-    border-radius: 6px; /* "border-radius" redondea la fila; "6px" de curvatura para que se vea como una tarjeta */
-    cursor: pointer; /* "cursor" cambia la forma del mouse; "pointer" muestra la mano, indicando que se puede hacer clic */
-    transition: background var(--snap); /* "transition" anima el cambio; "background" es la propiedad que cambia y "var(--snap)" usa el tiempo de transición del tema */
-    font-size: 14px; /* "font-size" define el tamaño de la letra del nombre; "14px" de altura */
-    color: var(--ink); /* "color" define el color del texto; "var(--ink)" usa el color de tinta definido por el tema */
-    user-select: none; /* "user-select" controla si se puede seleccionar el texto; "none" evita que al marcar la casilla se resalte el texto, mejorando la experiencia */
+.multi-user-checkbox { /* ".multi-user-checkbox" es la clase de cada fila que arma la función "renderUserCheckboxes" con un "label" por usuario */
+    display: flex; /* flex alinea en fila la casilla y el nombre del usuario */
+    align-items: center; /* centra la casilla verticalmente respecto al texto del nombre */
+    gap: 10px; /* separación de 10px entre la casilla y el nombre */
+    padding: 8px 12px; /* espacio interno para hacer clicable toda la fila */
+    border-radius: 6px; /* curvatura para que la fila se vea como una tarjeta */
+    cursor: pointer; /* el mouse muestra la mano, indicando que se puede hacer clic */
+    transition: background var(--snap); /* anima el cambio de fondo con el tiempo de transición del tema */
+    font-size: 14px; /* tamaño de la letra del nombre */
+    color: var(--ink); /* color del texto, usando el color de tinta definido por el tema */
+    user-select: none; /* evita que al marcar la casilla se resalte el texto */
 }
 
-.multi-user-checkbox:hover { /* ":hover" es una pseudo-clase que se activa cuando el mouse pasa encima de la fila; la llave abre el bloque */
-    background: rgba(16, 185, 129, 0.08); /* "background" pinta el fondo al pasar el mouse; "rgba" con verde y 8% de opacidad resalta la fila al señalarla */
+.multi-user-checkbox:hover { /* ":hover": cuando el mouse pasa encima de la fila */
+    background: rgba(16, 185, 129, 0.08); /* resalta la fila con un verde muy tenue al señalarla */
 }
 
-.multi-user-checkbox input[type="checkbox"] { /* este selector apunta a la casilla dentro de cada fila; "input" es el elemento de entrada y "[type='checkbox']" confirma que es una casilla de verificación; la llave abre el bloque */
-    width: 18px; /* "width" define el ancho de la casilla; "18px" la hace lo bastante grande para tocarla fácil */
-    height: 18px; /* "height" define la altura de la casilla; "18px" la mantiene cuadrada */
-    accent-color: var(--emerald-500); /* "accent-color" es el color con el que se pinta la casilla al marcarla; "var(--emerald-500)" usa el verde esmeralda del tema */
-    cursor: pointer; /* "cursor" cambia la forma del mouse; "pointer" muestra la mano al pasar sobre la casilla */
-    flex-shrink: 0; /* "flex-shrink" impide que la casilla se encoja; "0" mantiene su tamaño de 18px sin importar el espacio */
+.multi-user-checkbox input[type="checkbox"] { /* apunta a la casilla dentro de cada fila */
+    width: 18px; /* ancho de 18px: lo bastante grande para tocarla fácil */
+    height: 18px; /* altura de 18px para mantenerla cuadrada */
+    accent-color: var(--emerald-500); /* pinta la casilla de verde esmeralda del tema al marcarla */
+    cursor: pointer; /* muestra la mano al pasar sobre la casilla */
+    flex-shrink: 0; /* evita que la casilla se encoja y mantiene su tamaño de 18px */
 }
 
 .form__hint {
